@@ -1,4 +1,5 @@
 # Projet FuniBot - Néorobrooke
+<img src="logo/NeoRobrooke.png" alt="Alt" width="100"/>
 
 ## Projet S4 en Génie robotique - Université de Sherbrooke
 
@@ -15,6 +16,4 @@ Installez git-lfs avant de cloner.
 ## Linux
 Disponible dans le gestionnaire de paquets de votre distribution.
 ## Windows ou autres
-Téléchargeable à partir du lien suivant:
- 
-https://git-lfs.github.com/
+Téléchargeable à partir [de ce lien.](https://git-lfs.github.com/)
