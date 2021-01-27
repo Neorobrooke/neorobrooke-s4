@@ -8,10 +8,10 @@ namespace FuniConst
 namespace FuniMath
 {
 	// Valeur absolue d'un double
-	inline double abs(double u) { return (u >= 0) ? u : -u; }
+	inline double abs(double vec) { return (vec >= 0) ? vec : -vec; }
 
 	// Racine carrée à l'aide de la méthode de Raphson-Newton
-	double sqrt(double u, double precision = 0.001);
+	double sqrt(double vec, double precision = 0.0001);
 
 	//vecteur
 	class Vecteur
@@ -25,15 +25,16 @@ namespace FuniMath
 		
 		inline double norme_carree() { return (x * x) + (y * y) + (z * z); }
 		inline double norme() { return sqrt(norme_carree()); }
+		inline double produitScalaire(const Vecteur vec) const { return x * vec.x + y * vec.y + z * vec.z; }
+		inline Vecteur produitVectoriel(const Vecteur vec) const { return Vecteur(y*vec.z - vec.y*z, z*vec.x - vec.z*x, x*vec.y - vec.x * y); }
 		
-		inline Vecteur operator+(const Vecteur u) const { return Vecteur(x + u.x, y + u.y, z + u.z); }
-		inline Vecteur operator-(const Vecteur u) const { return Vecteur(x - u.x, y - u.y, z - u.z); }
-		inline Vecteur operator*(const double u) const { return Vecteur(x * u, y * u, z * u); }
-		inline Vecteur operator/(const double u) const { return Vecteur(x / u, y / u, z / u); }
+		inline Vecteur operator+(const Vecteur vec) const { return Vecteur(x + vec.x, y + vec.y, z + vec.z); }
+		inline Vecteur operator-(const Vecteur vec) const { return Vecteur(x - vec.x, y - vec.y, z - vec.z); }
+		inline Vecteur operator*(const double vec) const { return Vecteur(x * vec, y * vec, z * vec); }
+		inline Vecteur operator/(const double vec) const { return Vecteur(x / vec, y / vec, z / vec); }
 	};
 
-	Vecteur operator*(const double u, const Vecteur v);
-}
+	Vecteur operator*(const double vec, const Vecteur v);
 
 class Funibot
 {
