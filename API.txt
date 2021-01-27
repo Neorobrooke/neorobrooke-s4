@@ -1,0 +1,29 @@
+Distribution du code:
+	-	Tout tourne sur le microcontrôleur.
+	-	On communique par port série avec un ordinateur quelconque.
+	-	On fait une librairie wrapper en Python, C++, C.
+	-	Pour notre projet, on va utiliser un Raspberry Pi pour la partie pas-Arduino
+		.	Implique de faire de la doc pour l'utiliser avec un Pi
+		.	Pour tester, on va surtout faire ça sur nos ordis
+
+Point de vue utilisateur:
+	-	Instancier plusieurs robots
+		.	Port série pour chacun
+		.	Coordonnées des poteaux pour chacun
+	-	Calibrer
+		.	Manuellement dans un premier temps
+		.	Automatiquement plus tard?
+	-	Obtenir la position de la charge
+	-	Déplacer à une position
+	-	Déplacer dans une direction
+		.	D'une certaine distance
+		.	Jusqu'à ce qu'on demande d'arrêter
+	-	Accéder aux erreurs et aux messages d'erreurs
+		.	Un peu comme les erreurs de FILE* en C
+
+Point de vue de l'interface Série:
+	-	Commandes pour chaque accès de l'API
+		.	ENUM avec chaque commande
+		.	STRING pour chaque commande (moins bonne idée)
+	-	On commence avec une sérialisation JSON
+		.	On va garder du JSON sauf si on a besoin de gagner en vitesse, ce qui ne devrait pas être le cas
