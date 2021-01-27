@@ -8,3 +8,13 @@ Une API pour la librairie sera développée dans les langages suivants:
 - Python
 - C++
 - C
+
+# Notes
+Ce répertoir utilise git-lfs pour les fichiers volumineux.
+Installez git-lfs avant de cloner.
+## Linux
+Disponible dans le gestionnaire de paquets de votre distribution.
+## Windows ou autres
+Téléchargeable à partir du lien suivant:
+ 
+https://git-lfs.github.com/
