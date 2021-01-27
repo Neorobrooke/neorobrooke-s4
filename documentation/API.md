@@ -9,9 +9,7 @@
 - Déplacer la charge dans une direction spécifiée
   - Sur une certaine distance (ou l'atteinte de la limite)
   - Jusqu'à une demande d'arrêt (ou l'atteinte de la limite)
-## Erreurs et exceptions [^1]
+## Erreurs et exceptions
 - Accéder aux erreurs levées
 - Obtenir le dernier message d'erreur
 - Effacer les erreurs et réinitialiser
-
-[^1]: À la manière des erreurs d'un FILE* en C
