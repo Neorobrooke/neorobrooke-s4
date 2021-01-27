@@ -11,7 +11,7 @@ namespace FuniMath
     double abs(double u);
 
     //racine carrée à l'aide de la méthode Raphson-Newton
-    double sqrt(double u, double precision = 0.001);
+    double sqrt(double u, double precision = 0.0001);
 
     //vecteur
     class vecteur
@@ -21,6 +21,8 @@ namespace FuniMath
         vecteur(double _x = 0, double _y = 0, double _z = 0) :x(_x), y(_y), z(_z) {}
         double norm() { return sqrt(x * x + y * y + z * z); }
         double norm2() { return x * x + y * y + z * z; }
+        double produitScalaire(const vecteur u) const { return x * u.x + y * u.y + z * u.z; }
+        vecteur produitVectoriel(const vecteur u) const { return vecteur(y*u.z - u.y*z, z*u.x - u.z*x, x*u.y - u.x * y); }
         vecteur operator + (const vecteur u) const { return vecteur(x + u.x, y + u.y, z + u.z); }
         vecteur operator - (const vecteur u) const { return vecteur(x - u.x, y - u.y, z - u.z); }
         vecteur operator * (const double u)  const { return vecteur(x * u, y * u, z * u); }
