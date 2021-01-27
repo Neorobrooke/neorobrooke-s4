@@ -1,5 +1,5 @@
 # Projet FuniBot - Néorobrooke
-<img src="logo/NeoRobrooke.png" alt="Alt" style="float:right" width="120"/>
+<img src="logo/NeoRobrooke.png" alt="Alt" width="100"/>
 
 ## Projet S4 en Génie robotique - Université de Sherbrooke
 
