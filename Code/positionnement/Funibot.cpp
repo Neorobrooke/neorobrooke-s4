@@ -1,16 +1,13 @@
 #include "Funibot.h"
-#include "iostream"
+#include <iostream>
 
-FuniMath::vecteur operator * (const double u, const FuniMath::vecteur v) { return FuniMath::vecteur(v.x * u, v.y * u, v.z * u); }
 
-//valeur absolue
-double FuniMath::abs(double u)
+FuniMath::Vecteur operator*(const double u, const FuniMath::Vecteur v)
 {
-	if (u >= 0) return u;
-	else return -u;
+	return FuniMath::Vecteur(v.x * u, v.y * u, v.z * u);
 }
 
-//racine carrée à l'aide de la méthode Raphson-Newton
+// Racine carrÃ©e Ã  l'aide de la mÃ©thode de Raphson-Newton
 double FuniMath::sqrt(double u, double precision)
 {
 	double est = u / 2;
@@ -21,7 +18,7 @@ double FuniMath::sqrt(double u, double precision)
 	return est;
 }
 
-std::ostream& operator << (std::ostream& ios, FuniMath::vecteur& vect)
+std::ostream& operator << (std::ostream& ios, FuniMath::Vecteur& vect)
 {
 	ios << "(" << vect.x << "; " << vect.y << ";" << vect.z << ")";
 	return ios;
@@ -29,23 +26,23 @@ std::ostream& operator << (std::ostream& ios, FuniMath::vecteur& vect)
 
 Funibot::Funibot():nbrPole(0)
 {
-	for (unsigned char i = 0; i < FuniConst::NBRPOLE; i++)
+	for (unsigned char i = 0; i < FuniConst::NBR_POLES; i++)
 	{
 		cable[i] = 0;
 	}
 }
 
-void Funibot::addPole(FuniMath::vecteur positionPole, FuniMath::vecteur positionAccroche)
+void Funibot::addPole(FuniMath::Vecteur positionPole, FuniMath::Vecteur positionAccroche)
 {
-	if (nbrPole == FuniConst::NBRPOLE)throw 1; //dépassement du nombre de pole maximum
+	if (nbrPole == FuniConst::NBR_POLES)throw 1; //dÃ©passement du nombre de pole maximum
 	pole[nbrPole] = positionPole;
 	accroche[nbrPole] = positionAccroche;
 	nbrPole++;
 }
 
-void Funibot::setPole(unsigned char index, FuniMath::vecteur positionPole, FuniMath::vecteur positionAccroche)
+void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniMath::Vecteur positionAccroche)
 {
-	if (index >= nbrPole)throw 1; //accès à un pole inexistant
+	if (index >= nbrPole)throw 1; //accÃ¨s Ã  un pole inexistant
 	pole[index] = positionPole;
 	accroche[index] = positionAccroche;
 
@@ -53,45 +50,45 @@ void Funibot::setPole(unsigned char index, FuniMath::vecteur positionPole, FuniM
 
 void Funibot::setLongueurCable(unsigned char index, double longueur)
 {
-	if (index >= nbrPole)throw 1; //accès à un cable inexistant
+	if (index >= nbrPole)throw 1; //accÃ¨s Ã  un cable inexistant
 	cable[index] = longueur;
 }
 
-FuniMath::vecteur Funibot::getPosition()
+FuniMath::Vecteur Funibot::getPosition()
 {
 	//plus de deux cables
 	if (nbrPole > 2)
 	{
-		//vérifiactions
+		//vÃ©rifiactions
 		for (int i = 0; i < nbrPole; i++)
 			for (int j = i+1; j < nbrPole; j++)
 			{
-				double distij = (pole[i] - accroche[i] - pole[j] + accroche[j]).norm2();
+				double distij = (pole[i] - accroche[i] - pole[j] + accroche[j]).norme_carree();
 				if (sqrt(distij) > (cable[i] + cable[j])) throw 2; //cables trop court
 			}
 
 		// points
-		FuniMath::vecteur C1 = pole[0] - accroche[0];
-		FuniMath::vecteur C2 = pole[1] - accroche[1];
-		FuniMath::vecteur C3 = pole[2] - accroche[2];
+		FuniMath::Vecteur C1 = pole[0] - accroche[0];
+		FuniMath::Vecteur C2 = pole[1] - accroche[1];
+		FuniMath::Vecteur C3 = pole[2] - accroche[2];
 
 		if (C1.z == C2.z && C1.z == C3.z) throw 5; //allignement en z
 		if (C1.x == C2.x && C1.x == C3.x) throw 5; //allignement en x
 
 		//centres de jonction
-		FuniMath::vecteur Dirr1 = C2 - C1;
-		FuniMath::vecteur Dirr2 = C3 - C1;
+		FuniMath::Vecteur Dirr1 = C2 - C1;
+		FuniMath::Vecteur Dirr2 = C3 - C1;
 
-		double dist1 = Dirr1.norm();
-		double dist2 = Dirr2.norm();
+		double dist1 = Dirr1.norme();
+		double dist2 = Dirr2.norme();
 
 
 		double r1Carr = cable[0]* cable[0];
 		double k1 = (r1Carr - (cable[1] * cable[1]) + (dist1 * dist1)) / (2 * dist1);
 		double k2 = (r1Carr - (cable[2] * cable[2]) + (dist2 * dist2)) / (2 * dist2);
 
-		FuniMath::vecteur centre1 = (Dirr1 * k1 / dist1) + C1;
-		FuniMath::vecteur centre2 = (Dirr2 * k2 / dist2) + C1;
+		FuniMath::Vecteur centre1 = (Dirr1 * k1 / dist1) + C1;
+		FuniMath::Vecteur centre2 = (Dirr2 * k2 / dist2) + C1;
 
 		//fabrication de droites
 		double a1,a2,b1,b2;
@@ -119,7 +116,7 @@ FuniMath::vecteur Funibot::getPosition()
 			b2 = centre2.z - a2 * centre2.x;
 		}
 
-		//résolution finale
+		//rÃ©solution finale
 		double posX;
 		double posZ;
 
@@ -140,9 +137,9 @@ FuniMath::vecteur Funibot::getPosition()
 		}
 
 		double posYCarr = r1Carr - posX * posX - posZ * posZ;
-		if (posYCarr < 0)throw 6;//racine négative
+		if (posYCarr < 0)throw 6;//racine nÃ©gative
 		double posY = C1.y - sqrt(posYCarr);
-		return FuniMath::vecteur(posX, posY, posZ);
+		return FuniMath::Vecteur(posX, posY, posZ);
 
 
 	}
@@ -150,10 +147,10 @@ FuniMath::vecteur Funibot::getPosition()
 	else if (nbrPole == 2)
 	{
 		// calculs pole relatif
-		FuniMath::vecteur C1 = pole[0] - accroche[0];
-		FuniMath::vecteur C2 = pole[1] - accroche[1];
-		FuniMath::vecteur Dirr = C2 - C1;
-		double dist = Dirr.norm();
+		FuniMath::Vecteur C1 = pole[0] - accroche[0];
+		FuniMath::Vecteur C2 = pole[1] - accroche[1];
+		FuniMath::Vecteur Dirr = C2 - C1;
+		double dist = Dirr.norme();
 
 		if (dist > (cable[0] + cable[1])) throw 2; //cables trop court
 		if ((dist * dist + cable[1] * cable[1]) < (cable[0] * cable[0]))throw 3; //cable 0 trop long
@@ -161,22 +158,22 @@ FuniMath::vecteur Funibot::getPosition()
 
 
 		double k = ((cable[0]) * (cable[0]) - (cable[1] * cable[1]) + (dist * dist)) / (2*dist);
-		FuniMath::vecteur centre = (Dirr * k / dist) + C1;
+		FuniMath::Vecteur centre = (Dirr * k / dist) + C1;
 		
 		if (C1.y == C2.y)
 		{
-			return FuniMath::vecteur(centre.x,centre.y-FuniMath::sqrt(cable[0]*cable[0] - k*k),centre.z);
+			return FuniMath::Vecteur(centre.x,centre.y-FuniMath::sqrt(cable[0]*cable[0] - k*k),centre.z);
 		}
 		else
 		{
 			double a = (C2.x - C1.x) / (C1.y - C2.y);
-			return centre - ( FuniMath::vecteur(1, a, 0)/ FuniMath::vecteur(1, a, 0).norm() * FuniMath::sqrt(cable[0] * cable[0] - k * k));
+			return centre - ( FuniMath::Vecteur(1, a, 0)/ FuniMath::Vecteur(1, a, 0).norme() * FuniMath::sqrt(cable[0] * cable[0] - k * k));
 		}
 	}
 	//un seul cable
 	else if (nbrPole == 1)
 	{
-		return pole[0] - accroche[0] - FuniMath::vecteur(0, cable[0], 0);
+		return pole[0] - accroche[0] - FuniMath::Vecteur(0, cable[0], 0);
 	}
 	else throw 1; // aucun cable pour les calculs
 }
@@ -196,10 +193,10 @@ void Funibot::test()
 		std::cout << "\nlongueurs des cables:\n";
 		for (int i = 0; i < nbrPole; i++)std::cout << cable[i] << "\n";
 
-		FuniMath::vecteur pos = getPosition();
+		FuniMath::Vecteur pos = getPosition();
 		std::cout << "\n\nPosition calculee : " << pos;
 		std::cout << "\nlongueurs des cables calculees:\n";
-		for (int i = 0; i < nbrPole; i++)std::cout << (pos + accroche[i] - pole[i]).norm() << "\n";
+		for (int i = 0; i < nbrPole; i++)std::cout << (pos + accroche[i] - pole[i]).norme() << "\n";
 	}
 	//un seul cable
 	else if (nbrPole == 1)
@@ -208,9 +205,9 @@ void Funibot::test()
 		std::cout << "position du pole : " << pole[0];
 		std::cout << "\nposition de l'accroche :" << accroche[0];
 		std::cout << "\ntaille du cable : " << cable[0];
-		FuniMath::vecteur pos = getPosition();
+		FuniMath::Vecteur pos = getPosition();
 		std::cout << "\n\nPosition calculee : " << pos;
-		std::cout << "\ntaille cable calculee : " << (pos + accroche[0] - pole[0]).norm() << "\n";
+		std::cout << "\ntaille cable calculee : " << (pos + accroche[0] - pole[0]).norme() << "\n";
 	}
 	else throw 1; // aucun cable pour les calculs
 }
