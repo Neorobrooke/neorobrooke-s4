@@ -24,7 +24,7 @@ namespace FuniMath
 			{}
 		
 		inline double norme_carree() { return (x * x) + (y * y) + (z * z); }
-		inline double norme() { return sqrt(norme_carree()); }
+		inline double norme() { return FuniMath::sqrt(norme_carree()); }
 		inline double produitScalaire(const Vecteur vec) const { return x * vec.x + y * vec.y + z * vec.z; }
 		inline Vecteur produitVectoriel(const Vecteur vec) const { return Vecteur(y*vec.z - vec.y*z, z*vec.x - vec.z*x, x*vec.y - vec.x * y); }
 		
@@ -35,6 +35,7 @@ namespace FuniMath
 	};
 
 	Vecteur operator*(const double vec, const Vecteur v);
+}
 
 class Funibot
 {
