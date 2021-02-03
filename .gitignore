@@ -1,2 +1,4 @@
 .vscode
 ~$*
+NOGIT*
+__pycache__
