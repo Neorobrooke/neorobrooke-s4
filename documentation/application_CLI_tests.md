@@ -1,4 +1,5 @@
 # Commandes de l'application de tests en CLI
+
 ## Initialisation
 - Paramètre "-N" pour une liste de noeuds et leurs coordonnées
   - Paramètre de la forme suivante: "x1:y1 x2:y2 x3:y3 x4:y4"
