@@ -20,14 +20,14 @@ namespace FuniMath
 		double x, y, z;
 
 		Vecteur(double _x = 0, double _y = 0, double _z = 0)
-			: x(_x), y(_y), z(_z)
-		{}
-
+			:	x(_x), y(_y), z(_z)
+			{}
+		
 		inline double norme_carree() { return (x * x) + (y * y) + (z * z); }
 		inline double norme() { return FuniMath::sqrt(norme_carree()); }
 		inline double produitScalaire(const Vecteur vec) const { return x * vec.x + y * vec.y + z * vec.z; }
-		inline Vecteur produitVectoriel(const Vecteur vec) const { return Vecteur(y * vec.z - vec.y * z, z * vec.x - vec.z * x, x * vec.y - vec.x * y); }
-
+		inline Vecteur produitVectoriel(const Vecteur vec) const { return Vecteur(y*vec.z - vec.y*z, z*vec.x - vec.z*x, x*vec.y - vec.x * y); }
+		
 		inline Vecteur operator+(const Vecteur vec) const { return Vecteur(x + vec.x, y + vec.y, z + vec.z); }
 		inline Vecteur operator-(const Vecteur vec) const { return Vecteur(x - vec.x, y - vec.y, z - vec.z); }
 		inline Vecteur operator*(const double vec) const { return Vecteur(x * vec, y * vec, z * vec); }
@@ -47,8 +47,6 @@ public:
 	void test();
 
 	FuniMath::Vecteur getPosition();
-	double* deplacementDirectionnel(FuniMath::Vecteur dir, double pasTemps, double vitesse, double* vitesseCable);
-	double* deplacementPos(FuniMath::Vecteur pos, double pasTemps, double vitesse, double* vitesseCable);
 
 protected:
 	unsigned char nbrPole;

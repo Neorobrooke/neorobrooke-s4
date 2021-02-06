@@ -25,7 +25,7 @@ std::ostream& operator<<(std::ostream& ios, FuniMath::Vecteur& vect)
 }
 
 Funibot::Funibot()
-	: nbrPole(0)
+	:	nbrPole(0)
 {
 	for (unsigned char i = 0; i < FuniConst::NBR_POLES; i++)
 	{
@@ -40,7 +40,7 @@ void Funibot::addPole(FuniMath::Vecteur positionPole, FuniMath::Vecteur position
 	{
 		throw 1;
 	}
-
+	
 	pole[nbrPole] = positionPole;
 	accroche[nbrPole] = positionAccroche;
 	nbrPole++;
@@ -79,7 +79,7 @@ FuniMath::Vecteur Funibot::getPosition()
 			for (int j = i + 1; j < nbrPole; ++j)
 			{
 				double distij = (pole[i] - accroche[i] - pole[j] + accroche[j]).norme_carree();
-
+				
 				// Câbles trop courts
 				if (sqrt(distij) > (cable[i] + cable[j]) * (cable[i] + cable[j]))
 				{
@@ -101,7 +101,7 @@ FuniMath::Vecteur Funibot::getPosition()
 		{
 			throw 5; // Alignement en x
 		}
-
+		
 		// Direction d'un pôle à l'autre
 		FuniMath::Vecteur Dirr1 = C2 - C1;
 		FuniMath::Vecteur Dirr2 = C3 - C1;
@@ -127,7 +127,7 @@ FuniMath::Vecteur Funibot::getPosition()
 		base2 = base2 / base2.norme();
 		FuniMath::Vecteur base3 = base1.produitVectoriel(base2);
 		base3 = base3 / base3.norme();
-
+		
 		if (base3.y > 0)
 		{
 			base3 = base3 * -1;
@@ -153,18 +153,18 @@ FuniMath::Vecteur Funibot::getPosition()
 
 		// Recherche de la composante dans la base3 à l'aide de l'équation de la sphère C1
 		double b3Pos2 = r1Carr - (b1Pos * b1Pos) - (b2Pos * b2Pos);
-
+		
 		// Racine neative
 		if (b3Pos2 < 0)
 		{
 			throw 5;
 		}
-
+		
 		double b3Pos = sqrt(b3Pos2);
 
 
 		// Conversion des positions dans le référentiel normal
-		FuniMath::Vecteur jointure = base1 * b1Pos + base2 * b2Pos + base3 * b3Pos;
+		FuniMath::Vecteur jointure =  base1 * b1Pos +  base2 * b2Pos + base3 * b3Pos;
 
 		// Décentrage de C1
 		return jointure + C1;
@@ -197,18 +197,18 @@ FuniMath::Vecteur Funibot::getPosition()
 		}
 
 		// Recherche des centres de jonctions tels que c1 + k*Dirr = centre de jonction entre C1 et C2
-		double k = ((cable[0]) * (cable[0]) - (cable[1] * cable[1]) + (dist * dist)) / (2 * dist);
+		double k = ((cable[0]) * (cable[0]) - (cable[1] * cable[1]) + (dist * dist)) / (2*dist);
 		FuniMath::Vecteur centre = (Dirr * k / dist) + C1;
-
+		
 		// Recherche du décalage d'un au rayon de la jonction
 		if (C1.y == C2.y)
 		{
-			return FuniMath::Vecteur(centre.x, centre.y - FuniMath::sqrt(cable[0] * cable[0] - k * k), centre.z);
+			return FuniMath::Vecteur(centre.x, centre.y - FuniMath::sqrt(cable[0]*cable[0] - k*k), centre.z);
 		}
 		else
 		{
 			double a = (C2.x - C1.x) / (C1.y - C2.y);
-			return centre - (FuniMath::Vecteur(1, a, 0) / FuniMath::Vecteur(1, a, 0).norme() * FuniMath::sqrt(cable[0] * cable[0] - k * k));
+			return centre - ( FuniMath::Vecteur(1, a, 0) / FuniMath::Vecteur(1, a, 0).norme() * FuniMath::sqrt(cable[0] * cable[0] - k * k));
 		}
 	}
 	// Un seul câble
@@ -236,19 +236,19 @@ void Funibot::test()
 		{
 			std::cout << "Fonctionnement 3D\n\n";
 		}
-
+		
 		std::cout << "Position des pôles:\n";
 		for (int i = 0; i < nbrPole; i++)
 		{
 			std::cout << pole[i] << "\n";
 		}
-
+		
 		std::cout << "\nPosition des accroches:\n";
 		for (int i = 0; i < nbrPole; i++)
 		{
 			std::cout << accroche[i] << "\n";
 		}
-
+		
 		std::cout << "\nLongueurs des câbles:\n";
 		for (int i = 0; i < nbrPole; i++)
 		{
@@ -257,7 +257,7 @@ void Funibot::test()
 
 		FuniMath::Vecteur pos = getPosition();
 		std::cout << "\n\nPosition calculée: " << pos;
-
+		
 		std::cout << "\nLongueurs des câbles calculées:\n";
 		for (int i = 0; i < nbrPole; i++)
 		{
@@ -271,7 +271,7 @@ void Funibot::test()
 		std::cout << "Position du pôle: " << pole[0];
 		std::cout << "\nPosition de l'accroche:" << accroche[0];
 		std::cout << "\nTaille du câble: " << cable[0];
-
+		
 		FuniMath::Vecteur pos = getPosition();
 		std::cout << "\n\nPosition calculée: " << pos;
 		std::cout << "\nTaille câble calculée : " << (pos + accroche[0] - pole[0]).norme() << "\n";
@@ -281,43 +281,4 @@ void Funibot::test()
 	{
 		throw 1;
 	}
-}
-
-double* Funibot::deplacementDirectionnel(FuniMath::Vecteur dir, double pasTemps, double vitesse, double* vitesseCable)
-{
-	//Position cible
-	FuniMath::Vecteur position = getPosition();									//prise de la position actuelle
-	dir = dir / dir.norme();													//direction unitaire
-	FuniMath::Vecteur positionCible = position + (dir * pasTemps * vitesse);	//calcul de la position cible
-
-	//Vitesse des cables
-	for (unsigned char i = 0; i < FuniConst::NBR_POLES; i++)
-	{
-		const double nCable ((positionCible + accroche[i] - pole[i]).norme());		//longueur de cable cible
-		vitesseCable[i] = (nCable - cable[i]) / pasTemps;							//vitesse du cable
-	}
-
-	return vitesseCable;
-}
-
-double* Funibot::deplacementPos(FuniMath::Vecteur pos, double pasTemps, double vitesse, double* vitesseCable)
-{
-	//Position cible
-	FuniMath::Vecteur position = getPosition();									//prise de la position actuelle
-	FuniMath::Vecteur dir = pos - position;										//direction du déplacement
-	dir = dir / dir.norme();													//direction unitaire
-	FuniMath::Vecteur positionCible = position + (dir * pasTemps * vitesse);	//calcul de la position cible
-
-	//test cible dépassé
-	if ((position - positionCible).norme_carree() > (position - pos).norme_carree())	//si la cible est plus loin que la position désirée,
-		positionCible = pos;															//on remplace la cible par la position désirée
-
-	//Vitesse des cables
-	for (unsigned char i = 0; i < FuniConst::NBR_POLES; i++)
-	{
-		const double nCable((positionCible + accroche[i] - pole[i]).norme());		//longueur de cable cible
-		vitesseCable[i] = (nCable - cable[i]) / pasTemps;							//vitesse du cable
-	}
-
-	return vitesseCable;
 }
