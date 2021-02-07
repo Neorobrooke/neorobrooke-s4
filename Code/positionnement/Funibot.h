@@ -12,7 +12,7 @@ namespace FuniMath
 	// Valeur absolue d'un double
 	inline double abs(double vec) { return (vec >= 0) ? vec : -vec; }
 
-	// Racine carrÃ©e Ã  l'aide de la mÃ©thode de Raphson-Newton
+	// Racine carrée à l'aide de la méthode de Raphson-Newton
 	double sqrt(double vec, double precision = 0.0001);
 
 	//vecteur
@@ -49,9 +49,16 @@ public:
 	void setLongueurCable(unsigned char index, double longueur);
 	void test();
 
+	FuniMath::Vecteur getPole(unsigned char index);
+	FuniMath::Vecteur getAccroche(unsigned char index);
+	FuniMath::Vecteur getLongueurCable(unsigned char index);
+	FuniMath::Vecteur getPoleRelatif(unsigned char index); //Pole - accroche
+
 	FuniMath::Vecteur getPosition();
 	double* deplacementDirectionnel(FuniMath::Vecteur dir, double pasTemps, double vitesse, double* vitesseCable);
 	double* deplacementPosition(FuniMath::Vecteur pos, double pasTemps, double vitesse, double* vitesseCable);
+
+
 
 protected:
 	unsigned char nbrPole;
