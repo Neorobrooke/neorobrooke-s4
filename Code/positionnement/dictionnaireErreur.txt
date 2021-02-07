@@ -65,4 +65,20 @@ id:		fonction
 	présence d'un erreur mineure dans la liste d'erreur (surement du à la fonction de positionnement)
 	traitez les erreurs avant de relancer la fonction
 
+15:	Funibot::getPole
+	fonction annulée, vecteur nul retourné
+	pole inexistant
+
+16:	Funibot::getAccroche
+	fonction annulée, vecteur nul retourné
+	accroche inexistante
+
+17:	Funibot::getLongueurCable
+	fonction annulée, retourne 0
+	cable inexistant
+
+18:	Funibot::getPoleRelatif
+	fonction annulée, vecteur nul retourné
+	pole inexistant
+
 
