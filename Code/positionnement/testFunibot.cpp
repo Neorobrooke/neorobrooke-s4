@@ -166,7 +166,7 @@ FuniTest::rapport FuniTest::getPosition()
 }
 
 
-FuniTest::rapport FuniTest::deplacementDirrectionnel()
+FuniTest::rapport FuniTest::deplacementDirectionnel()
 {
 	int info = 0;
 	rapport out;

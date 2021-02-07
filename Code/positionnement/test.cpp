@@ -7,6 +7,6 @@ int main()
     std::cout << FuniTest::abs();
     std::cout << FuniTest::sqrt();
     std::cout << FuniTest::getPosition();
-    std::cout << FuniTest::deplacementDirrectionnel();
+    std::cout << FuniTest::deplacementDirectionnel();
     std::cout << FuniTest::deplacementPosition();
 }

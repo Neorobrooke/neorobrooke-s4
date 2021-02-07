@@ -20,7 +20,7 @@ namespace FuniTest
 	rapport sqrt();
 	//funibot
 	rapport getPosition();
-	rapport deplacementDirrectionnel();
+	rapport deplacementDirectionnel();
 	rapport deplacementPosition();
 
 }
