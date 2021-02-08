@@ -8,21 +8,21 @@ PileErreurs::PileErreurs()
 
 void PileErreurs::addBack(erreur newErreur)
 {
-	if (curseurDebut == curseurFin)							//si taille max dépassé
-		curseurDebut = (curseurDebut + 1) % TAILLE_PILE;	//décalage du curseur de début
+	if (curseurDebut == curseurFin)							//si taille max dÃ©passÃ©
+		curseurDebut = (curseurDebut + 1) % TAILLE_PILE;	//dÃ©calage du curseur de dÃ©but
 
 	listeErreurs[curseurFin] = newErreur;					//ajout de l'erreur
-	curseurFin = (curseurFin + 1) % TAILLE_PILE;			//décalage du curseur de fin
+	curseurFin = (curseurFin + 1) % TAILLE_PILE;			//dÃ©calage du curseur de fin
 }
 erreur PileErreurs::takeFront()
 {
 	if (curseurDebut == curseurFin) //si aucune erreur
 		return erreur();			//retourne une erreur vide (id = 0)
 	
-	unsigned char PositionPremiereErreur = curseurDebut;	//enregistrement de la position de la première erreure
-	curseurDebut = (curseurDebut + 1) % TAILLE_PILE;		//décalage du curseur de début
+	unsigned char PositionPremiereErreur = curseurDebut;	//enregistrement de la position de la premiÃ¨re erreure
+	curseurDebut = (curseurDebut + 1) % TAILLE_PILE;		//dÃ©calage du curseur de dÃ©but
 
-	return listeErreurs[PositionPremiereErreur];			//retour de la première erreur
+	return listeErreurs[PositionPremiereErreur];			//retour de la premiÃ¨re erreur
 }
 
 unsigned char PileErreurs::size()

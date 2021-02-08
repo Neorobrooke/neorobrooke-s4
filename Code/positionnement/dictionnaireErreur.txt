@@ -1,84 +1,84 @@
 
 id:		fonction
-		conséquence
+		consÃ©quence
 		desciption...
 
 0:	Aucune erreur
 
 1:	Funibot::addPole
-	fonction annulée
-	dépassement du nombre de pole
+	fonction annulÃ©e
+	dÃ©passement du nombre de pole
 
 2:	Funibot::setPole
-	fonction annulée
+	fonction annulÃ©e
 	pole inexistant
 
 3:	Funibot::setLongueurCable
-	fonction annulée
+	fonction annulÃ©e
 	cable inexistant
 
 4:	Funibot::getPosition
-	fonction annulée, vecteur nul retourné
+	fonction annulÃ©e, vecteur nul retournÃ©
 	Aucun pole existant
 
 5:	Funibot::getPosition 2Poles
-	fonction annulée, vecteur nul retourné
+	fonction annulÃ©e, vecteur nul retournÃ©
 	cables trop courts, aucune jonction possible
 
 6:	Funibot::getPosition 2Poles
-	fonction imprécise
+	fonction imprÃ©cise
 	cables 0 trop long
 
 7:	Funibot::getPosition 2Poles
-	fonction imprécise
+	fonction imprÃ©cise
 	cables 1 trop long
 
 8:	Funibot::getPosition 3Poles
-	fonction annulée, vecteur nul retourné
+	fonction annulÃ©e, vecteur nul retournÃ©
 	cables trop courts, aucune jonction possible
 
 9:	Funibot::getPosition 3Poles
-	fonction annulée, vecteur nul retourné
-	poles allignés, aucune jonction possible
+	fonction annulÃ©e, vecteur nul retournÃ©
+	poles allignÃ©s, aucune jonction possible
 
 10: Funibot::getPosition 3Poles
-	fonction imprécise
-	racine négative estimée à 0
+	fonction imprÃ©cise
+	racine nÃ©gative estimÃ©e Ã  0
 
 11:	Funibot::deplacementDirectionnel
-	fonction annulée
-	présence d'un erreur majeur dans la liste d'erreur (surement du à la fonction de positionnement)
+	fonction annulÃ©e
+	prÃ©sence d'un erreur majeur dans la liste d'erreur (surement du Ã  la fonction de positionnement)
 	traitez les erreurs avant de relancer la fonction
 
 12:	Funibot::deplacementDirectionnel
-	fonction possiblement imprécise
-	présence d'un erreur mineure dans la liste d'erreur (surement du à la fonction de positionnement)
+	fonction possiblement imprÃ©cise
+	prÃ©sence d'un erreur mineure dans la liste d'erreur (surement du Ã  la fonction de positionnement)
 	traitez les erreurs avant de relancer la fonction
 
 13:	Funibot::deplacementPosition
-	fonction annulée
-	présence d'un erreur majeur dans la liste d'erreur (surement du à la fonction de positionnement)
+	fonction annulÃ©e
+	prÃ©sence d'un erreur majeur dans la liste d'erreur (surement du Ã  la fonction de positionnement)
 	traitez les erreurs avant de relancer la fonction
 
 14:	Funibot::deplacementPosition
-	fonction possiblement imprécise
-	présence d'un erreur mineure dans la liste d'erreur (surement du à la fonction de positionnement)
+	fonction possiblement imprÃ©cise
+	prÃ©sence d'un erreur mineure dans la liste d'erreur (surement du Ã  la fonction de positionnement)
 	traitez les erreurs avant de relancer la fonction
 
 15:	Funibot::getPole
-	fonction annulée, vecteur nul retourné
+	fonction annulÃ©e, vecteur nul retournÃ©
 	pole inexistant
 
 16:	Funibot::getAccroche
-	fonction annulée, vecteur nul retourné
+	fonction annulÃ©e, vecteur nul retournÃ©
 	accroche inexistante
 
 17:	Funibot::getLongueurCable
-	fonction annulée, retourne 0
+	fonction annulÃ©e, retourne 0
 	cable inexistant
 
 18:	Funibot::getPoleRelatif
-	fonction annulée, vecteur nul retourné
+	fonction annulÃ©e, vecteur nul retournÃ©
 	pole inexistant
 
 
