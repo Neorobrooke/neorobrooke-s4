@@ -31,7 +31,6 @@
  - Exemple: `Direction("x")`
 
 ### Classe `PosVec`
-- Hérite de `NamedTuple`
 - Contient trois composantes/coordonnées x, y et z
 - Algèbre simple possible (somme, différence, multiplication par un entier, norme)
 
