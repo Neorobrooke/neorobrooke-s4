@@ -87,12 +87,18 @@ void encodeurs()
 //setup
 void setup()
 {
-    //valeurs initiales des cable
-
-    global.lastCommunication = millis();
-    global.lastMoteur = millis();
-    global.lastControle = millis();
-    global.lastEncodeur = millis();
+    //mise en place des poles:
+    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
+    
+    //enregistrement du temps
+    long temps = millis();
+    global.lastCommunication = temps;
+    global.lastMoteur = temps;
+    global.lastControle = temps;
+    global.lastEncodeur = temps;
 }
 
 //loop
@@ -103,24 +109,24 @@ void loop()
     if(temps - global.lastCommunication >= periodeCommunication)
     {
         communication();
-        global.lastCommunication = millis();
+        global.lastCommunication = temps;
     }
     //Fonction de contrôle
     if (temps - global.lastControle >= periodeControle)
     {
         controle();
-        global.lastControle = millis();
+        global.lastControle = temps;
     }
     //Fonction des encodeurs
     if(temps - global.lastEncodeur >= periodeEncodeur)
     {
         encodeurs();
-        global.lastEncodeur = millis();
+        global.lastEncodeur = temps;
     }
     //Fonction des moteurs
     if(temps - global.lastMoteur >= periodeControle)
     {
         moteurs();
-        global.lastMoteur = millis();
+        global.lastMoteur = temps;
     }
 }
