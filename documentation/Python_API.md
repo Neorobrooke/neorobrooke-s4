@@ -25,7 +25,7 @@
   - Interrompu par un Ctrl-C
 
 ### Classe `Direction`
- - Créer avec 1 à 3 axes, avec + (implicite) ou - pour chacun, peu importe l'ordre
+ - Créé avec 1 à 3 axes, avec + (implicite) ou - pour chacun, peu importe l'ordre
  - Exemple: `Direction("+x+y-z")`
  - Exemple: `Direction("-z-x+y")`
  - Exemple: `Direction("x")`
@@ -41,7 +41,8 @@
 - Donne accès à la position du pôle:
   - Attribut `pos`
 - Donne accès à la longueur du câble à ce pôle
-  - Fonction `len()`
+  - ~~Fonction `len()`~~
+  - Attribut `longueur_cable`
 - Donne accès aux angles à ce pôle?
   - Attributs `angle_plan` et `angle_chute`
 - Donne accès au courant dans le moteur (et au couple?)
