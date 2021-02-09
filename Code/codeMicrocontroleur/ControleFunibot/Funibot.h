@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #undef abs
 #undef sqrt
 
@@ -14,7 +14,7 @@ namespace FuniMath
 	// Valeur absolue d'un double
 	inline double abs(double vec) { return (vec >= 0) ? vec : -vec; }
 
-	// Racine carrée à l'aide de la méthode de Raphson-Newton
+	// Racine carrÃ©e Ã  l'aide de la mÃ©thode de Raphson-Newton
 	double sqrt(double vec, double precision = 0.0001);
 
 	//vecteur

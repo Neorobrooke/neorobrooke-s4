@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 namespace GestionErreurs
 {
@@ -20,7 +20,7 @@ namespace GestionErreurs
 	public:
 
 		PileErreurs();					//constructeur
-		void addBack(Erreur newErreur); //ajoute un erreur � la liste
+		void addBack(Erreur newErreur); //ajoute un erreur à la liste
 		Erreur takeFront();				//prend l'erreur le plus ancien de de la pile et la retire de la pile
 		unsigned char size();			//retourne le nombre d'erreur dans la pile
 		bool empty();			//plus rapide que size() != 0 pour savoir s'il y a un erreur ou non
