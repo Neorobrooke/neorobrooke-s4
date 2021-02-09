@@ -86,7 +86,7 @@ FuniMath::Vecteur Funibot::getPosition()
 	// Plus de deux câbles
 	if (nbrPole > 2)
 	{
-		// Vérifiactions
+		// Vérifications
 		for (int i = 0; i < nbrPole; ++i)
 			for (int j = i + 1; j < nbrPole; ++j)
 			{
