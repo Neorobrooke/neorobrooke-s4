@@ -50,17 +50,16 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
   - Sur une certaine distance (ou l'atteinte de la limite)
   - Jusqu'à une demande d'arrêt (ou l'atteinte de la limite)
   ```json
-  // `get` n'est pas utilisé. En `start` ou `stop`, `dist` est `null` ou ignorée.
+  // `get` n'est pas utilisé. La norme du vecteur (axe_x, axe_y, axe_z) n'est pas considérée avec `distance`
   {
     "comm": "dep",
     "type": "set | ack",
     "args":
     {
       "mode": "start | stop | distance",
-      "axe_x": "+ | . | -",
-      "axe_y": "+ | . | -",
-      "axe_z": "+ | . | -",
-      "dist": 0
+      "axe_x": 0.0,
+      "axe_y": 0.0,
+      "axe_z": 0.0
     }
   }
   ```
