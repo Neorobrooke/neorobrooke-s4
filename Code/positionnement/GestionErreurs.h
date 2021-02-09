@@ -1,16 +1,10 @@
 #pragma once
 
-#ifdef ARDUINO
-#define TIMESTAMP_ERREUR(x) x.moment = millis() 
-#else
-#define TIMESTAMP_ERREUR(x) x.moment = 0
-#endif
-
 namespace GestionErreurs
 {
 	const unsigned char TAILLE_PILE = 32;
 
-	struct erreur
+	struct Erreur
 	{
 		bool majeur = true;
 		unsigned char id = 0;
@@ -22,15 +16,15 @@ namespace GestionErreurs
 	protected:
 		unsigned char curseurDebut;
 		unsigned char curseurFin;
-		erreur listeErreurs[TAILLE_PILE];
+		Erreur listeErreurs[TAILLE_PILE];
 	public:
 
 		PileErreurs();					//constructeur
-		void addBack(erreur newErreur); //ajoute un erreur Ã  la liste
-		erreur takeFront();				//prend l'erreur le plus ancien de de la pile et la retire de la pile
+		void addBack(Erreur newErreur); //ajoute un erreur à la liste
+		Erreur takeFront();				//prend l'erreur le plus ancien de de la pile et la retire de la pile
 		unsigned char size();			//retourne le nombre d'erreur dans la pile
 		bool empty();			//plus rapide que size() != 0 pour savoir s'il y a un erreur ou non
-		erreur operator[] (unsigned char i);
+		Erreur operator[] (unsigned char i);
 
 
 	};
