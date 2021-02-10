@@ -1,9 +1,9 @@
 name: Tests Python
 
 on:
-  push:
-    paths:
-      - '**.py'
+  push
+    # paths:
+    #   - '**.py'
 
 jobs:
   pytest_api:
@@ -29,10 +29,10 @@ jobs:
        
       - name: pytest run
         run: |
-          pytest --cov=funibot_api --cov-report=html:./coverage/lcov.info
+          pytest --cov=funibot_api --cov-report=xml:/coverage/lcov.html
 
       - name: coverage report
         uses: romeovs/lcov-reporter-action@v0.2.16
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: ./coverage/lcov.info
+          lcov-file: /coverage/lcov.html
