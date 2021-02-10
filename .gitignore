@@ -2,3 +2,5 @@
 ~$*
 NOGIT*
 __pycache__
+.venv
+.vs
