@@ -33,4 +33,4 @@ jobs:
           pytest --cov=funibot_api
 
       - name: coverage report
-        uses: 
+        run: echo "Coverage"
