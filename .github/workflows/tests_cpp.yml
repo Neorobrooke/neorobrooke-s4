@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: setup gcc
         uses: egor-tensin/setup-gcc@v1
@@ -30,4 +30,4 @@ jobs:
         uses: MarkusJx/googletest-installer@v1.1
 
       - name: compile
-      - run: echo "Allo"
+        run: echo "Allo"
