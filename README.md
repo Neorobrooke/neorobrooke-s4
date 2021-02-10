@@ -1,7 +1,7 @@
 # Projet FuniBot - Néorobrooke
 <img src="logo/NeoRobrooke.png" alt="Alt" width="100"/>
 
-[![Tests Python](https://img.shields.io/github/workflow/status/Neorobrooke/neorobrooke-s4/Tests%20Python?label=Tests%20Python)](https://github.com/Neorobrooke/neorobrooke-s4/actions?query=workflow%3A%22Tests+Python%22) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Neorobrooke/neorobrooke-s4/Tests%20C++?label=Tests%20C%2B%2B)](https://github.com/Neorobrooke/neorobrooke-s4/actions?query=workflow%3A%22Tests+C%2B%2B%22)
+[![Tests Python](https://img.shields.io/github/workflow/status/Neorobrooke/neorobrooke-s4/Tests%20Python/main?label=Tests%20Python)](https://github.com/Neorobrooke/neorobrooke-s4/actions?query=workflow%3A%22Tests+Python%22) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/Neorobrooke/neorobrooke-s4/Tests%20C++/main?label=Tests%20C%2B%2B)](https://github.com/Neorobrooke/neorobrooke-s4/actions?query=workflow%3A%22Tests+C%2B%2B%22)
 
 
 ## Projet S4 en Génie robotique - Université de Sherbrooke
