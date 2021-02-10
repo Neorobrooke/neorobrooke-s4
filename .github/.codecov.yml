@@ -6,7 +6,4 @@ flags:
   # python_cli:
   #   paths:
   #     - funibot_cli/
-
-ignore:
-  - "/*/**"
-  - "!funibot_api"
+  
