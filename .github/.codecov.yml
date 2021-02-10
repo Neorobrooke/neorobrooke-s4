@@ -1,0 +1,12 @@
+flags:
+  python_api:
+    paths:
+      - funibot_api/
+  # python_cli:
+  #   paths:
+  #     - funibot_cli/
+
+ignore:
+  - "Code"
+  - "Code/API"
+  - "Code/API/Python"
