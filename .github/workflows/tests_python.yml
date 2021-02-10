@@ -29,4 +29,10 @@ jobs:
        
       - name: pytest run
         run: |
-          pytest --cov=funibot_api
+          pytest --cov=funibot_api --cov-report=html:./coverage/lcov.info
+
+      - name: coverage report
+        uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
