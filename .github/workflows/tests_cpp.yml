@@ -1,0 +1,37 @@
+name: Tests C++
+
+on:
+  push:
+    paths:
+      - '**.c'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - '**.ino'
+
+jobs:
+  gtest:
+    name: gtest run
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compilers: ["g++", "clang++"]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          platform: x64
+
+      - name: setup gtest
+        uses: MarkusJx/googletest-installer@v1.1
+
+      - name: compilation c++
+        #run: make ${{ matrix.python-version }}
+        run: echo "Compilation avec" ${{ matrix.python-version }}
+
+      - name: gtest run
+        run: echo "Réalisation des tests"

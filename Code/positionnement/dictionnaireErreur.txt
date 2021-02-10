@@ -1,0 +1,84 @@
+
+id:		fonction
+		conséquence
+		desciption...
+
+0:	Aucune erreur
+
+1:	Funibot::addPole
+	fonction annulée
+	dépassement du nombre de pole
+
+2:	Funibot::setPole
+	fonction annulée
+	pole inexistant
+
+3:	Funibot::setLongueurCable
+	fonction annulée
+	cable inexistant
+
+4:	Funibot::getPosition
+	fonction annulée, vecteur nul retourné
+	Aucun pole existant
+
+5:	Funibot::getPosition 2Poles
+	fonction annulée, vecteur nul retourné
+	cables trop courts, aucune jonction possible
+
+6:	Funibot::getPosition 2Poles
+	fonction imprécise
+	cables 0 trop long
+
+7:	Funibot::getPosition 2Poles
+	fonction imprécise
+	cables 1 trop long
+
+8:	Funibot::getPosition 3Poles
+	fonction annulée, vecteur nul retourné
+	cables trop courts, aucune jonction possible
+
+9:	Funibot::getPosition 3Poles
+	fonction annulée, vecteur nul retourné
+	poles allignés, aucune jonction possible
+
+10: Funibot::getPosition 3Poles
+	fonction imprécise
+	racine négative estimée à 0
+
+11:	Funibot::deplacementDirectionnel
+	fonction annulée
+	présence d'un erreur majeur dans la liste d'erreur (surement du à la fonction de positionnement)
+	traitez les erreurs avant de relancer la fonction
+
+12:	Funibot::deplacementDirectionnel
+	fonction possiblement imprécise
+	présence d'un erreur mineure dans la liste d'erreur (surement du à la fonction de positionnement)
+	traitez les erreurs avant de relancer la fonction
+
+13:	Funibot::deplacementPosition
+	fonction annulée
+	présence d'un erreur majeur dans la liste d'erreur (surement du à la fonction de positionnement)
+	traitez les erreurs avant de relancer la fonction
+
+14:	Funibot::deplacementPosition
+	fonction possiblement imprécise
+	présence d'un erreur mineure dans la liste d'erreur (surement du à la fonction de positionnement)
+	traitez les erreurs avant de relancer la fonction
+
+15:	Funibot::getPole
+	fonction annulée, vecteur nul retourné
+	pole inexistant
+
+16:	Funibot::getAccroche
+	fonction annulée, vecteur nul retourné
+	accroche inexistante
+
+17:	Funibot::getLongueurCable
+	fonction annulée, retourne 0
+	cable inexistant
+
+18:	Funibot::getPoleRelatif
+	fonction annulée, vecteur nul retourné
+	pole inexistant
+
+
