@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        compilers: ["gcc", "clang"]
+        compilers: ["g++", "clang++"]
 
     steps:
       - name: checkout
@@ -29,5 +29,9 @@ jobs:
       - name: setup gtest
         uses: MarkusJx/googletest-installer@v1.1
 
-      - name: compile
-        run: echo "Allo"
+      - name: compilation c++
+        #run: make ${{ matrix.python-version }}
+        run: echo "Compilation avec" ${{ matrix.python-version }}
+
+      - name: gtest run
+        run: echo "Réalisation des tests"
