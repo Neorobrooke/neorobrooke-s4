@@ -5,3 +5,4 @@ __pycache__
 .venv
 .vs
 .pytest_cache
+googletest
