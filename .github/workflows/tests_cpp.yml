@@ -3,11 +3,11 @@ name: Tests C++
 on:
   push:
     paths:
-      '**.c'
-      '**.cpp'
-      '**.h'
-      '**.hpp'
-      '**.ino'
+      - '**.c'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - '**.ino'
 
 jobs:
   gtest:
