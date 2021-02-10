@@ -33,6 +33,8 @@ jobs:
           pytest --cov=funibot_api
 
       - name: coverage report
-        run: |
-          export CODECOV_TOKEN="e290051a-f28f-4bea-8bae-d377f0567a3f"
-          bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
+          files: ./coverage.xml
+          flags: python_api
