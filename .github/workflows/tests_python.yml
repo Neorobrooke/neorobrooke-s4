@@ -1,11 +1,14 @@
-name: Tests
+name: Tests Python
 
-on: push
+on:
+  push:
+    paths:
+      - '**.py'
 
 jobs:
-  pytest:
-    name: pytest run
-    runs-on: ubuntu-latest
+  pytest_api:
+    name: Tests API Python
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
@@ -24,6 +27,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
        
-      - name: Tests with pytest
+      - name: pytest run
         run: |
           pytest

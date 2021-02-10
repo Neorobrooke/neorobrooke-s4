@@ -1,0 +1,32 @@
+name: Tests C++
+
+on:
+  push:
+    paths:
+      '**.c'
+      '**.cpp'
+      '**.h'
+      '**.hpp'
+      '**.ino'
+
+jobs:
+  gtest:
+    name: gtest run
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compilers: ["gcc", "clang"]
+
+    steps:
+      - name: checkout
+      - uses: actions/checkout@v2
+
+      - name: setup gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          platform: x64
+
+      - name: setup gtest
+        uses: MarkusJx/googletest-installer@v1.1
+
+      - name: compile
