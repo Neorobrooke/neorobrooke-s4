@@ -1,5 +1,6 @@
 //mettre les fichiers suivant dans la librairie
 #include "Funibot.h"
+#include "moteur.h"
 
 #define periodeCommunication 500
 #define periodeControle 300
@@ -77,6 +78,7 @@ void controle()
 //fonction des moteurs, controle les moteurs et s'assure d'obtenir la bonne vitesse
 void moteurs()
 {
+    moteurLoop();
 }
 
 //fonction des encodeurs, assure un bon suivie de la longueur des cables
@@ -99,6 +101,8 @@ void setup()
     global.lastMoteur = temps;
     global.lastControle = temps;
     global.lastEncodeur = temps;
+
+    moteurSetup();
 }
 
 //loop
