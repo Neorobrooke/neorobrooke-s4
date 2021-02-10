@@ -30,7 +30,7 @@ jobs:
        
       - name: pytest run
         run: |
-          pytest --cov=funibot_api
+          pytest --cov=funibot_api --cov-branch
 
       - name: coverage report
         uses: codecov/codecov-action@v1
