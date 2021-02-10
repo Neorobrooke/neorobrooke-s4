@@ -1,5 +1,6 @@
 # Projet FuniBot - Néorobrooke
 <img src="logo/NeoRobrooke.png" alt="Alt" width="100"/>
+[Build Status](https://img.shields.io/github/workflow/status/Neorobrooke/neorobrooke-s4/Tests%20Python)
 
 ## Projet S4 en Génie robotique - Université de Sherbrooke
 
