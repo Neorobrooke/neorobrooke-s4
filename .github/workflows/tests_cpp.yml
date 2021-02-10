@@ -30,3 +30,4 @@ jobs:
         uses: MarkusJx/googletest-installer@v1.1
 
       - name: compile
+      - run: echo "Allo"
