@@ -9,5 +9,5 @@ class TestsPoteau(unittest.TestCase):
         poteau = Poteau(nom="poteau_test", position=position)
         self.assertTrue(poteau.__repr__() == "Poteau[poteau_test](1;2;4)", msg=f"__repr__() donne: {poteau.__repr__()}")
 
-    def truc(self):
+    def truc2(self):
         self.assertTrue(True)
