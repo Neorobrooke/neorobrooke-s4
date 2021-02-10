@@ -30,7 +30,7 @@ jobs:
        
       - name: pytest run
         run: |
-          pytest --cov=funibot_api --cov-report=xml:'~/.coverage/lcov.html'
+          pytest --cov=funibot_api --cov-report=xml:'~/.coverage/lcov.info'
 
       - name: coverage report
         uses: romeovs/lcov-reporter-action@v0.2.16
