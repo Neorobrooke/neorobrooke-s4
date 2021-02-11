@@ -53,6 +53,26 @@ class PosVec:
             print_exc()
             raise e
 
+    def __truediv__(self, other) -> PosVec:
+        if not isinstance(other, Number):
+            return NotImplemented
+        
+        try:
+            return PosVec(self.x / other, self.y / other, self.z / other)
+        except ... as e:
+            print_exc()
+            raise e
+
+    def __floordiv__(self, other) -> PosVec:
+        if not isinstance(other, Number):
+            return NotImplemented
+        
+        try:
+            return PosVec(self.x // other, self.y // other, self.z // other)
+        except ... as e:
+            print_exc()
+            raise e
+
     @property
     def norme(self) -> float:
         try:
