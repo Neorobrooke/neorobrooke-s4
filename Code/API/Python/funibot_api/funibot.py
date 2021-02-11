@@ -107,6 +107,10 @@ class Direction:
     def __repr__(self) -> str:
         return f"Direction(x:{self.axe_x}; y:{self.axe_y}; z:{self.axe_z})"
 
+    def as_vector(self):
+        return PosVec(self.axe_x, self.axe_y, self.axe_z)
+        
+
 class Poteau:
     """Représente un pôle du Funibot"""
 

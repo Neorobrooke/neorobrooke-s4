@@ -29,6 +29,7 @@
  - Exemple: `Direction("+x+y-z")`
  - Exemple: `Direction("-z-x+y")`
  - Exemple: `Direction("x")`
+ - Peut être transformé en vecteur PosVec avec la méthode `as_vector`
 
 ### Classe `PosVec`
 - Contient trois composantes/coordonnées x, y et z
