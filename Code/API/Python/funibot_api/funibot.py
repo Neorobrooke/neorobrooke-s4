@@ -5,90 +5,106 @@ from traceback import print_exc
 from numbers import Number
 
 
-class PosVec:
+class Vecteur:
     """Représente un vecteur position"""
 
-    def __init__(self, x, y, z) -> None:
+    def __init__(self, x=0, y=0, z=0) -> None:
+        """Initialisation du vecteur avec trois composantes x, y et z.
+           Par défaut, chaque composante vaut 0."""
         self.x = x
         self.y = y
         self.z = z
 
     def __repr__(self) -> str:
+        """Représentation du vecteur sous la forme (x;y;z)"""
         return f"({self.x};{self.y};{self.z})"
 
-    def __add__(self, other) -> PosVec:
+    def __add__(self, other) -> Vecteur:
+        """Permet d'additionner deux vecteurs ensemble"""
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         try:
-            return PosVec(self.x + other.x, self.y + other.y, self.z + other.z)
+            return Vecteur(self.x + other.x, self.y + other.y, self.z + other.z)
         except ... as e:
             print_exc()
             raise e
 
-    def __sub__(self, other) -> PosVec:
+    def __sub__(self, other) -> Vecteur:
+        """Permet de soustraire deux vecteurs l'un de l'autre"""
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         try:
-            return PosVec(self.x - other.x, self.y - other.y, self.z - other.z)
+            return Vecteur(self.x - other.x, self.y - other.y, self.z - other.z)
         except ... as e:
             print_exc()
             raise e
 
-    def __mul__(self, other) -> PosVec:
+    def __mul__(self, other) -> Vecteur:
+        """Permet de multiplier un vecteur par un scalaire"""
         if not isinstance(other, Number):
             return NotImplemented
 
         try:
-            return PosVec(self.x * other, self.y * other, self.z * other)
+            return Vecteur(self.x * other, self.y * other, self.z * other)
         except ... as e:
             print_exc()
             raise e
 
-    def __rmul__(self, other) -> PosVec:
+    def __rmul__(self, other) -> Vecteur:
+        """Permet de multiplier un vecteur par un scalaire"""
         try:
             return self.__mul__(other)
         except ... as e:
             print_exc()
             raise e
 
-    def __truediv__(self, other) -> PosVec:
+    def __truediv__(self, other) -> Vecteur:
+        """Permet de diviser un vecteur par un scalaire"""
         if not isinstance(other, Number):
             return NotImplemented
         
         try:
-            return PosVec(self.x / other, self.y / other, self.z / other)
+            return Vecteur(self.x / other, self.y / other, self.z / other)
         except ... as e:
             print_exc()
             raise e
 
-    def __floordiv__(self, other) -> PosVec:
+    def __floordiv__(self, other) -> Vecteur:
+        """Permet de diviser (division entière) un vecteur par un scalaire"""
         if not isinstance(other, Number):
             return NotImplemented
         
         try:
-            return PosVec(self.x // other, self.y // other, self.z // other)
+            return Vecteur(self.x // other, self.y // other, self.z // other)
         except ... as e:
             print_exc()
             raise e
 
-    @property
     def norme(self) -> float:
+        """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
         except ... as e:
             print_exc()
             raise e
 
+    def unitaire(self) -> Vecteur:
+        """Retourne le vecteur unitaire ayant la même direction"""
+        norme_vec = self.norme()
+        return Vecteur(self.x / norme_vec, self.y / norme_vec, self.z / norme_vec)
+
 
 class Direction:
     """Représente une direction combinée dans les trois axes"""
     def __init__(self, direction: str) -> None:
+        """Crée une direction à partir d'une string de 'xyz+-'"""
         self.axe_x, self.axe_y, self.axe_z = Direction._parse(direction)
 
     @staticmethod
     def _parse(direction: str) -> tuple(int):
+        """Transforme une string contenant les caractères 'xyz+-' en direction"""
         allowed = "+-xyz"
         if not set(direction).issubset(set(allowed)):
             raise ValueError(f"'{direction}' contient des caractères qui ne sont pas dans '{allowed}'")
@@ -105,16 +121,19 @@ class Direction:
         return directions['x'], directions['y'], directions['z']
 
     def __repr__(self) -> str:
+        """Présente la direction sous la forme Direction(x:X; y:Y; z:Z).
+           Ici, X, Y et Z sont soit -1, 0 ou 1."""
         return f"Direction(x:{self.axe_x}; y:{self.axe_y}; z:{self.axe_z})"
 
-    def as_vector(self):
-        return PosVec(self.axe_x, self.axe_y, self.axe_z)
-        
+    def vecteur(self):
+        """Retourne un Vecteur correspondant à la direction"""
+        return Vecteur(self.axe_x, self.axe_y, self.axe_z)
+
 
 class Poteau:
     """Représente un pôle du Funibot"""
 
-    def __init__(self, nom, position=PosVec(0, 0, 0)) -> None:
+    def __init__(self, nom, position=Vecteur(0, 0, 0)) -> None:
         self.nom = nom
         self.pos = position
 
@@ -123,14 +142,6 @@ class Poteau:
 
     @property
     def longueur_cable(self) -> float:
-        raise NotImplementedError("Pas encore codé dans la communication")
-
-    @property
-    def angle_plan(self) -> float:
-        raise NotImplementedError("Pas encore codé dans la communication")
-
-    @property
-    def angle_chute(self) -> float:
         raise NotImplementedError("Pas encore codé dans la communication")
 
     @property

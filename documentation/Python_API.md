@@ -29,11 +29,13 @@
  - Exemple: `Direction("+x+y-z")`
  - Exemple: `Direction("-z-x+y")`
  - Exemple: `Direction("x")`
- - Peut être transformé en vecteur PosVec avec la méthode `as_vector`
+ - Peut être transformé en vecteur PosVec avec la méthode `vecteur`
 
-### Classe `PosVec`
+### Classe `Vecteur`
 - Contient trois composantes/coordonnées x, y et z
-- Algèbre simple possible (somme, différence, multiplication par un entier, norme)
+- Algèbre simple possible (somme, différence, multiplication par un nombre, division par un nombre, divison entière par un nombre)
+- Obtention de la norme avec la méthode `norme`
+- Obtention du vecteur unitaire avec la méthode `unitaire`
 
 ### Classe `Poteau`
 - Réprente un poteau supportant un des pôles du Funibot.
@@ -44,10 +46,8 @@
 - Donne accès à la longueur du câble à ce pôle
   - ~~Fonction `len()`~~
   - Attribut `longueur_cable`
-- Donne accès aux angles à ce pôle?
-  - Attributs `angle_plan` et `angle_chute`
 - Donne accès au courant dans le moteur (et au couple?)
-  - Attributs `courant` (et `couple`?)
+  - Attributs `courant_moteur` (et `couple_moteur`?)
 
 ## Module `json_serial`
 
