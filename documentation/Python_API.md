@@ -4,21 +4,23 @@
 
 ### Classe `Funibot`
 - Représente un Funibot.
+- Lié à un port série accessible via l'attribut `port_serie`
 - Offre l'accès aux différents poteaux
   - Itération
   - Accès par crochets: [id_poteau]
+  - Accès au `dict` par l'attribut `poteaux`
 - Offre l'accès à la position actuelle de la charge
   - Attribut: `pos`
 - Permet de déplacer la charge à une position donnée
-  - Attribut: `pos = PosVec(x=1, y=1, z=1)`
+  - Attribut: `pos = Vecteur(x=1, y=1, z=1)`
 - Permet de déplacer la charge dans une direction donnée, d'une certaine distance
-  - Méthode: `deplacer(direction: Union[Direction, str], distance=None)`
+  - Méthode: `deplacer(direction: Union[Direction, Vecteur, str], distance=None)`
   - Avec une str:
     - Direction créée à partir de la str
 - Permet de déplacer la charge dans une direction donnée, jusqu'à ce qu'on l'arrête
   - Context Manager:
     ```py
-    with deplacer(direction: Union[Direction, str]):
+    with deplacer(direction: Union[Direction, Vecteur, str]):
         # faire_des_trucs_pendant_que_ca_bouge()
         pass
     ```
@@ -40,7 +42,7 @@
 ### Classe `Poteau`
 - Réprente un poteau supportant un des pôles du Funibot.
 - Accessible via un Funibot:
-  - Itération, [ ]
+  - Itération, [ ], attribut `poteaux`
 - Donne accès à la position du pôle:
   - Attribut `pos`
 - Donne accès à la longueur du câble à ce pôle
