@@ -50,6 +50,7 @@ public:
 	void setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniMath::Vecteur positionAccroche);
 	void setLongueurCable(unsigned char index, double longueur);
 
+	unsigned char getNbrPole(){return nbrPole;}
 	FuniMath::Vecteur getPole(unsigned char index);
 	FuniMath::Vecteur getAccroche(unsigned char index);
 	FuniMath::Vecteur getLongueurCable(unsigned char index);
