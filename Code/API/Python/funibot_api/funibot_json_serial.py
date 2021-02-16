@@ -26,16 +26,18 @@ class FuniModeCalibration(Enum):
 
 
 class FuniErreur(Enum):
-    pass
+    TEST = 1
+
 
 class MockSerial:
 
     def write(self, contenu):
         print(contenu)
-    
+
     def readline(self) -> str:
         ligne = input()
         return ligne
+
 
 class FuniSerial():
     """Objet Serial possédant des méthodes pour envoyer et recevoir du JSON en lien avec le Funibot"""
@@ -49,6 +51,8 @@ class FuniSerial():
     def envoyer(self, json: dict) -> Tuple[bool, str, dict]:
         """Envoie du json sous forme de dict"""
         self.serial.write(self.json_encoder.encode(json))
+        if json["type"] == FuniType.ACK.value:
+            return (True, "ack", {})
         reponse = self.json_decoder.decode(self.serial.readline())
 
         if json["type"] == "set" and reponse["type"] == "ack":
@@ -81,11 +85,11 @@ class FuniSerial():
         args = {}
         if not isinstance(id, int):
             return "id n'est pas un entier"
-        
+
         args["id"] = id
         if type is FuniType.SET:
             if position is None:
-                return None
+                return "position est None"
             args["pos_x"] = position[0]
             args["pos_y"] = position[1]
             args["pos_z"] = position[2]
@@ -142,7 +146,7 @@ class FuniSerial():
         args = {}
         if type is FuniType.SET:
             if position is None:
-                return None
+                return "position est None"
             args["pos_x"] = position[0]
             args["pos_y"] = position[1]
             args["pos_z"] = position[2]
@@ -191,33 +195,35 @@ class FuniSerial():
         else:
             return ""
 
-    def err(self, type: FuniType, code: Union[None, FuniErreur], direction: Tuple[float, float, float] = None) -> str:
+    def err(self, type: FuniType, code: Union[None, FuniErreur], flag: bool, msg: str = None, num: int = None)\
+        -> Union[str, Tuple[Tuple[FuniErreur, bool, str], int]]:
         if not isinstance(type, FuniType):
             return "type n'est pas un FuniType"
         pass
-        # json = {}
-        # json["comm"] = "err"
-        # json["type"] = type.value
+        json = {}
+        json["comm"] = "err"
+        json["type"] = type.value
 
-        # args = {}
-        # args["code"] = None if code is None else code.value
-        # if type is FuniType.SET and \
-        #         (mode == FuniModeDeplacement.DISTANCE or mode == FuniModeDeplacement.START):
+        args = {}
+        args["code"] = None if code is None else code.value
+        if type is FuniType.SET:
+            if flag is None:
+                return "flag est None"
+            args["flag"] = flag
+        else:
+            args["flag"] = None
 
-        #     if direction is None:
-        #         return None
-        #     args["axe_x"] = direction(0)
-        #     args["axe_y"] = direction(1)
-        #     args["axe_z"] = direction(2)
-        # else:
-        #     args["axe_x"] = None
-        #     args["axe_y"] = None
-        #     args["axe_z"] = None
+        if type is FuniType.ACK:
+            args["msg"] = msg
+            args["num"] = num
+        else:
+            args["msg"] = None
+            args["num"] = None
 
-        # json["args"] = args
+        json["args"] = args
 
-        # success, message, retour = self.envoyer(json)
-        # if not success:
-        #     return message
-        # else:
-        #     return ""
+        success, message, retour = self.envoyer(json)
+        if not success:
+            return message
+        else:
+            return ((FuniErreur(retour["args"]["code"]), retour["args"]["flag"], retour["args"]["msg"]), retour["args"]["num"] - 1)
