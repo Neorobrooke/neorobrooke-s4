@@ -186,12 +186,6 @@ void communication()
                 serializeJson(output,Serial);
                 Serial.println();
             }
-            else
-            {
-                input["type"] = "ack";
-                serializeJson(input,Serial);
-                Serial.println();
-            }
         }
         else if (comm == "cal")
         {
@@ -209,10 +203,10 @@ void communication()
                     {
                         global.cable[id] = longueur;
                     }
-                    
+
                     input["type"] = "ack";
                     input["args"]["id"] = id;
-                    input["args"]["nLong"] = global.bot.getLongueurCable(id);
+                    input["args"]["long"] = global.bot.getLongueurCable(id);
                     serializeJson(input,Serial);
                     Serial.println();
                 }
