@@ -210,10 +210,10 @@ void communication()
                     if(type == "set" && args.hasOwnProperty("mode"))
                     {
                         String mode = (const char*)args["mode"];
-                        if(mode == "cable" && args.hasOwnProperty("id") && args.hasOwnProperty("longueur"))
+                        if(mode == "cable" && args.hasOwnProperty("id") && args.hasOwnProperty("long"))
                         {
                             int id = getInt(args["id"]);
-                            double longueur = getDouble(args["longueur"]);
+                            double longueur = getDouble(args["long"]);
                             global.bot.setLongueurCable(id,longueur);
                             input["type"] = "ack";
                             input["args"]["id"] = id;
