@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - '**.py'
+      - '**requirements.txt'
+  workflow_dispatch:
 
 jobs:
   pytest_api:
