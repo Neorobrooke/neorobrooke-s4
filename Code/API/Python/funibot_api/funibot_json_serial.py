@@ -1,4 +1,3 @@
-import benedict
 from json.decoder import JSONDecoder
 from json.encoder import JSONEncoder
 from benedict import benedict
