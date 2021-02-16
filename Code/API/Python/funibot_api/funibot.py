@@ -176,6 +176,9 @@ class Vecteur:
         norme_vec = self.norme()
         return Vecteur(self.x / norme_vec, self.y / norme_vec, self.z / norme_vec)
 
+    def vers_tuple(self) -> tuple(float, float, float):
+        return (self.x, self.y, self.z)
+
 
 class Direction:
     """Représente une direction combinée dans les trois axes"""

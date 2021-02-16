@@ -19,6 +19,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
       "pos_z": 0.0
     }
   }
+  // pos_x, pos_y et pos_z correspondent aux coordonnées du vecteur position du poteau additionné 
   ```
 - Choisir un port série pour le système
   - Pas de comande
