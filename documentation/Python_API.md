@@ -36,7 +36,8 @@
 ### Classe `Vecteur`
 - Contient trois composantes/coordonnées x, y et z
 - Algèbre simple possible (somme, différence, multiplication par un nombre, division par un nombre, divison entière par un nombre)
-- Obtention de la norme avec la méthode `norme`
+- Obtention de la norme avec l'attribut `norme`
+  - Changement de la norme en conservant la direction en assignant à `norme`
 - Obtention du vecteur unitaire avec la méthode `unitaire`
 
 ### Classe `Poteau`

@@ -27,7 +27,13 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
   ```json
   {
     "comm": "cal",
-    "args": "à définir"
+    "type": "set | ack",
+    "args":
+    {
+      "mode": "cable",
+      "id": 0,
+      "long": 0.0
+    }
   }
   ```
 

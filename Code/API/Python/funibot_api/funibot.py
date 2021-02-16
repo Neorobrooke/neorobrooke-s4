@@ -44,9 +44,9 @@ class Vecteur:
             self.z += other.z
         except ... as e:
             print_exc()
-            self.x = bckup(0)
-            self.y = bckup(1)
-            self.z = bckup(2)
+            self.x = bckup[0]
+            self.y = bckup[1]
+            self.z = bckup[2]
             raise e
 
     def __sub__(self, other) -> Vecteur:
@@ -72,9 +72,9 @@ class Vecteur:
             self.z -= other.z
         except ... as e:
             print_exc()
-            self.x = bckup(0)
-            self.y = bckup(1)
-            self.z = bckup(2)
+            self.x = bckup[0]
+            self.y = bckup[1]
+            self.z = bckup[2]
             raise e
 
     def __mul__(self, other) -> Vecteur:
@@ -106,9 +106,9 @@ class Vecteur:
             self.z *= other
         except ... as e:
             print_exc()
-            self.x = bckup(0)
-            self.y = bckup(1)
-            self.z = bckup(2)
+            self.x = bckup[0]
+            self.y = bckup[1]
+            self.z = bckup[2]
             raise e
 
     def __truediv__(self, other) -> Vecteur:
@@ -132,9 +132,9 @@ class Vecteur:
             self.z /= other
         except ... as e:
             print_exc()
-            self.x = bckup(0)
-            self.y = bckup(1)
-            self.z = bckup(2)
+            self.x = bckup[0]
+            self.y = bckup[1]
+            self.z = bckup[2]
             raise e
 
     def __floordiv__(self, other) -> Vecteur:
@@ -158,17 +158,34 @@ class Vecteur:
             self.z //= other
         except ... as e:
             print_exc()
-            self.x = bckup(0)
-            self.y = bckup(1)
-            self.z = bckup(2)
+            self.x = bckup[0]
+            self.y = bckup[1]
+            self.z = bckup[2]
             raise e
 
+    @property
     def norme(self) -> float:
         """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
         except ... as e:
             print_exc()
+            raise e
+
+    @norme.setter
+    def norme(self, longueur) -> None:
+        """Change la norme du vecteur"""
+        norme = self.norme
+        bckup = (self.x, self.y, self.z)
+        try:
+            self.x *= longueur/norme
+            self.y *= longueur/norme
+            self.z *= longueur/norme
+        except ... as e:
+            print_exc()
+            self.x = bckup[0]
+            self.y = bckup[1]
+            self.z = bckup[2]
             raise e
 
     def unitaire(self) -> Vecteur:
@@ -301,7 +318,7 @@ class Funibot:
         return f"Funibot[{self.port_serie}]({self.poteaux.values()})"
 
     @contextmanager
-    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float=None) -> Union[float, None]:
+    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None) -> Union[float, None]:
         """Déplace le Funibot dans la direction indiquée par 'direction'.
            Utilisable comme un contextmanager (avec 'with')
            Si 'distance' n'est pas None, arrête après avoir parcouru 'distance'.
@@ -321,7 +338,7 @@ class Funibot:
             yield (None if distance is None else 0.0)
         except KeyboardInterrupt:
             pass
-        
+
         # Attendre fin du déplacement si distance non-nulle
         if distance is not None:
             try:
