@@ -1,7 +1,7 @@
 #include "Funibot.h"
 #include <iostream>
 
-//#define systemeArduino
+#define systemeArduino
 
 
 FuniMath::Vecteur FuniMath::operator*(const double u, const FuniMath::Vecteur v)
@@ -113,6 +113,12 @@ FuniMath::Vecteur Funibot::getPosition()
 				// Câbles trop courts
 				if (sqrt(distij) > (cable[i] + cable[j]) * (cable[i] + cable[j]))
 				{
+					Serial.print(i);
+					Serial.print(',');
+					Serial.println(j);
+					Serial.println(cable[i]);
+					Serial.println(cable[j]);
+					Serial.println(sqrt(distij));
 					GestionErreurs::Erreur erreur;
 					erreur.id = 8;
 					#ifdef systemeArduino
