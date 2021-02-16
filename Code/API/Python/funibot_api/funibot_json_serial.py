@@ -25,8 +25,50 @@ class FuniModeCalibration(Enum):
     CABLE = 'cable'
 
 
+FUNI_ERREUR_MESSAGES =\
+    [
+        "AUCUNE_ERREUR",
+        "ADD_POLE_DEPASSEMENT",
+        "SET_POLE_INEXISTANT",
+        "SET_LONGUEUR_CABLE_INEXISTANT",
+        "GET_POSITION_PAS_DE_POLES",
+        "GET_POSITION_TROP_COURTS_2D",
+        "GET_POSITION_0_TROP_LONG_2D",
+        "GET_POSITION_1_TROP_LONG_2D",
+        "GET_POSITION_TROP_COURTS_3D",
+        "GET_POSITION_ALIGNES_3D",
+        "GET_POSITION_RACINE_ESTIMEE_3D",
+        "DEPLACEMENT_DIRECTIONNEL_ERREUR_MAJEURE",
+        "DEPLACEMENT_DIRECTIONNEL_ERREUR_MINEURE",
+        "DEPLACEMENT_POSITION_ERREUR_MAJEURE",
+        "DEPLACEMENT_POSITION_ERREUR_MINEURE",
+        "GET_POLE_INEXISTANT",
+        "GET_ACCROCHE_INEXISTANTE",
+        "GET_LONGUEUR_CABLE_INEXISTANT",
+        "GET_POLE_RELATIF_INEXISTANT"
+    ]
+
+
 class FuniErreur(Enum):
-    TEST = 1
+    AUCUNE_ERREUR = 0
+    ADD_POLE_DEPASSEMENT = 1
+    SET_POLE_INEXISTANT = 2
+    SET_LONGUEUR_CABLE_INEXISTANT = 3
+    GET_POSITION_PAS_DE_POLES = 4
+    GET_POSITION_TROP_COURTS_2D = 5
+    GET_POSITION_0_TROP_LONG_2D = 6
+    GET_POSITION_1_TROP_LONG_2D = 7
+    GET_POSITION_TROP_COURTS_3D = 8
+    GET_POSITION_ALIGNES_3D = 9
+    GET_POSITION_RACINE_ESTIMEE_3D = 10
+    DEPLACEMENT_DIRECTIONNEL_ERREUR_MAJEURE = 11
+    DEPLACEMENT_DIRECTIONNEL_ERREUR_MINEURE = 12
+    DEPLACEMENT_POSITION_ERREUR_MAJEURE = 13
+    DEPLACEMENT_POSITION_ERREUR_MINEURE = 14
+    GET_POLE_INEXISTANT = 15
+    GET_ACCROCHE_INEXISTANTE = 16
+    GET_LONGUEUR_CABLE_INEXISTANT = 17
+    GET_POLE_RELATIF_INEXISTANT = 18
 
 
 class MockSerial:
@@ -196,7 +238,7 @@ class FuniSerial():
             return ""
 
     def err(self, type: FuniType, code: Union[None, FuniErreur], flag: bool, msg: str = None, num: int = None)\
-        -> Union[str, Tuple[Tuple[FuniErreur, bool, str], int]]:
+            -> Union[str, Tuple[Tuple[FuniErreur, bool, str], int]]:
         if not isinstance(type, FuniType):
             return "type n'est pas un FuniType"
         pass

@@ -6,6 +6,23 @@ from numbers import Number
 from typing import ContextManager, ItemsView, Iterator, KeysView, ValuesView, Union
 from contextlib import contextmanager
 
+from serial import Serial
+from funibot_api.funibot_json_serial import FuniSerial, FuniType
+
+
+class JamaisInitialise(Exception):
+    """Exception pour un poteau jamais initialisé par un Funibot qui essaie de communiquer en série"""
+
+    def __init__(self, poteau: Poteau = None, message=None):
+        if poteau is None:
+            poteau = "Ce Poteau"
+
+        self.message = f"{poteau} n'est pas initialisé dans un Funibot et n'a pas de port série"
+        if message is not None:
+            self.message = f"{self.message} -> Impossible d'accéder à '{message}'"
+
+        super().__init__(self.message)
+
 
 class Vecteur:
     """Représente un vecteur position"""
@@ -241,10 +258,18 @@ class Poteau:
            'nom=' est l'identifiant du Poteau
            'position=' est un Vecteur donnant les coordonnées du Poteau.
            Par défaut, position = (0;0;0).
-           Nécessite une communication série.
         """
         self.nom = nom
         self.pos = position
+
+    def init_poteau(self, id: int, comm_serie: FuniSerial):
+        """Initialise le poteau à l'intérieur du Funibot
+           Nécessite une communication série.
+        """
+        self.id = id
+        self.serial = comm_serie
+        self.serial.pot(type=FuniType.SET, id=self.id,
+                        position=self.pos.vers_tuple())
 
     def __repr__(self) -> str:
         """Représente le Poteau sous la forme Poteau[nom](x;y;z)"""
@@ -255,6 +280,8 @@ class Poteau:
         """Donne la longueur actuelle du câble associé à ce poteau
            Nécessite une communication série.
         """
+        if self.id is None or self.serial is None:
+            raise JamaisInitialise(self, "longueur_cable")
         raise NotImplementedError("Pas encore codé dans la communication")
 
     @property
@@ -262,6 +289,8 @@ class Poteau:
         """Donne le courant actuel du moteur associé à ce poteau
            Nécessite une communication série.
         """
+        if self.id is None or self.serial is None:
+            raise JamaisInitialise(self)
         raise NotImplementedError("Pas encore codé dans la communication")
 
     @property
@@ -269,15 +298,18 @@ class Poteau:
         """Donne le couple actuel du moteur associé à ce poteau
            Nécessite une communication série.
         """
+        if self.id is None or self.serial is None:
+            raise JamaisInitialise(self)
         raise NotImplementedError("Pas encore codé dans la communication")
 
 
 class Funibot:
     """Représente le Funibot"""
 
-    def __init__(self, port_serie, poteaux: list[Poteau]) -> None:
-        self.port_serie = port_serie
+    def __init__(self, serial: FuniSerial, poteaux: list[Poteau]) -> None:
+        self.serial = serial
         self.poteaux = Funibot._poteaux_liste_a_dict(poteaux)
+        self._initialiser_poteaux()
 
     @property
     def pos(self) -> float:
@@ -315,7 +347,7 @@ class Funibot:
 
     def __repr__(self) -> str:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
-        return f"Funibot[{self.port_serie}]({self.poteaux.values()})"
+        return f"Funibot[{self.serial}]({self.poteaux.values()})"
 
     @contextmanager
     def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None) -> Union[float, None]:
@@ -359,3 +391,14 @@ class Funibot:
         for poteau in poteaux:
             poteaux_dict[poteau.nom] = poteau
         return poteaux_dict
+
+    def _initialiser_poteaux(self):
+        """Donne un ID et assigne l'objet serial à chaque poteau"""
+        self.poteaux_id = []
+        for poteau in self.poteaux.values():
+            try:
+                poteau.init_poteau(id=len(self.poteaux_id, comm_serie=self.serial))
+            except ... as e:
+                print_exc()
+                raise e
+            self.poteaux_id.append(poteau)
