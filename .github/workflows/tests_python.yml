@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - '**.py'
+      - '**requirements.txt'
 
 jobs:
   pytest_api:
