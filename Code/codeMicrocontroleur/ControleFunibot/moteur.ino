@@ -15,9 +15,6 @@ uint8_t liste_moteurs[4] = {3, 2, 4, 1};
 
 void moteurSetup()
 {
-    
-    Serial.begin(BAUDRATE);
-
     dxl_wb.init(DEVICE_NAME,BAUDRATE);
 
     for (uint8_t i=0; i<4; i++)

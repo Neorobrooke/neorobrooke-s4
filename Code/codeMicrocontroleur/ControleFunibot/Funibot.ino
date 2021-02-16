@@ -99,7 +99,17 @@ FuniMath::Vecteur Funibot::getPosition()
 			for (int j = i + 1; j < nbrPole; ++j)
 			{
 				double distij = (pole[i] - accroche[i] - pole[j] + accroche[j]).norme_carree();
-
+				//poles confondue
+				if(distij < 0.00001)
+				{
+					GestionErreurs::Erreur erreur;
+					erreur.id = 20;
+					#ifdef systemeArduino
+						erreur.moment = millis();
+					#endif
+					erreurs.addBack(erreur);
+					return FuniMath::Vecteur();
+				}
 				// Câbles trop courts
 				if (sqrt(distij) > (cable[i] + cable[j]) * (cable[i] + cable[j]))
 				{
@@ -215,6 +225,18 @@ FuniMath::Vecteur Funibot::getPosition()
 		FuniMath::Vecteur C2 = pole[1] - accroche[1];
 		FuniMath::Vecteur Dirr = C2 - C1;
 		double dist = Dirr.norme();
+
+		//poles confondues
+		if(dist < 0.00001)
+		{
+			GestionErreurs::Erreur erreur;
+			erreur.id = 19;
+			#ifdef systemeArduino
+				erreur.moment = millis();
+			#endif
+			erreurs.addBack(erreur);
+			return FuniMath::Vecteur();
+		}
 
 		// Câbles trop courts
 		if (dist > (cable[0] + cable[1]))
@@ -419,7 +441,7 @@ FuniMath::Vecteur Funibot::getAccroche(unsigned char index)
 	}
 	return pole[index];
 }
-FuniMath::Vecteur Funibot::getLongueurCable(unsigned char index)
+double Funibot::getLongueurCable(unsigned char index)
 {
 	if (index >= nbrPole)
 	{

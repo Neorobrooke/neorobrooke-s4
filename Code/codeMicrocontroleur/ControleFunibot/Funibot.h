@@ -53,7 +53,7 @@ public:
 	unsigned char getNbrPole(){return nbrPole;}
 	FuniMath::Vecteur getPole(unsigned char index);
 	FuniMath::Vecteur getAccroche(unsigned char index);
-	FuniMath::Vecteur getLongueurCable(unsigned char index);
+	double getLongueurCable(unsigned char index);
 	FuniMath::Vecteur getPoleRelatif(unsigned char index); //Pole - accroche
 
 	FuniMath::Vecteur getPosition();
