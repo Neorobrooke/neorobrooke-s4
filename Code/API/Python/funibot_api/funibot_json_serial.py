@@ -21,6 +21,10 @@ class FuniModeDeplacement(Enum):
     DISTANCE = 'distance'
 
 
+class FuniModeCalibration(Enum):
+    CABLE = 'cable'
+
+
 class FuniErreur(Enum):
     pass
 
@@ -49,13 +53,15 @@ class FuniSerial():
 
         if json["type"] == "set" and reponse["type"] == "ack":
             return self._valider_reponse(json_envoye=json, json_recu=reponse)
+        elif json["type"] == "get" and reponse["type"] == "ack":
+            return(True, "", reponse)
         else:
             return (False, f"{reponse['type']} au lieu de 'ack'", reponse)
 
     @staticmethod
     def _valider_reponse(json_envoye: dict, json_recu: dict) -> Tuple[bool, str]:
-        json_envoye_flat = benedict(json_envoye).flatten()
-        json_recu_flat = benedict(json_recu).flatten()
+        json_envoye_flat = benedict(json_envoye).flatten("/")
+        json_recu_flat = benedict(json_recu).flatten("/")
 
         for key, value in json_recu_flat.items():
             if not key in json_envoye_flat:
@@ -63,14 +69,19 @@ class FuniSerial():
             if key != "type" and json_envoye_flat[key] is not None and json_envoye_flat[key] != value:
                 return (False, f"{key}: {value}", json_recu)
 
-        return (True, "")
+        return (True, "", json_recu)
 
     def pot(self, type: FuniType, id: int, position: Tuple[float, float, float] = None) -> Union[str, Tuple[float, float, float]]:
+        if not isinstance(type, FuniType):
+            return "type n'est pas un FuniType"
         json = {}
         json["comm"] = "pot"
         json["type"] = type.value
 
         args = {}
+        if not isinstance(id, int):
+            return "id n'est pas un entier"
+        
         args["id"] = id
         if type is FuniType.SET:
             if position is None:
@@ -91,7 +102,39 @@ class FuniSerial():
         else:
             return (retour["args"]["pos_x"], retour["args"]["pos_y"], retour["args"]["pos_z"])
 
+    def cal(self, type: FuniType, mode: FuniModeCalibration, id: int, longueur: float) -> Union[str, float]:
+        if not isinstance(type, FuniType):
+            return "type n'est pas un FuniType"
+        if type == FuniType.GET:
+            return "GET pas supporté"
+        json = {}
+        json["comm"] = "cal"
+        json["type"] = type.value
+
+        args = {}
+        args["mode"] = mode.value
+        if not isinstance(id, int):
+            return "id n'est pas un entier"
+
+        args["id"] = id
+        if type is FuniType.SET:
+            if longueur is None:
+                return "longueur est None"
+            args["long"] = longueur
+        else:
+            args["long"] = None
+
+        json["args"] = args
+
+        success, message, retour = self.envoyer(json)
+        if not success:
+            return message
+        else:
+            return retour["args"]["long"]
+
     def pos(self, type: FuniType, position: Tuple[float, float, float] = None) -> Union[str, Tuple[float, float, float]]:
+        if not isinstance(type, FuniType):
+            return "type n'est pas un FuniType"
         json = {}
         json["comm"] = "pos"
         json["type"] = type.value
@@ -117,6 +160,10 @@ class FuniSerial():
             return (retour["args"]["pos_x"], retour["args"]["pos_y"], retour["args"]["pos_z"])
 
     def dep(self, type: FuniType, mode: FuniModeDeplacement, direction: Tuple[float, float, float] = None) -> str:
+        if not isinstance(type, FuniType):
+            return "type n'est pas un FuniType"
+        if type == FuniType.GET:
+            return "GET pas supporté"
         json = {}
         json["comm"] = "dep"
         json["type"] = type.value
@@ -127,7 +174,7 @@ class FuniSerial():
                 (mode == FuniModeDeplacement.DISTANCE or mode == FuniModeDeplacement.START):
 
             if direction is None:
-                return None
+                return "Pas de direction"
             args["axe_x"] = direction[0]
             args["axe_y"] = direction[1]
             args["axe_z"] = direction[2]
@@ -145,6 +192,8 @@ class FuniSerial():
             return ""
 
     def err(self, type: FuniType, code: Union[None, FuniErreur], direction: Tuple[float, float, float] = None) -> str:
+        if not isinstance(type, FuniType):
+            return "type n'est pas un FuniType"
         pass
         # json = {}
         # json["comm"] = "err"
