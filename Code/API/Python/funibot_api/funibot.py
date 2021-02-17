@@ -378,24 +378,25 @@ class Funibot:
         if isinstance(direction, Direction):
             direction = direction.vecteur()
 
-        # Envoyer un commencer
-        try:
-            yield (None if distance is None else 0.0)
-        except KeyboardInterrupt:
-            pass
-
-        # Attendre fin du déplacement si distance non-nulle
         if distance is not None:
+            # Envoyer un commencer
+            try:
+                yield 0.0
+            except KeyboardInterrupt:
+                pass
+
+            # Attendre fin du déplacement si distance non-nulle
             try:
                 # Attendre
                 pass
             except KeyboardInterrupt:
                 pass
-        else:
-            # Envoyer un stop
-            pass
 
-        return None
+            # Envoyer un stop
+
+        else:
+            # Envoyer un déplacement
+            return None
 
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:

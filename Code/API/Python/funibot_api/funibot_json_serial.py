@@ -4,7 +4,7 @@ from json.decoder import JSONDecoder
 from json.encoder import JSONEncoder
 from enum import Enum
 import time
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 
 from serial import Serial
@@ -276,7 +276,7 @@ class FuniSerial():
         else:
             return (retour["args"]["axe_x"], retour["args"]["axe_y"], retour["args"]["axe_z"])
 
-    def err(self, type: FuniType, code: Union[None, int, eFuniErreur]=None, temps: int=None, err_sup: int=None) -> Tuple[list[eFuniErreur], list[str]]:
+    def err(self, type: FuniType, code: Union[None, int, eFuniErreur]=None, temps: int=None, err_sup: int=None) -> Tuple[List[eFuniErreur], List[str]]:
         if not isinstance(type, FuniType):
             raise TypeError("type n'est pas un FuniType")
         if type == FuniType.SET:
