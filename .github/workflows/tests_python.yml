@@ -49,6 +49,7 @@ jobs:
         with:
           name: coverage
           path: ./coverage.html
+          verbose: true
 
       - name: list filesystem
         run: ls -R
