@@ -1,7 +1,9 @@
+from json import encoder
 from benedict import benedict
 from json.decoder import JSONDecoder
 from json.encoder import JSONEncoder
 from enum import Enum
+import time
 from typing import Union, Tuple
 
 
@@ -47,8 +49,31 @@ FUNI_ERREUR_MESSAGES =\
         "GET_POLE_RELATIF_INEXISTANT"
     ]
 
+FUNI_ERREUR_MAJ =\
+    [
+        False,  # 0
+        True,   # 1
+        True,   # 2
+        True,   # 3
+        True,   # 4
+        True,   # 5
+        False,  # 6
+        False,  # 7
+        True,   # 8
+        True,   # 9
+        False,  # 10
+        True,   # 11
+        False,  # 12
+        True,   # 13
+        False,  # 14
+        True,   # 15
+        True,   # 16
+        True,   # 17
+        True    # 18
+    ]
 
-class FuniErreur(Enum):
+
+class eFuniErreur(Enum):
     AUCUNE_ERREUR = 0
     ADD_POLE_DEPASSEMENT = 1
     SET_POLE_INEXISTANT = 2
@@ -68,6 +93,21 @@ class FuniErreur(Enum):
     GET_ACCROCHE_INEXISTANTE = 16
     GET_LONGUEUR_CABLE_INEXISTANT = 17
     GET_POLE_RELATIF_INEXISTANT = 18
+
+
+class FuniErreur:
+    """Représente une erreur du Funibot"""
+    
+    def __init__(self, erreur: Union[int, eFuniErreur], temps: int) -> None:
+        if isinstance(erreur, int):
+            erreur = eFuniErreur(erreur)
+        self.erreur = erreur
+        self.id = erreur.value
+        self.maj = FUNI_ERREUR_MAJ[self.id]
+        self.t = temps
+
+    def __repr__(self) -> str:
+        return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.erreur.value}:{self.erreur.name}]"
 
 
 class MockSerial:
@@ -118,19 +158,19 @@ class FuniSerial():
 
     def pot(self, type: FuniType, id: int, position: Tuple[float, float, float] = None) -> Union[str, Tuple[float, float, float]]:
         if not isinstance(type, FuniType):
-            return "type n'est pas un FuniType"
+            raise TypeError("type n'est pas un FuniType")
         json = {}
         json["comm"] = "pot"
         json["type"] = type.value
 
         args = {}
         if not isinstance(id, int):
-            return "id n'est pas un entier"
-
+            raise TypeError("id n'est pas un entier")
+            
         args["id"] = id
         if type is FuniType.SET:
             if position is None:
-                return "position est None"
+                raise ValueError("position est None")
             args["pos_x"] = position[0]
             args["pos_y"] = position[1]
             args["pos_z"] = position[2]
@@ -141,17 +181,17 @@ class FuniSerial():
 
         json["args"] = args
 
-        success, message, retour = self.envoyer(json)
-        if not success:
+        succes, message, retour = self.envoyer(json)
+        if not succes:
             return message
         else:
             return (retour["args"]["pos_x"], retour["args"]["pos_y"], retour["args"]["pos_z"])
 
     def cal(self, type: FuniType, mode: FuniModeCalibration, id: int, longueur: float) -> Union[str, float]:
         if not isinstance(type, FuniType):
-            return "type n'est pas un FuniType"
+            raise TypeError("type n'est pas un FuniType")
         if type == FuniType.GET:
-            return "GET pas supporté"
+            raise ValueError("GET n'est pas supporté")
         json = {}
         json["comm"] = "cal"
         json["type"] = type.value
@@ -159,27 +199,27 @@ class FuniSerial():
         args = {}
         args["mode"] = mode.value
         if not isinstance(id, int):
-            return "id n'est pas un entier"
+            raise TypeError("id n'est pas un entier")
 
         args["id"] = id
         if type is FuniType.SET:
             if longueur is None:
-                return "longueur est None"
+                raise ValueError("longueur est None")
             args["long"] = longueur
         else:
             args["long"] = None
 
         json["args"] = args
 
-        success, message, retour = self.envoyer(json)
-        if not success:
+        succes, message, retour = self.envoyer(json)
+        if not succes:
             return message
         else:
             return retour["args"]["long"]
 
     def pos(self, type: FuniType, position: Tuple[float, float, float] = None) -> Union[str, Tuple[float, float, float]]:
         if not isinstance(type, FuniType):
-            return "type n'est pas un FuniType"
+            raise TypeError("type n'est psa un FuniType")
         json = {}
         json["comm"] = "pos"
         json["type"] = type.value
@@ -187,7 +227,7 @@ class FuniSerial():
         args = {}
         if type is FuniType.SET:
             if position is None:
-                return "position est None"
+                raise ValueError("position est None")
             args["pos_x"] = position[0]
             args["pos_y"] = position[1]
             args["pos_z"] = position[2]
@@ -198,17 +238,17 @@ class FuniSerial():
 
         json["args"] = args
 
-        success, message, retour = self.envoyer(json)
-        if not success:
+        succes, message, retour = self.envoyer(json)
+        if not succes:
             return message
         else:
             return (retour["args"]["pos_x"], retour["args"]["pos_y"], retour["args"]["pos_z"])
 
     def dep(self, type: FuniType, mode: FuniModeDeplacement, direction: Tuple[float, float, float] = None) -> str:
         if not isinstance(type, FuniType):
-            return "type n'est pas un FuniType"
+            raise TypeError("type n'est pas un FuniType")
         if type == FuniType.GET:
-            return "GET pas supporté"
+            raise ValueError("GET n'est pas supporté")
         json = {}
         json["comm"] = "dep"
         json["type"] = type.value
@@ -219,7 +259,7 @@ class FuniSerial():
                 (mode == FuniModeDeplacement.DISTANCE or mode == FuniModeDeplacement.START):
 
             if direction is None:
-                return "Pas de direction"
+                raise ValueError("direction est None")
             args["axe_x"] = direction[0]
             args["axe_y"] = direction[1]
             args["axe_z"] = direction[2]
@@ -230,41 +270,59 @@ class FuniSerial():
 
         json["args"] = args
 
-        success, message, retour = self.envoyer(json)
-        if not success:
+        succes, message, retour = self.envoyer(json)
+        if not succes:
             return message
         else:
-            return ""
+            return (retour["args"]["axe_x"], retour["args"]["axe_y"], retour["args"]["axe_z"])
 
-    def err(self, type: FuniType, code: Union[None, FuniErreur], flag: bool, msg: str = None, num: int = None)\
-            -> Union[str, Tuple[Tuple[FuniErreur, bool, str], int]]:
+    def err(self, type: FuniType, code: Union[None, int, eFuniErreur]=None, temps: int=None, err_sup: int=None) -> Tuple[list[eFuniErreur], list[str]]:
         if not isinstance(type, FuniType):
-            return "type n'est pas un FuniType"
-        pass
+            raise TypeError("type n'est pas un FuniType")
+        if type == FuniType.SET:
+            raise ValueError("SET n'est pas supporté")
         json = {}
         json["comm"] = "err"
         json["type"] = type.value
 
-        args = {}
-        args["code"] = None if code is None else code.value
-        if type is FuniType.SET:
-            if flag is None:
-                return "flag est None"
-            args["flag"] = flag
+        if type == FuniType.GET:
+            args = None
         else:
-            args["flag"] = None
+            args = {}
+            
+            if isinstance(code, eFuniErreur):
+                code = code.value
+            if not isinstance(code, int):
+                raise TypeError("code n'est pas une eFuniErreur ou un entier")
+            if code <= 0:
+                raise ValueError("code est un entier négatif, il devrait être positif")
 
-        if type is FuniType.ACK:
-            args["msg"] = msg
-            args["num"] = num
-        else:
-            args["msg"] = None
-            args["num"] = None
+            if not isinstance(temps, int):
+                raise TypeError("temps n'est pas un entier")
+
+            if not isinstance(temps, int):
+                raise TypeError("err_sup n'est pas un entier")
+            if not err_sup >= 0:
+                raise ValueError("err_sup est négatif")
+
+            args["id"] = code
+            args["maj"] = FUNI_ERREUR_MAJ[code]
+            args["t"] = temps
+            args["err_sup"] = err_sup
 
         json["args"] = args
 
-        success, message, retour = self.envoyer(json)
-        if not success:
-            return message
-        else:
-            return ((FuniErreur(retour["args"]["code"]), retour["args"]["flag"], retour["args"]["msg"]), retour["args"]["num"] - 1)
+        succes = True
+        encore = True
+        erreurs = []
+        messages = []
+        while succes and encore:
+            succes, message, retour = self.envoyer(json)
+            encore = (retour["args"]["err_sup"] > 0)
+            
+            if not succes:
+                messages.append(message)
+            else:
+                erreurs.append(FuniErreur(retour["args"]["id"], retour["args"]["t"]))
+        
+        return (erreurs, messages)

@@ -10,6 +10,11 @@ from serial import Serial
 from funibot_api.funibot_json_serial import FuniSerial, FuniType
 
 
+class FuniCommException(Exception):
+    """Exception lancée lors d'une erreur de communication ou de paramètres"""
+    pass
+
+
 class JamaisInitialise(Exception):
     """Exception pour un poteau jamais initialisé par un Funibot qui essaie de communiquer en série"""
 
@@ -290,7 +295,7 @@ class Poteau:
            Nécessite une communication série.
         """
         if self.id is None or self.serial is None:
-            raise JamaisInitialise(self)
+            raise JamaisInitialise(self, "courant_moteur")
         raise NotImplementedError("Pas encore codé dans la communication")
 
     @property
@@ -299,7 +304,7 @@ class Poteau:
            Nécessite une communication série.
         """
         if self.id is None or self.serial is None:
-            raise JamaisInitialise(self)
+            raise JamaisInitialise(self, "couple_moteur")
         raise NotImplementedError("Pas encore codé dans la communication")
 
 
@@ -312,18 +317,26 @@ class Funibot:
         self._initialiser_poteaux()
 
     @property
-    def pos(self) -> float:
+    def pos(self) -> Vecteur:
         """Retourne la position actuelle du Funibot.
            Nécessite une communication série.
         """
-        raise NotImplementedError("Pas encore dans la communication")
+        valeur = self.serial.pos(FuniType.GET)
+        if isinstance(valeur, str):
+            raise FuniCommException(valeur)
+        return Vecteur(*valeur)
+        # raise NotImplementedError("Pas encore dans la communication")
 
     @pos.setter
     def pos(self, position: Vecteur) -> None:
         """Déplace le Funibot à la posision vectorielle demandée.
            Nécessite une communication série.
         """
-        raise NotImplementedError("Pas encore dans la communication")
+        valeur = self.serial.pos(FuniType.SET, position.vers_tuple())
+        if isinstance(valeur, str):
+            raise FuniCommException(valeur)
+        return
+        # raise NotImplementedError("Pas encore dans la communication")
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""
