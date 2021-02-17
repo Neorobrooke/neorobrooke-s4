@@ -1,5 +1,5 @@
 # API Python
-[![Truc](https://img.shields.io/codecov/c/github/Neorobrooke/neorobrooke-s4?flag=python_api&label=Couverture%20Python)]()
+
 ## Module `funibot`
 
 ### Classe `Funibot`
