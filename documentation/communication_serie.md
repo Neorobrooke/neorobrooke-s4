@@ -19,6 +19,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
       "pos_z": 0.0
     }
   }
+  // pos_x, pos_y et pos_z correspondent aux coordonnées du vecteur position du poteau additionné 
   ```
 - Choisir un port série pour le système
   - Pas de comande
@@ -26,7 +27,13 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
   ```json
   {
     "comm": "cal",
-    "args": "à définir"
+    "type": "set | ack",
+    "args":
+    {
+      "mode": "cable",
+      "id": 0,
+      "long": 0.0
+    }
   }
   ```
 
@@ -69,21 +76,20 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
 - Obtenir le dernier message d'erreur
 - Effacer les erreurs et réinitialiser
   ```json
-  // `flag` est vrai si l'erreur est levée
-  // `msg` contient une string si l'erreur est levée
-  // si `code` est `null`:
-  //    Avec get, donne une réponse pour chaque code d'erreur dont le flag est vrai. Le `num` de chaque réponse est le nombre total de réponses + 2 (ack vides au début et à la fin)
-  //    Avec set, efface toutes les erreurs en réinitialisant tout ce qu'il faut, et répond pour chaque erreur qui avait un `flag` vrai. Le `num` de chaque réponse est le nombre total de réponses + 2 (ack vides au début et à la fin)
-  //    Avec ack, `code` est null au début et à la fin des réponses multiples
+  // Avec `get`, `args` lui-même est `null`
+  // `code` est le code d'erreur (un entier)
+  // `maj` contient `true` si l'erreur est majeure, `false` sinon
+  // `t` contient une identification du moment de l'erreur
+  // `num` contient le nombre d'erreurs restantes
   {
     "comm": "err",
-    "type": "get | set | ack",
+    "type": "get | ack",
     "args":
     {
-      "code": "un identifiant d'erreur",
-      "flag": false,
-      "msg": null,
-      "num": 1
+      "id": 0,
+      "maj": false,
+      "t": 0,
+      "err_sup": 1
     }
   }
   ```

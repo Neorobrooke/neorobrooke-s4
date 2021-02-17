@@ -15,10 +15,21 @@ Une API pour la librairie sera développée dans les langages suivants:
 - C++
 - C
 
-# Notes
+# git-fls
 Ce répertoir utilise git-lfs pour les fichiers volumineux.
 Installez git-lfs avant de cloner.
 ## Linux
 Disponible dans le gestionnaire de paquets de votre distribution.
 ## Windows ou autres
 Téléchargeable à partir [de ce lien.](https://git-lfs.github.com/)
+
+# Initialisation
+Il est possible d'initialiser un environnement Python contenant toutes les dépendances requises en exécutant le script `pip_script.py`.
+Ce script crée un environnement virtuel et y installe les dépendances.
+Il faut ensuite activer l'environnement à l'aide d'une commande dépendant du shell utilisé:
+
+Windows (CMD) : `'./.venv/Scripts/activate.bat'`  
+Windows (PowerShell) : `'./.venv/Scripts/Activate.ps1'`  
+Linux/Mac (bash, zsh, etc.) : `source ./.venv/Scripts/activate`
+
+L'environnement doit être réactivé chaque fois qu'on veut exécuter le module ou un autre module ou script qui en dépend.
