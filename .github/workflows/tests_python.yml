@@ -33,7 +33,7 @@ jobs:
        
       - name: pytest run
         run: |
-          pytest --cov=funibot_api --cov-branch --cov-report=xml:./coverage.xml
+          pytest --cov=funibot_api --cov-branch --cov-report=xml
           pytest --cov=funibot_api --cov-branch --cov-report=html:./coverage.html
 
       - name: coverage report
@@ -42,10 +42,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
           # files: ./coverage.html
-          flags: python_api
-          name: python_api
-          verbose: true
-          functionalities: html
 
       - name: coverage upload
         uses: actions/upload-artifact@v2
