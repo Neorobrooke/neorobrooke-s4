@@ -6,6 +6,7 @@ on:
     paths:
       - '**.py'
       - '**requirements.txt'
+      - '**tests_python.yml'
   workflow_dispatch:
 
 jobs:
@@ -32,13 +33,22 @@ jobs:
        
       - name: pytest run
         run: |
-          pytest --cov=funibot_api --cov-branch --cov-report=xml:./coverage.xml
+          pytest --cov=funibot_api --cov-branch --cov-report=xml
+          pytest --cov=funibot_api --cov-branch --cov-report=html:./coverage.html
 
       - name: coverage report
         uses: codecov/codecov-action@v1
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          files: ./coverage.xml
-          flags: python_api
-          carryforward: true
-          name: python_api
+
+      - name: coverage upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage_${{ matrix.python-version }}
+          path: ./coverage.html
+
+      - name: list filesystem
+        run: |
+          pwd
+          ls -R
