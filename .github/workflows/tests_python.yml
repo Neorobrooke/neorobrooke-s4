@@ -41,7 +41,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          files: ./coverage.html
+          # files: ./coverage.html
           flags: python_api
           name: python_api
           verbose: true
