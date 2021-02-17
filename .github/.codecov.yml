@@ -2,6 +2,7 @@ flags:
   python_api:
     paths:
       - funibot_api/
+    carryforward: true
   # python_cli:
   #   paths:
   #     - funibot_cli/

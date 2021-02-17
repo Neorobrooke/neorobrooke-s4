@@ -6,6 +6,7 @@ on:
     paths:
       - '**.py'
       - '**requirements.txt'
+      - '**tests_python.yml'
   workflow_dispatch:
 
 jobs:
@@ -40,5 +41,13 @@ jobs:
           fail_ci_if_error: true
           files: ./coverage.xml
           flags: python_api
-          carryforward: true
           name: python_api
+
+      - name: coverage upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: ./coverage.xml
+
+      - name: list filesystem
+        run: ls -R /
