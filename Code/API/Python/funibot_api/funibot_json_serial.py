@@ -1,6 +1,6 @@
+from benedict import benedict
 from json.decoder import JSONDecoder
 from json.encoder import JSONEncoder
-from benedict import benedict
 from enum import Enum
 from typing import Union, Tuple
 
