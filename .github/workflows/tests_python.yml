@@ -46,7 +46,7 @@ jobs:
       - name: coverage upload
         uses: actions/upload-artifact@v2
         with:
-          name: coverage_${{ matrix.node-version }}
+          name: coverage_${{ matrix.python-version }}
           path: ./coverage.html
 
       - name: list filesystem
