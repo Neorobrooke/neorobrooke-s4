@@ -10,7 +10,7 @@
 #define periodeMoteur 50
 #define periodeEncodeur 10
 
-#define NBR_CABLES 4
+#define NBR_CABLES 2
 
 struct aglomerationVariable
 {
@@ -24,10 +24,10 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 1;
-    double seuilPosition = 1;
+    double vitesse = 3;
+    double seuilPosition = 0.5;
     //retour encodeur
-    double cable[NBR_CABLES] = {0,0,0,0};
+    double cable[NBR_CABLES] = {100,100};
     //commande au moteur
     double commandeVitesseCable[NBR_CABLES] = {0};
 
@@ -266,7 +266,7 @@ void controle()
 //fonction des moteurs, controle les moteurs et s'assure d'obtenir la bonne vitesse
 void moteurs()
 {
-    moteurLoop();
+    moteurLoop(NBR_CABLES,global.commandeVitesseCable,global.cable,periodeMoteur);
 }
 
 //fonction des encodeurs, assure un bon suivie de la longueur des cables
@@ -281,10 +281,8 @@ void setup()
     Serial.begin(BAUDRATE);
 
     //mise en place des poles:
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(0,1000,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(100,1000,0),FuniMath::Vecteur(0,0,0));
     
     //enregistrement du temps
     long temps = millis();
@@ -293,7 +291,7 @@ void setup()
     global.lastControle = temps;
     global.lastEncodeur = temps;
 
-    moteurSetup();
+    moteurSetup(NBR_CABLES);
 }
 
 //loop

@@ -8,35 +8,42 @@
 #endif   
 
 #define BAUDRATE  57600
+#define mmprad -2.387
 
 DynamixelWorkbench dxl_wb;
 
-uint8_t liste_moteurs[4] = {3, 2, 4, 1};
+uint8_t liste_moteurs[4] = {1, 2, 3, 4};
+float position_moteurs[4];
 
-void moteurSetup()
+void moteurSetup(uint8_t nbrMoteur)
 {
     dxl_wb.init(DEVICE_NAME,BAUDRATE);
 
-    for (uint8_t i=0; i<4; i++)
+    for (uint8_t i=0; i<nbrMoteur; i++)
     {
       dxl_wb.ping(liste_moteurs[i]);
       dxl_wb.wheelMode(liste_moteurs[i], 0);
     }
+    for (uint8_t i=0; i<nbrMoteur; i++)
+    {
+      dxl_wb.getRadian(liste_moteurs[i], position_moteurs+i);
+    }
 }
 
-void moteurLoop()
+void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable, int dt)
 {
-  for (int8_t count = 0; count <= 4; count++)
+  for (uint8_t i=0; i<nbrMoteur; i++)
     {
-      if(count >= 0 && count < 4)dxl_wb.goalVelocity((uint8_t)liste_moteurs[count], (int32_t)200);
-      if(count - 1 >= 0)dxl_wb.goalVelocity((uint8_t)liste_moteurs[count-1], (int32_t)100);
-      if(count - 2 >= 0)dxl_wb.goalVelocity((uint8_t)liste_moteurs[count-2], (int32_t)0);
-      delay(100);
-    }
+      float radian;
+      dxl_wb.getRadian(liste_moteurs[i], &radian);
+      float deplacement = radian - position_moteurs[i];
+      position_moteurs[i] = radian;
+      if (deplacement > PI)
+        deplacement -= 2*PI;
+      if (deplacement < -PI)
+        deplacement += 2*PI;
+      longueurCable[i] += deplacement*mmprad;
+      dxl_wb.goalVelocity(liste_moteurs[i], (float)(vitesse[i]/mmprad));
 
-  
-    dxl_wb.goalVelocity(liste_moteurs[0], (int32_t)0);
-    dxl_wb.goalVelocity(liste_moteurs[1], (int32_t)0);
-    dxl_wb.goalVelocity(liste_moteurs[2], (int32_t)0);
-    dxl_wb.goalVelocity(liste_moteurs[3], (int32_t)0);
+    }
 }
