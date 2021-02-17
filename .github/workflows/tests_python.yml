@@ -50,4 +50,4 @@ jobs:
           path: ./coverage.xml
 
       - name: list filesystem
-        run: ls -R /
+        run: ls -R
