@@ -54,4 +54,6 @@ jobs:
           path: ./coverage.html
 
       - name: list filesystem
-        run: ls -R
+        run: |
+          pwd
+          ls -R
