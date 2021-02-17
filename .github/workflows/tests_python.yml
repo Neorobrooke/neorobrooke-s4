@@ -43,13 +43,13 @@ jobs:
           files: ./coverage.xml
           flags: python_api
           name: python_api
+          verbose: true
 
       - name: coverage upload
         uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: ./coverage.html
-          verbose: true
 
       - name: list filesystem
         run: ls -R
