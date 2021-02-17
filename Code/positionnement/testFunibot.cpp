@@ -8,11 +8,11 @@ std::ostream& operator<< (std::ostream& os, FuniTest::rapport rap)
 	os << "Test: " << rap.nom << "\n";
 	if (rap.reussite)
 	{
-		os << "rÃ©ussite du test\n";
+		os << "réussite du test\n";
 	}
 	else
 	{
-		os << "Ã©chec du test\n";
+		os << "échec du test\n";
 	}
 	os << rap.info;
 	os << "\n";
@@ -170,7 +170,7 @@ FuniTest::rapport FuniTest::deplacementDirectionnel()
 {
 	int info = 0;
 	rapport out;
-	out.nom = "deplacementDirrectionnel()";
+	out.nom = "deplacementDirectionnel()";
 
 	Funibot bot = testBot();
 
@@ -186,7 +186,7 @@ FuniTest::rapport FuniTest::deplacementDirectionnel()
 		for (int jDirr = 0; jDirr < nbrDirr; jDirr++)
 			for (int kDirr = 0; kDirr < nbrDirr; kDirr++)
 			{
-				//vecteur de dÃ©placement
+				//vecteur de déplacement
 				FuniMath::Vecteur dirr(dirrTest[iDirr], dirrTest[jDirr], dirrTest[kDirr]);
 				FuniMath::Vecteur dirrU = dirr / dirr.norme();
 
@@ -194,7 +194,7 @@ FuniTest::rapport FuniTest::deplacementDirectionnel()
 					for (int j = 0; j < nbrPosition; j++)
 						for (int k = 0; k < nbrPosition; k++)
 						{
-							//position dÃ©part
+							//position départ
 							FuniMath::Vecteur depart(positionTest[i], positionTest[j], positionTest[k]);
 							//suivie de position
 							FuniMath::Vecteur position = depart;
@@ -207,13 +207,13 @@ FuniTest::rapport FuniTest::deplacementDirectionnel()
 								bot.setLongueurCable(w, cable[w]);
 							}
 
-							//itÃ©ration du mouvement
+							//itération du mouvement
 							FuniMath::Vecteur estimation = position + dirrU * vitesse * pas; //estimation de la prochaine position
 							while (estimation.x < 97 && estimation.x > 3
 								&& estimation.y < 97 && estimation.y > 3
 								&& estimation.z < 97 && estimation.z > 3)
 							{
-								//mise Ã  jour des cables
+								//mise à jour des cables
 								double vitesseCable[4];
 								bot.deplacementDirectionnel(dirr, pas, vitesse, vitesseCable);
 								for (int w = 0; w < 4; w++)
@@ -222,18 +222,18 @@ FuniTest::rapport FuniTest::deplacementDirectionnel()
 									bot.setLongueurCable(w, cable[w]);
 								}
 
-								//mise Ã  jours de la position
+								//mise à jours de la position
 								oldPosition = position;
 								position = bot.getPosition();
 
-								//test de validitÃ©
+								//test de validité
 								FuniMath::Vecteur erreur = (position - (oldPosition + dirrU * vitesse * pas)); //erreur de dirrection
 
 								if (erreur.norme_carree() > 0.00001) //erreur de dirrection trop grande
 								{
 									double fact = erreur.norme_carree();
 									out.reussite = false;
-									out.info += "dÃ©placement de (" + std::to_string(oldPosition.x) + ", " + std::to_string(oldPosition.y) + ", " + std::to_string(oldPosition.z) + ") vers\n(" +
+									out.info += "déplacement de (" + std::to_string(oldPosition.x) + ", " + std::to_string(oldPosition.y) + ", " + std::to_string(oldPosition.z) + ") vers\n(" +
 										std::to_string(dirrU.x * vitesse * pas) + ", " + std::to_string(dirrU.y * vitesse * pas) + ", " + std::to_string(dirrU.z * vitesse * pas) + ") donne\n(" +
 										std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z) + ")\n";
 									info++;
@@ -295,12 +295,12 @@ FuniTest::rapport FuniTest::deplacementPosition()
 							//estimation de temps
 							double estimTemps = (fin - debut).norme() / vitesse;
 
-							//nbr d'itÃ©ration
+							//nbr d'itération
 							int nbrItt = ((estimTemps / pas) * 1.01) + 1;
 
 							for (int itt = 0; itt <= nbrItt; itt++)
 							{
-								//dÃ©placement
+								//déplacement
 								double vitesseCable[4];
 								bot.deplacementPosition(fin, pas, vitesse, vitesseCable);
 								for (int w = 0; w < 4; w++)
@@ -313,7 +313,7 @@ FuniTest::rapport FuniTest::deplacementPosition()
 								if (!bot.erreurs.empty())
 								{
 									out.reussite = false;
-									out.info += "erreur dans l'ittÃ©ration " + std::to_string(itt) + "du dÃ©placement entre\n(" +
+									out.info += "erreur dans l'ittération " + std::to_string(itt) + "du déplacement entre\n(" +
 										std::to_string(debut.x) + ", " + std::to_string(debut.y) + ", " + std::to_string(debut.z) + ") et\n("+
 										std::to_string(fin.x) + ", " + std::to_string(fin.y) + ", " + std::to_string(fin.z) + ")\n";
 								}
@@ -327,12 +327,12 @@ FuniTest::rapport FuniTest::deplacementPosition()
 
 							}
 
-							//test de position Ã  la fin du dÃ©placement
+							//test de position à la fin du déplacement
 							FuniMath::Vecteur positionFin = bot.getPosition();
-							if ((positionFin - fin).norme_carree() > 0.001)
+							if ((positionFin - fin).norme_carree() > 0.00001)
 							{
 								out.reussite = false;
-								out.info += "dÃ©placement de " + std::to_string(debut.x) + ", " + std::to_string(debut.y) + ", " + std::to_string(debut.z) + ") Ã \n(" +
+								out.info += "déplacement de " + std::to_string(debut.x) + ", " + std::to_string(debut.y) + ", " + std::to_string(debut.z) + ") à\n(" +
 									std::to_string(positionFin.x) + ", " + std::to_string(positionFin.y) + ", " + std::to_string(positionFin.z) + ") au lieu de\n("+
 									std::to_string(fin.x) + ", " + std::to_string(fin.y) + ", " + std::to_string(fin.z) + ")\n";
 							}
