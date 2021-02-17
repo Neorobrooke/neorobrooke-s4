@@ -41,7 +41,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          flag: python_api
+          flags: python_api
 
       - name: coverage upload
         uses: actions/upload-artifact@v2
