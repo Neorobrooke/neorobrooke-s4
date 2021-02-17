@@ -1,0 +1,48 @@
+name: Tests C++
+
+on:
+  push:
+    paths:
+      - '**.c'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - '**.ino'
+
+jobs:
+  gtest:
+    name: gtest run
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compilers: ["g++", "clang++"]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: setup gcc
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          platform: x64
+
+      - name: setup gtest
+        uses: MarkusJx/googletest-installer@v1.1
+
+      - name: compilation c++
+        #run: make ${{ matrix.python-version }}
+        run: echo "Compilation avec" ${{ matrix.python-version }}
+
+      - name: gtest run
+        #run: make tests ${{ matrix.python-version }}
+        run: echo "Réalisation des tests"
+
+      - name: coverage report
+        # uses: codecov/codecov-action@v1
+        # with:
+        #   fail_ci_if_error: true
+        #   files: ./coverage.xml
+        #   flags: cpp_embarque
+        #   carryforward: true
+        #   name: cpp_embarque
+        run: echo "Coverage"

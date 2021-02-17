@@ -4,3 +4,6 @@ NOGIT*
 __pycache__
 .venv
 .vs
+.pytest_cache
+googletest
+.coverage
