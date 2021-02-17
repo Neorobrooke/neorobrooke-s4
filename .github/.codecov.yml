@@ -1,5 +1,5 @@
-flags:
-  python_api:
-    paths:
-      - funibot_api/
+# flags:
+#   python_api:
+#     paths:
+#       - funibot_api/
   
