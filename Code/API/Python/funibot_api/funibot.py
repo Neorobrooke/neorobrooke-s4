@@ -258,14 +258,17 @@ class Direction:
 class Poteau:
     """Représente un pôle du Funibot"""
 
-    def __init__(self, nom, position: Vecteur = Vecteur(0, 0, 0)) -> None:
+    def __init__(self, nom, position_pole: Vecteur = Vecteur(0, 0, 0),\
+        position_accroche: Vecteur = Vecteur(0, 0, 0)) -> None:
         """Initialise un Poteau pour le Funibot.
            'nom=' est l'identifiant du Poteau
            'position=' est un Vecteur donnant les coordonnées du Poteau.
            Par défaut, position = (0;0;0).
         """
         self.nom = nom
-        self.pos = position
+        self.pos_pole = position_pole
+        self.pos_acccroche = position_accroche
+        self.pos = position_pole - position_accroche
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
