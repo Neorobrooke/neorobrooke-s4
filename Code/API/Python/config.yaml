@@ -3,31 +3,32 @@
     port: COM4
     baudrate: 57600
   poteaux: # distances en cm
-    test0:
+    moteur3:
       poles:
-        x: 7.5
-        y: 4
-        z: 105
-      attaches:
+        x: 0
+        y: 0
+        z: 0
+      accroches:
         x: 0
         y: 0
         z: 7.5
-    # test1:
-    #   poles:
-    #     x: 0
-    #     y: 0
-    #     z: 0
-    #   attaches:
-    #     x: -1
-    #     y: 1
-    #     z: 1
+      cable: 32
+    moteur2:
+      poles:
+        x: 66
+        y: 0
+        z: 66
+      accroches:
+        x: 0
+        y: 0
+        z: 7.5
 ...
     # test2:
     #   poles:
     #     x: 0
     #     y: 0
     #     z: 0
-    #   attaches:
+    #   accroches:
     #     x: -1
     #     y: 1
     #     z: 1
@@ -36,8 +37,7 @@
     #     x: 0
     #     y: 0
     #     z: 0
-    #   attaches:
+    #   accroches:
     #     x: -1
     #     y: 1
     #     z: 1
-    

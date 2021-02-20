@@ -1,5 +1,6 @@
 import cmd
 import os
+from traceback import print_exc
 from serial import Serial
 from serial.serialutil import SerialException
 from yaml import load, dump, Loader, Dumper
@@ -10,7 +11,7 @@ import time
 from pprint import pprint
 from pathlib import Path
 
-from funibot_api.funibot import Funibot
+from funibot_api.funibot import Funibot, Poteau, Vecteur
 from funibot_api.funibot_json_serial import FuniSerial
 
 class CLIFunibot(cmd.Cmd):
@@ -30,13 +31,33 @@ class CLIFunibot(cmd.Cmd):
             exit(1)
         self.funi_serial = FuniSerial(self.serial)
 
-    def do_addpoteau(self, arg):
-        pass
+    def initialiser_poteaux(self, poteaux: dict) -> None:
+        liste_poteaux = []
+        for key, value in poteaux.items():
+            try:
+                poles = value["poles"]
+                accroches = value["accroches"]
+                px, py, pz = poles["x"], poles["y"], poles["z"]
+                ax, ay, az = accroches["x"], accroches["y"], accroches["z"]
+                cable = value["cable"]
+            except KeyError:
+                print_exc()
+                print(f"Valeurs manquantes dans le fichier de config pour le poteau [{key}]")
+                exit(4)
+            
+            nouveau_pot = Poteau(nom=key, position_pole=Vecteur(px, py, pz),
+            position_accroche=Vecteur(ax, ay, az))
+            liste_poteaux.append(nouveau_pot)
+        
+        self.bot = 
 
-    def do_makebot(self, arg):
-        self.bot = Funibot(self.funi_serial)
+    # def do_addpoteau(self, arg):
+    #     pass
 
-    def default(self, arg):
+    # def do_makebot(self, arg):
+    #     self.bot = Funibot(self.funi_serial)
+
+    def default(self, _):
         print("ERREUR: Commande inconnue")
 
     def do_shell(self, arg):
@@ -68,10 +89,10 @@ class CLIFunibot(cmd.Cmd):
 
 def parse_args() -> Any:
     parser = argparse.ArgumentParser(prog="funibot_" + os.path.basename(__file__))
-    parser.add_argument('-p', help='Port série à utiliser')
-    parser.add_argument('-b', help='Baud rate série à utiliser')
-    # parser.add_argument('-f', required=True, help='Fichier de config yaml à utiliser')
-    parser.add_argument('-f', help='Fichier de config yaml à utiliser')
+    # parser.add_argument('-p', help='Port série à utiliser')
+    # parser.add_argument('-b', help='Baud rate série à utiliser')
+    parser.add_argument('-f', required=True, help='Fichier de config yaml à utiliser')
+    # parser.add_argument('-f', help='Fichier de config yaml à utiliser')
 
     return parser.parse_args()
 
@@ -80,9 +101,25 @@ if __name__ == '__main__':
     if cli_args.f is not None:
         with open(Path(cli_args.f), "r") as f:
             config = load(f, Loader=Loader)
-
-    elif cli_args.p is None or cli_args.b is None:
-        print("Fichier de config ou port série et baud rate non spécifiés")
+    else:
+        print("Fichier de config non spécifié")
         exit(1)
 
-    CLIFunibot(port=config["serial"]["port"], baud=config["serial"]["baudrate"]).cmdloop()
+    try:
+        port = config["serial"]["port"]
+        baud = config["serial"]["baudrate"]
+    except KeyError:
+        print_exc()
+        print("Port ou baudrate manquants dans le fichier de config")
+        exit(2)
+
+    cli_funibot = CLIFunibot(port=port, baud=baud)
+    try:
+        cli_funibot.initialiser_poteaux(config["poteaux"])
+    except KeyError:
+        print_exc()
+        print("Dictionnaire des poteaux manquant dans le fichier de config")
+        exit(3)
+
+    cli_funibot.cmdloop()
+    

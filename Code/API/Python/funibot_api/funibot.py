@@ -7,7 +7,7 @@ from typing import ContextManager, ItemsView, Iterator, KeysView, ValuesView, Un
 from contextlib import contextmanager
 
 from serial import Serial
-from funibot_api.funibot_json_serial import FuniSerial, FuniType
+from funibot_api.funibot_json_serial import FuniModeDeplacement, FuniSerial, FuniType
 
 
 class FuniCommException(Exception):
@@ -401,6 +401,22 @@ class Funibot:
         #     # Envoyer un déplacement
         #     return None
 
+    def deplacer_vers(self, direction: Union[Direction, Vecteur, str]) -> Union[float, None]:
+        """Commence un déplacement dans une certaine direction"""
+        if isinstance(direction, str):
+            direction = Direction(direction=direction)
+
+        if isinstance(direction, Direction):
+            direction = direction.vecteur()
+
+        self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.START,
+                        direction=direction.vers_tuple())
+        return None
+
+    def stop(self) -> None:
+        self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
+        return None
+
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:
         """Crée un dict avec la liste de poteaux, en utilisant le nom comme clé"""
@@ -415,7 +431,7 @@ class Funibot:
         for poteau in self.poteaux.values():
             try:
                 poteau.init_poteau(
-                    id=len(self.poteaux_id, comm_serie=self.serial))
+                    id=len(self.poteaux_id), comm_serie=self.serial)
             except ... as e:
                 print_exc()
                 raise e
