@@ -1,0 +1,43 @@
+---
+  serial:
+    port: COM4
+    baudrate: 57600
+  poteaux: # distances en cm
+    test0:
+      poles:
+        x: 7.5
+        y: 4
+        z: 105
+      attaches:
+        x: 0
+        y: 0
+        z: 7.5
+    # test1:
+    #   poles:
+    #     x: 0
+    #     y: 0
+    #     z: 0
+    #   attaches:
+    #     x: -1
+    #     y: 1
+    #     z: 1
+...
+    # test2:
+    #   poles:
+    #     x: 0
+    #     y: 0
+    #     z: 0
+    #   attaches:
+    #     x: -1
+    #     y: 1
+    #     z: 1
+    # test3:
+    #   poles:
+    #     x: 0
+    #     y: 0
+    #     z: 0
+    #   attaches:
+    #     x: -1
+    #     y: 1
+    #     z: 1
+    
