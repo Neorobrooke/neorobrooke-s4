@@ -325,7 +325,6 @@ class Funibot:
         if isinstance(valeur, str):
             raise FuniCommException(valeur)
         return Vecteur(*valeur)
-        # raise NotImplementedError("Pas encore dans la communication")
 
     @pos.setter
     def pos(self, position: Vecteur) -> None:
@@ -336,7 +335,6 @@ class Funibot:
         if isinstance(valeur, str):
             raise FuniCommException(valeur)
         return
-        # raise NotImplementedError("Pas encore dans la communication")
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""
@@ -372,31 +370,33 @@ class Funibot:
            Nécessite une communication série.
         """
 
-        if isinstance(direction, str):
-            direction = Direction(direction=direction)
+        raise NotImplementedError
 
-        if isinstance(direction, Direction):
-            direction = direction.vecteur()
+        # if isinstance(direction, str):
+        #     direction = Direction(direction=direction)
 
-        if distance is not None:
-            # Envoyer un commencer
-            try:
-                yield 0.0
-            except KeyboardInterrupt:
-                pass
+        # if isinstance(direction, Direction):
+        #     direction = direction.vecteur()
 
-            # Attendre fin du déplacement si distance non-nulle
-            try:
-                # Attendre
-                pass
-            except KeyboardInterrupt:
-                pass
+        # if distance is not None:
+        #     # Envoyer un commencer
+        #     try:
+        #         yield 0.0
+        #     except KeyboardInterrupt:
+        #         pass
 
-            # Envoyer un stop
+        #     # Attendre fin du déplacement si distance non-nulle
+        #     try:
+        #         # Attendre
+        #         pass
+        #     except KeyboardInterrupt:
+        #         pass
 
-        else:
-            # Envoyer un déplacement
-            return None
+        #     # Envoyer un stop
+
+        # else:
+        #     # Envoyer un déplacement
+        #     return None
 
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:
