@@ -258,8 +258,8 @@ class Direction:
 class Poteau:
     """Représente un pôle du Funibot"""
 
-    def __init__(self, nom, position_pole: Vecteur = Vecteur(0, 0, 0),\
-        position_accroche: Vecteur = Vecteur(0, 0, 0)) -> None:
+    def __init__(self, nom, position_pole: Vecteur = Vecteur(0, 0, 0),
+                 position_accroche: Vecteur = Vecteur(0, 0, 0)) -> None:
         """Initialise un Poteau pour le Funibot.
            'nom=' est l'identifiant du Poteau
            'position=' est un Vecteur donnant les coordonnées du Poteau.
@@ -268,7 +268,7 @@ class Poteau:
         self.nom = nom
         self.pos_pole = position_pole
         self.pos_acccroche = position_accroche
-        self.pos = position_pole - position_accroche
+        self.pos_resultante = position_pole - position_accroche
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
@@ -277,11 +277,11 @@ class Poteau:
         self.id = id
         self.serial = comm_serie
         self.serial.pot(type=FuniType.SET, id=self.id,
-                        position=self.pos.vers_tuple())
+                        position=self.pos_resultante.vers_tuple())
 
     def __repr__(self) -> str:
         """Représente le Poteau sous la forme Poteau[nom](x;y;z)"""
-        return f"Poteau[{self.nom}]{self.pos}"
+        return f"Poteau[{self.nom}]{self.pos_pole}{self.pos_acccroche}"
 
     @property
     def longueur_cable(self) -> float:
@@ -414,7 +414,8 @@ class Funibot:
         self.poteaux_id = []
         for poteau in self.poteaux.values():
             try:
-                poteau.init_poteau(id=len(self.poteaux_id, comm_serie=self.serial))
+                poteau.init_poteau(
+                    id=len(self.poteaux_id, comm_serie=self.serial))
             except ... as e:
                 print_exc()
                 raise e
