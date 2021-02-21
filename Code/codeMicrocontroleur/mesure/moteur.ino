@@ -8,16 +8,15 @@
 #endif   
 
 #define BAUDRATE  57600
-#define mmprad -4
+#define mmprad -2.387
 
 DynamixelWorkbench dxl_wb;
 
-uint8_t liste_moteurs[4] = {3, 2, 1, 4};
+uint8_t liste_moteurs[4] = {1, 2, 3, 4};
 float position_moteurs[4];
 
 void moteurSetup(uint8_t nbrMoteur)
 {
-  while(!Serial);
     dxl_wb.init(DEVICE_NAME,BAUDRATE);
 
     for (uint8_t i=0; i<nbrMoteur; i++)
@@ -31,11 +30,10 @@ void moteurSetup(uint8_t nbrMoteur)
     }
 }
 
-void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable, int dt)
+void moteurLoop(uint8_t nbrMoteur, double *commande)
 {
   for (uint8_t i=0; i<nbrMoteur; i++)
     {
-      
       float radian;
       dxl_wb.getRadian(liste_moteurs[i], &radian);
       float deplacement = radian - position_moteurs[i];
@@ -44,8 +42,8 @@ void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable, int d
         deplacement -= 2*PI;
       if (deplacement < -PI)
         deplacement += 2*PI;
-      longueurCable[i] += deplacement*mmprad;
-      dxl_wb.goalVelocity(liste_moteurs[i], (float)(vitesse[i]/mmprad));
+      commande[i] -= deplacement;
+      dxl_wb.goalVelocity(liste_moteurs[i], (float)(commande[i]/2.0));
 
     }
 }
