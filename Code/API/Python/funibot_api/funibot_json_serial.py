@@ -136,9 +136,9 @@ class FuniSerial():
         if json["type"] == FuniType.ACK.value:
             return (True, "ack", {})
         try:
-            reponse = self.json_decoder.decode(self.serial.readline().decode("utf8"))
-        except ... as e:
-            print(e)
+            reponse = self.serial.readline()
+            reponse = self.json_decoder.decode(reponse.decode("utf8"))
+        except:
             print_exc()
             return (False, "erreur serial", {})
 
@@ -244,7 +244,11 @@ class FuniSerial():
 
         json["args"] = args
 
-        succes, message, retour = self.envoyer(json)
+        try:
+            succes, message, retour = self.envoyer(json)
+        except:
+            print_exc()
+        
         if not succes:
             return message
         else:

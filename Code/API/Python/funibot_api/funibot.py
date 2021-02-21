@@ -269,6 +269,7 @@ class Poteau:
         self.pos_pole = position_pole
         self.pos_acccroche = position_accroche
         self.pos_resultante = position_pole - position_accroche
+        self.dernier_retour = None
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
@@ -293,17 +294,17 @@ class Poteau:
         raise NotImplementedError("Pas encore codé dans la communication")
 
     @longueur_cable.setter
-    def longueur_cable(self, longueur: float) -> float:
+    def longueur_cable(self, longueur: float) -> None:
         """Initialise la longueur du cable pour ce poteau
            Nécessite une communication série.
         """
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
-            return self.serial.cal(FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
-        except ... as e:
-            print(e)
-            return
+            self.dernier_retour = self.serial.cal(FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
+        except:
+            print_exc()
+            return "Exception"
 
     @property
     def courant_moteur(self) -> float:

@@ -30,6 +30,7 @@ class CLIFunibot(cmd.Cmd):
         except SerialException:
             print("Port série introuvable")
             exit(1)
+
         self.funi_serial = FuniSerial(self.serial)
 
     def initialiser_poteaux(self, poteaux: dict) -> None:
@@ -50,7 +51,11 @@ class CLIFunibot(cmd.Cmd):
                                  position_accroche=Vecteur(ax, ay, az))
             liste_poteaux.append(nouveau_pot)
 
-        self.bot = Funibot(self.funi_serial, liste_poteaux)
+        try:
+            self.bot = Funibot(self.funi_serial, liste_poteaux)
+        except:
+            print(f"Erreur lors de l'initialisation du bot")
+            exit(5)
 
     def do_cable(self, arg: str):
         cables = arg.split(" ")
@@ -61,13 +66,13 @@ class CLIFunibot(cmd.Cmd):
                 print("Doit être une entrée de la forme idpoteau:longueur")
                 return
             try:
-                self.bot.poteaux[cle].longueur_cable = valeur
-            except ... as e:
+                self.bot.poteaux[cle].longueur_cable = float(valeur)
+            except KeyError as e:
                 print(f"Erreur: {e}")
                 return
 
-    # def do_makebot(self, arg):
-    #     self.bot = Funibot(self.funi_serial)
+    def do_dep(self, arg: str):
+        pass
 
     def default(self, _):
         print("ERREUR: Commande inconnue")

@@ -2,8 +2,8 @@
   serial:
     port: COM5
     baudrate: 57600
-  poteaux: # distances en cm
-    moteur3:
+  poteaux: # distances en mm
+    moteur2:
       poles:
         x: 0
         y: 0
@@ -11,16 +11,16 @@
       accroches:
         x: 0
         y: 0
-        z: 7.5
-    moteur2:
+        z: 75
+    moteur3:
       poles:
-        x: 66
+        x: 1170
         y: 0
-        z: 66
+        z: 0
       accroches:
         x: 0
         y: 0
-        z: 7.5
+        z: 75
 ...
     # test2:
     #   poles:
