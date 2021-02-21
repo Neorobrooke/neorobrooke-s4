@@ -6,7 +6,7 @@
 #define BAUDRATE  57600
 
 #define periodeCommunication 500
-#define periodeControle 1100
+#define periodeControle 500
 #define periodeMoteur 100
 #define periodeEncodeur 10
 
@@ -24,7 +24,7 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 15;
+    double vitesse = 30;
     double seuilPosition = 0.5;
     //retour encodeur
     double cable[NBR_CABLES] = {710,790};
@@ -32,7 +32,10 @@ struct aglomerationVariable
     double commandeVitesseCable[NBR_CABLES] = {0};
 
     //communication
-    volatile bool event = false;
+    bool SerialEvent = false;
+
+    //profile accumulatif
+    long timeProfile[6];
 };
 
 //création des variables globales
@@ -41,179 +44,177 @@ aglomerationVariable global;
 //fonctions lancées à chaques périodes
 
 //fonction de communication, communication entre utilisateur et microcontroleur
-void serialEvent(){
-  global.event=true;
-}
 
-void communication()
+
+void mainCommunication()
 {
-    if (global.event)
+    StaticJsonDocument<512> input;
+    deserializeJson(input,Serial);
+
+    String comm = (const char*)input["comm"];
+    if(comm == "pot")
     {
-        StaticJsonDocument<512> input;
-        deserializeJson(input,Serial);
-        global.event = false;
         
-        String comm = (const char*)input["comm"];
-        if(comm == "pot")
+        String type = input["type"];
+        if(type == "get" )
         {
-            
-            String type = input["type"];
-            if(type == "get" )
-            {
-                int id = input["args"]["id"];
-                FuniMath::Vecteur pot = global.bot.getPole(id);
-                //construction de la réponse
-                StaticJsonDocument<512> output;
+            int id = input["args"]["id"];
+            FuniMath::Vecteur pot = global.bot.getPole(id);
+            //construction de la réponse
+            StaticJsonDocument<512> output;
 
-                output["comm"] = "pot";
-                output["type"] = "ack";
+            output["comm"] = "pot";
+            output["type"] = "ack";
 
-                output["args"]["id"] = id;
-                output["args"]["pos_x"] = pot.x;
-                output["args"]["pos_y"] = pot.y;
-                output["args"]["pos_z"] = pot.z;
+            output["args"]["id"] = id;
+            output["args"]["pos_x"] = pot.x;
+            output["args"]["pos_y"] = pot.y;
+            output["args"]["pos_z"] = pot.z;
 
-                //encoie de la réponse
-                serializeJson(output,Serial);
-                Serial.println();
-                
-            }
-            else if(type == "set")
-            {
-                int id = input["args"]["id"];
-                double x = input["args"]["pos_x"];
-                double y = input["args"]["pos_y"];
-                double z = input["args"]["pos_z"];
-
-                if(global.bot.getNbrPole() <= id ) //pole inexistant
-                    global.bot.addPole(FuniMath::Vecteur(x,y,z),FuniMath::Vecteur(0,0,0));
-                else //pole existant
-                    global.bot.setPole(id,FuniMath::Vecteur(x,y,z),FuniMath::Vecteur(0,0,0));
-                //envoie d'une réponse
-                input["args"]["id"] = id;
-                input["type"] = "ack";
-                serializeJson(input,Serial);
-                Serial.println();
-            }
-        }
-        else if (comm == "dep")
-        {
-                String type = (const char*)input["type"];
-                if(type == "set")
-                {
-                    String mode = (const char*)input["args"]["mode"];
-                    if (mode == "stop") 
-                    {
-                        global.regime = 0; //arret
-                        input["type"] = "ack";
-                        serializeJson(input,Serial);
-                        Serial.println();
-                    }
-                    else
-                    {
-                        double x = input["args"]["axe_x"];
-                        double y = input["args"]["axe_y"];
-                        double z = input["args"]["axe_z"];
-                        global.objectif = FuniMath::Vecteur(x,y,z);
-
-                        if(mode == "start")
-                        {
-                            global.regime = 1; //déplacement dans la direction de objectif
-                            input["type"] = "ack";
-                            serializeJson(input,Serial);
-                            Serial.println();
-                        }
-                        else if(mode == "distance")
-                        {
-                            FuniMath::Vecteur position = global.bot.getPosition();
-                            global.objectif = global.objectif + position;
-                            global.regime = 1; //déplacement jusqu'à la position de objectif
-                            input["type"] = "ack";
-                            serializeJson(input,Serial);
-                            Serial.println();
-                        }
-                    }
-                    
-                }
+            //encoie de la réponse
+            serializeJson(output,Serial);
+            Serial.println();
             
         }
-        else if (comm == "pos")
+        else if(type == "set")
         {
-            String type = (const char*)input["type"];
-            if(type == "get")
-            {
-                StaticJsonDocument<1024> output;
-                FuniMath::Vecteur position = global.bot.getPosition();
+            int id = input["args"]["id"];
+            double x = input["args"]["pos_x"];
+            double y = input["args"]["pos_y"];
+            double z = input["args"]["pos_z"];
 
-                output["comm"] = "pos";
-                output["type"] = "ack";
-
-                output["args"]["pos_x"] = position.x;
-                output["args"]["pos_y"] = position.y;
-                output["args"]["pos_z"] = position.z;
-
-                serializeJson(output,Serial);
-                Serial.println();
-            }
-            if(type == "set")
-            {
-                double x = input["args"]["pos_x"];
-                double y = input["args"]["pos_y"];
-                double z = input["args"]["pos_z"];
-                global.objectif = FuniMath::Vecteur(x,y,z);
-                global.regime = 2; //déplacement jusqu'à la position global.objectif
-                //reponse
-                input["type"] = "ack";
-                serializeJson(input,Serial);
-                Serial.println();
-            }
+            if(global.bot.getNbrPole() <= id ) //pole inexistant
+                global.bot.addPole(FuniMath::Vecteur(x,y,z),FuniMath::Vecteur(0,0,0));
+            else //pole existant
+                global.bot.setPole(id,FuniMath::Vecteur(x,y,z),FuniMath::Vecteur(0,0,0));
+            //envoie d'une réponse
+            input["args"]["id"] = id;
+            input["type"] = "ack";
+            serializeJson(input,Serial);
+            Serial.println();
         }
-        else if (comm == "err")
-        {
-            String type = (const char*)input["type"];
-            if(type == "get")
-            {
-                StaticJsonDocument<1024> output;
-                GestionErreurs::Erreur err = global.bot.erreurs.takeFront();
-
-                output["comm"] = "err";
-                output["type"] = "ack";
-
-                output["args"]["id"] = err.id;
-                output["args"]["maj"] = err.majeur;
-                output["args"]["t"] = err.moment;
-                output["args"]["err_sup"] = global.bot.erreurs.size();
-
-                serializeJson(output,Serial);
-                Serial.println();
-            }
-        }
-        else if (comm == "cal")
-        {
+    }
+    else if (comm == "dep")
+    {
             String type = (const char*)input["type"];
             if(type == "set")
             {
                 String mode = (const char*)input["args"]["mode"];
-                if(mode == "cable")
+                if (mode == "stop") 
                 {
-                    int id = input["args"]["id"];
-                    double longueur = input["args"]["long"];
-                    global.bot.setLongueurCable(id,longueur);
-
-                    if(id < NBR_CABLES)
-                    {
-                        global.cable[id] = longueur;
-                    }
-
+                    global.regime = 0; //arret
                     input["type"] = "ack";
-                    input["args"]["id"] = id;
-                    input["args"]["long"] = global.bot.getLongueurCable(id);
                     serializeJson(input,Serial);
                     Serial.println();
                 }
+                else
+                {
+                    double x = input["args"]["axe_x"];
+                    double y = input["args"]["axe_y"];
+                    double z = input["args"]["axe_z"];
+                    global.objectif = FuniMath::Vecteur(x,y,z);
+
+                    if(mode == "start")
+                    {
+                        global.regime = 1; //déplacement dans la direction de objectif
+                        input["type"] = "ack";
+                        serializeJson(input,Serial);
+                        Serial.println();
+                    }
+                    else if(mode == "distance")
+                    {
+                        FuniMath::Vecteur position = global.bot.getPosition();
+                        global.objectif = global.objectif + position;
+                        global.regime = 1; //déplacement jusqu'à la position de objectif
+                        input["type"] = "ack";
+                        serializeJson(input,Serial);
+                        Serial.println();
+                    }
+                }
+                
+            }
+        
+    }
+    else if (comm == "pos")
+    {
+        String type = (const char*)input["type"];
+        if(type == "get")
+        {
+            StaticJsonDocument<1024> output;
+            FuniMath::Vecteur position = global.bot.getPosition();
+
+            output["comm"] = "pos";
+            output["type"] = "ack";
+
+            output["args"]["pos_x"] = position.x;
+            output["args"]["pos_y"] = position.y;
+            output["args"]["pos_z"] = position.z;
+
+            serializeJson(output,Serial);
+            Serial.println();
+        }
+        if(type == "set")
+        {
+            double x = input["args"]["pos_x"];
+            double y = input["args"]["pos_y"];
+            double z = input["args"]["pos_z"];
+            global.objectif = FuniMath::Vecteur(x,y,z);
+            global.regime = 2; //déplacement jusqu'à la position global.objectif
+            //reponse
+            input["type"] = "ack";
+            serializeJson(input,Serial);
+            Serial.println();
+        }
+    }
+    else if (comm == "err")
+    {
+        String type = (const char*)input["type"];
+        if(type == "get")
+        {
+            StaticJsonDocument<1024> output;
+            GestionErreurs::Erreur err = global.bot.erreurs.takeFront();
+
+            output["comm"] = "err";
+            output["type"] = "ack";
+
+            output["args"]["id"] = err.id;
+            output["args"]["maj"] = err.majeur;
+            output["args"]["t"] = err.moment;
+            output["args"]["err_sup"] = global.bot.erreurs.size();
+
+            serializeJson(output,Serial);
+            Serial.println();
+        }
+    }
+    else if (comm == "cal")
+    {
+        String type = (const char*)input["type"];
+        if(type == "set")
+        {
+            String mode = (const char*)input["args"]["mode"];
+            if(mode == "cable")
+            {
+                int id = input["args"]["id"];
+                double longueur = input["args"]["long"];
+                global.bot.setLongueurCable(id,longueur);
+
+                if(id < NBR_CABLES)
+                {
+                    global.cable[id] = longueur;
+                }
+
+                input["type"] = "ack";
+                input["args"]["id"] = id;
+                input["args"]["long"] = global.bot.getLongueurCable(id);
+                serializeJson(input,Serial);
+                Serial.println();
             }
         }
     }
+}
+
+void serialEvent(){
+  mainCommunication();
 }
 
 //fonction de controle, choisie la vitesse des moteurs
@@ -285,7 +286,7 @@ void setup()
     Serial.begin(BAUDRATE);
     //mise en place des poles:
     global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(780,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(1180,0,0),FuniMath::Vecteur(0,0,0));
     
     //enregistrement du temps
     long temps = millis();
@@ -302,11 +303,13 @@ void loop()
 {
     long temps = millis();
     //Fonction de communication
-    if(temps - global.lastCommunication >= periodeCommunication)
+    /*if(global.SerialEvent)
     {
-        communication();
-        global.lastCommunication = temps;
-    }
+         Serial.println(global.SerialEvent);
+        global.SerialEvent = false;
+        mainCommunication();
+        Serial.println(global.SerialEvent);
+    }*/
     //Fonction de contrôle
     if (temps - global.lastControle >= periodeControle)
     {
@@ -325,4 +328,6 @@ void loop()
         moteurs();
         global.lastMoteur = temps;
     }
+
+    
 }
