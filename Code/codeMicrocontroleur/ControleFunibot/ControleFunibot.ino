@@ -6,11 +6,11 @@
 #define BAUDRATE  57600
 
 #define periodeCommunication 500
-#define periodeControle 300
-#define periodeMoteur 50
+#define periodeControle 1100
+#define periodeMoteur 100
 #define periodeEncodeur 10
 
-#define NBR_CABLES 4
+#define NBR_CABLES 2
 
 struct aglomerationVariable
 {
@@ -24,10 +24,10 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 1;
-    double seuilPosition = 1;
+    double vitesse = 7;
+    double seuilPosition = 0.5;
     //retour encodeur
-    double cable[NBR_CABLES] = {0,0,0,0};
+    double cable[NBR_CABLES] = {710,790};
     //commande au moteur
     double commandeVitesseCable[NBR_CABLES] = {0};
 
@@ -51,6 +51,7 @@ void communication()
     {
         StaticJsonDocument<512> input;
         deserializeJson(input,Serial);
+        global.event = false;
         
         String comm = (const char*)input["comm"];
         if(comm == "pot")
@@ -223,6 +224,8 @@ void controle()
     {
         global.bot.setLongueurCable(i,global.cable[i]);
     }
+
+    if(!global.bot.erreurs.empty()) global.regime == 0;
     //en fonction du régime
     switch (global.regime)
 
@@ -266,7 +269,7 @@ void controle()
 //fonction des moteurs, controle les moteurs et s'assure d'obtenir la bonne vitesse
 void moteurs()
 {
-    moteurLoop();
+    moteurLoop(NBR_CABLES,global.commandeVitesseCable,global.cable,periodeMoteur);
 }
 
 //fonction des encodeurs, assure un bon suivie de la longueur des cables
@@ -277,14 +280,12 @@ void encodeurs()
 //setup
 void setup()
 {
+
     //communication série
     Serial.begin(BAUDRATE);
-
     //mise en place des poles:
     global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
-    global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(780,0,0),FuniMath::Vecteur(0,0,0));
     
     //enregistrement du temps
     long temps = millis();
@@ -293,7 +294,7 @@ void setup()
     global.lastControle = temps;
     global.lastEncodeur = temps;
 
-    moteurSetup();
+    moteurSetup(NBR_CABLES);
 }
 
 //loop
