@@ -26,6 +26,7 @@ void moteurSetup(uint8_t nbrMoteur)
       dxl_wb.torqueOff(liste_moteurs[i]);
       dxl_wb.setExtendedPositionControlMode(liste_moteurs[i]);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Velocity", 0);
+      //dxl_wb.setVelocityControlMode(liste_moteurs[i]);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Acceleration", 0);
       dxl_wb.torqueOn(liste_moteurs[i]);
       //dxl_wb.wheelMode(liste_moteurs[i], 1);
@@ -36,8 +37,12 @@ void moteurSetup(uint8_t nbrMoteur)
     }
 }
 
-void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable, int dt)
+void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
 {
+  static long t;
+  long nt = millis();
+  long dt = nt-t;
+  t = nt;
   for (uint8_t i=0; i<nbrMoteur; i++)
     {
       
@@ -50,7 +55,7 @@ void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable, int d
       if (deplacement < -PI)
         deplacement += 2*PI;*/
       longueurCable[i] += deplacement*mmprad;
-      float cible = radian + (vitesse[i]/mmprad)*dt;
+      float cible = radian + (vitesse[i]/mmprad)*((float)dt/1000.f);
       dxl_wb.goalPosition(liste_moteurs[i], cible);
       //dxl_wb.goalVelocity(liste_moteurs[i], (float)(vitesse[i]/mmprad));
 

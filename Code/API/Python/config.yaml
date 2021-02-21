@@ -3,7 +3,7 @@
     port: COM5
     baudrate: 57600
   poteaux: # distances en mm
-    moteur2:
+    moteur1:
       poles:
         x: 0
         y: 0
@@ -12,7 +12,7 @@
         x: -55
         y: 100
         z: 0
-    moteur3:
+    moteur4:
       poles:
         x: 1180
         y: 0

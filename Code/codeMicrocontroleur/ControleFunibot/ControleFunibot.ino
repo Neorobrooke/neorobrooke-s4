@@ -6,7 +6,7 @@
 #define BAUDRATE  57600
 
 #define periodeCommunication 500
-#define periodeControle 500
+#define periodeControle 100
 #define periodeMoteur 100
 #define periodeEncodeur 10
 
@@ -24,7 +24,7 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 30;
+    double vitesse = 200;
     double seuilPosition = 0.5;
     //retour encodeur
     double cable[NBR_CABLES] = {710,790};
@@ -270,7 +270,7 @@ void controle()
 //fonction des moteurs, controle les moteurs et s'assure d'obtenir la bonne vitesse
 void moteurs()
 {
-    moteurLoop(NBR_CABLES,global.commandeVitesseCable,global.cable,periodeMoteur);
+    moteurLoop(NBR_CABLES,global.commandeVitesseCable,global.cable);
 }
 
 //fonction des encodeurs, assure un bon suivie de la longueur des cables
@@ -314,9 +314,10 @@ void loop()
     if (temps - global.lastControle >= periodeControle)
     {
         controle();
+        moteurs();
         global.lastControle = temps;
     }
-    //Fonction des encodeurs
+    /*//Fonction des encodeurs
     if(temps - global.lastEncodeur >= periodeEncodeur)
     {
         encodeurs();
@@ -327,7 +328,7 @@ void loop()
     {
         moteurs();
         global.lastMoteur = temps;
-    }
+    }*/
 
     
 }
