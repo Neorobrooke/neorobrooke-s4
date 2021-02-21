@@ -1,6 +1,6 @@
 ---
   serial:
-    port: COM4
+    port: COM5
     baudrate: 57600
   poteaux: # distances en cm
     moteur3:
@@ -12,7 +12,6 @@
         x: 0
         y: 0
         z: 7.5
-      cable: 32
     moteur2:
       poles:
         x: 66

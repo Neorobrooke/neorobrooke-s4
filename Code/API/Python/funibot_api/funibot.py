@@ -3,11 +3,11 @@ from __future__ import annotations
 from math import sqrt
 from traceback import print_exc
 from numbers import Number
-from typing import ContextManager, ItemsView, Iterator, KeysView, ValuesView, Union
+from typing import ContextManager, ItemsView, Iterator, KeysView, List, ValuesView, Union
 from contextlib import contextmanager
 
 from serial import Serial
-from funibot_api.funibot_json_serial import FuniModeDeplacement, FuniSerial, FuniType
+from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType
 
 
 class FuniCommException(Exception):
@@ -292,6 +292,19 @@ class Poteau:
             raise JamaisInitialise(self, "longueur_cable")
         raise NotImplementedError("Pas encore codé dans la communication")
 
+    @longueur_cable.setter
+    def longueur_cable(self, longueur: float) -> float:
+        """Initialise la longueur du cable pour ce poteau
+           Nécessite une communication série.
+        """
+        if self.id is None or self.serial is None:
+            raise JamaisInitialise(self, "longueur_cable.setter")
+        try:
+            return self.serial.cal(FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
+        except ... as e:
+            print(e)
+            return
+
     @property
     def courant_moteur(self) -> float:
         """Donne le courant actuel du moteur associé à ce poteau
@@ -416,6 +429,13 @@ class Funibot:
     def stop(self) -> None:
         self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
         return None
+
+    def erreur(self) -> Union[None, List[FuniErreur, str]]:
+        try:
+            return self.serial.err(FuniType.GET)
+        except:
+            print_exc()
+            return
 
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:

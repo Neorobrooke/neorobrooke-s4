@@ -1,4 +1,5 @@
 from json import encoder
+from traceback import print_exc
 from benedict import benedict
 from json.decoder import JSONDecoder
 from json.encoder import JSONEncoder
@@ -131,10 +132,15 @@ class FuniSerial():
 
     def envoyer(self, json: dict) -> Tuple[bool, str, dict]:
         """Envoie du json sous forme de dict"""
-        self.serial.write(self.json_encoder.encode(json))
+        self.serial.write(bytes(self.json_encoder.encode(json), encoding='utf8'))
         if json["type"] == FuniType.ACK.value:
             return (True, "ack", {})
-        reponse = self.json_decoder.decode(self.serial.readline())
+        try:
+            reponse = self.json_decoder.decode(self.serial.readline().decode("utf8"))
+        except ... as e:
+            print(e)
+            print_exc()
+            return (False, "erreur serial", {})
 
         if json["type"] == "set" and reponse["type"] == "ack":
             return self._valider_reponse(json_envoye=json, json_recu=reponse)
@@ -276,7 +282,7 @@ class FuniSerial():
         else:
             return (retour["args"]["axe_x"], retour["args"]["axe_y"], retour["args"]["axe_z"])
 
-    def err(self, type: FuniType, code: Union[None, int, eFuniErreur]=None, temps: int=None, err_sup: int=None) -> Tuple[List[eFuniErreur], List[str]]:
+    def err(self, type: FuniType, code: Union[None, int, eFuniErreur]=None, temps: int=None, err_sup: int=None) -> Tuple[List[FuniErreur], List[str]]:
         if not isinstance(type, FuniType):
             raise TypeError("type n'est pas un FuniType")
         if type == FuniType.SET:
