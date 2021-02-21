@@ -8,11 +8,11 @@
 #endif   
 
 #define BAUDRATE  57600
-#define mmprad -4
+#define mmprad -8
 
 DynamixelWorkbench dxl_wb;
 
-uint8_t liste_moteurs[4] = {3, 2, 1, 4};
+uint8_t liste_moteurs[4] = {2, 3, 1, 4};
 float position_moteurs[4];
 
 void moteurSetup(uint8_t nbrMoteur)

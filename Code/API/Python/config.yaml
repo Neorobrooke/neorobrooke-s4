@@ -9,18 +9,18 @@
         y: 0
         z: 0
       accroches:
-        x: 0
-        y: 0
-        z: 75
+        x: -55
+        y: 100
+        z: 0
     moteur3:
       poles:
-        x: 1170
+        x: 1180
         y: 0
         z: 0
       accroches:
-        x: 0
-        y: 0
-        z: 75
+        x: 55
+        y: 100
+        z: 0
 ...
     # test2:
     #   poles:

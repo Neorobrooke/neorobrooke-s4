@@ -11,7 +11,7 @@ import time
 from pprint import pprint
 from pathlib import Path
 
-from funibot_api.funibot import Funibot, Poteau, Vecteur
+from funibot_api.funibot import Direction, Funibot, Poteau, Vecteur
 from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
 
 
@@ -72,7 +72,11 @@ class CLIFunibot(cmd.Cmd):
                 return
 
     def do_dep(self, arg: str):
-        pass
+        direction = Direction(arg)
+        self.bot.deplacer_vers(direction=direction)
+
+    def do_stop(self, _):
+        self.bot.stop()
 
     def default(self, _):
         print("ERREUR: Commande inconnue")
