@@ -12,7 +12,7 @@ Le projet consiste à réaliser un montage et une librairie pour contrôler un r
 La librairie est principalement en langage Arduino.
 Une API pour la librairie sera développée en Python.
 
-# git-fls
+# git-lfs
 Ce répertoir utilise git-lfs pour les fichiers volumineux.
 Installez git-lfs avant de cloner.
 ## Linux
@@ -26,7 +26,8 @@ Ce script crée un environnement virtuel et y installe les dépendances.
 Il faut ensuite activer l'environnement à l'aide d'une commande dépendant du shell utilisé:
 
 Windows (CMD) : `'./.venv/Scripts/activate.bat'`  
-Windows (PowerShell) : `'./.venv/Scripts/Activate.ps1'`  
-Linux/Mac (bash, zsh, etc.) : `source ./.venv/Scripts/activate`
+Windows (PowerShell) : `'./.venv/Scripts/Activate.ps1'` 
+Windows (git-bash) : `source ./.venv/Scripts/activate`
+Linux/Mac (bash, zsh, etc.) : `source ./.venv/bin/activate`
 
 L'environnement doit être réactivé chaque fois qu'on veut exécuter le module ou un autre module ou script qui en dépend.
