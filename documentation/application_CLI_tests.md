@@ -36,6 +36,7 @@
     - La base doit respecter la règle de la main droite
   - L'axe `y` doit être dans le sens opposé à la gravité
     - Il doit donc être vertical orienté vers le haut
+- Paramètre `--mock` pour mocker le port série
 
 ## Menu principal
 - Commande `exit` pour quitter
@@ -50,6 +51,9 @@
   - `[PARTIELLEMENT IMPLÉMENTÉ]` Ne donne que la position des pôles et des attaches, pas la longueur des câbles
   - Peut être utilisé avec un argument pour ne donner les informations que sur un poteau
     - L'argument peut être le nom du poteau ou son ID selon le OpenCR (un entier)
+      - Pour utiliser l'ID selon le OpenCR, ajouter un `:` devant
+      - Exemple: `ls 1` liste le poteau dont le nom est `1` dans le fichier de config
+      - Exemple: `ls :1` liste le poteau dont l'ID est `1` selon le OpenCR
 - Commande `pos` pour afficher la position de la charge
 - Commande `dep` pour déplacer le robot dans une direction simple donnée
   - Pour arrêter le robot, utiliser la commande `stop`
@@ -72,7 +76,7 @@
   - `longueur_i` doit être un nombre réel
   - `nom_poteau_i` doit correspondre à un nom de poteau existant dans le fichier de configuration
 - Commande `go` pour déplacer le robot à une position spécifique
-  - Format: `go x:y:z`, avec `x`, `y` et `z` comme des nombres
+  - Format: `go x:y:z`, avec `x`, `y` et `z` comme des nombres formant un vecteur position, en millimètres
 - Commande `serial` pour envoyer manuellement une commande JSON au robot et afficher sa réponse.
   - Voir le document [sur la documentation série ici.](./communication_serie.md)
 - Commande `err` pour demander et afficher toutes les erreurs générées par le OpenCR, avec un timestamp.

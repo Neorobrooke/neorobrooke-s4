@@ -270,6 +270,7 @@ class Poteau:
         self.pos_acccroche = position_accroche
         self.pos_resultante = position_pole - position_accroche
         self.dernier_retour = None
+        self.id = -1
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
@@ -281,8 +282,12 @@ class Poteau:
                         position=self.pos_resultante.vers_tuple())
 
     def __repr__(self) -> str:
-        """Représente le Poteau sous la forme Poteau[nom](x;y;z)"""
-        return f"Poteau[{self.nom}]{self.pos_pole}{self.pos_acccroche}"
+        """Représente le Poteau sous la forme Poteau[id:nom](px;py;pz)(ax;ay;az)
+           Le vecteur (px;py;pz) représente la position du poteau
+           Le vecteur (ax;ay;az) représente la position de l'attache sur la nacelle par rapport au TCP du robot
+           (Le TCP est le Tool Center Point)
+        """
+        return f"Poteau[{self.id}:{self.nom}]{self.pos_pole}{self.pos_acccroche}"
 
     @property
     def longueur_cable(self) -> float:

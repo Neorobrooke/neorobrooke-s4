@@ -11,24 +11,27 @@ import time
 from pprint import pprint
 from pathlib import Path
 
-from funibot_api.funibot import Direction, Funibot, Poteau, Vecteur
-from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
+from funibot_api.funibot import Direction, FuniCommException, Funibot, Poteau, Vecteur
+from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType, MockSerial
 
 
 class CLIFunibot(cmd.Cmd):
     intro = "Funibot CLI v1.0   ->   Tapez help ou ? pour la liste des commandes.\n"
     prompt = "(Funibot) $ "
 
-    def __init__(self, port: str, baud: int, completekey: str = 'tab', stdin: Any = None, stdout: Any = None) -> None:
+    def __init__(self, port: str, baud: int, mock: bool = False, completekey: str = 'tab', stdin: Any = None, stdout: Any = None) -> None:
         super().__init__(completekey=completekey, stdin=stdin, stdout=stdout)
         print(f"Ouverture du port série [{port}] avec un baudrate de <{baud}>")
         self.port_serie = port
         self.baud_rate = baud
-        try:
-            self.serial = Serial(port=port, baudrate=baud, timeout=10)
-        except SerialException:
-            print("Port série introuvable")
-            exit(1)
+        if not mock:
+            try:
+                self.serial = Serial(port=port, baudrate=baud, timeout=10)
+            except SerialException:
+                print("Port série introuvable")
+                exit(1)
+        else:
+            self.serial = MockSerial()
 
         self.funi_serial = FuniSerial(self.serial)
 
@@ -133,22 +136,67 @@ class CLIFunibot(cmd.Cmd):
         print(str(self.serial.read_all().decode('utf8')))
 
     def do_ls(self, arg):
+        """Liste les poteaux et leurs positions.
+           Format de la commande:
+               'ls'                 -> Affiche tous les poteaux
+               'ls nom_poteau'      -> Affiche seulement un poteau selon son nom dans le fichier de config
+               'ls :id_poteau'      -> Affiche seulement un poteau selon son id entier attribué par le OpenCR
+           Format de la sortie (identique au __repr__ de la classe Poteau du module funibot):
+               Poteau[id:nom](px;py;pz)(ax;ay;az)
+               id est -1 si le poteau n'est pas initialisé au niveau du OpenCR
+               Le vecteur (px;py;pz) représente la position du poteau
+               Le vecteur (ax;ay;az) représente la position de l'attache sur la nacelle par rapport au TCP du robot
+               (Le TCP est le Tool Center Point)
+        """
         if arg == "":
             for poteau in self.bot.values():
                 print(poteau)
-            return
-        
-        try:
-            print(self.bot.poteaux_id[int(arg)])
-        except ValueError:
-            pass
+        elif ':' in arg:
+            _, num = arg.split(':')
+            try:
+                print(self.bot.poteaux_id[int(num)])
+            except ValueError:
+                print(
+                    f"L'index doit être un entier entre 0 et {len(self.liste_poteaux) - 1}")
+                print("Ne pas mettre de ':' pour utiliser l'identifiant du poteau tel qu'indiqué dans le fichier de configuration")
+                return
+            except IndexError:
+                print(
+                    f"Index inconnu, doit être entre 0 et {len(self.liste_poteaux) - 1}")
+                return
         else:
+            try:
+                print(self.bot[arg])
+            except KeyError:
+                print("Identifiant de poteau inconnu.")
+                print(f"Choisir parmi [{', '.join(self.bot.keys())}]")
+                print(f"Préfixer l'argument avec ':' pour utiliser un index de poteau entre 0 et {len(self.liste_poteaux) - 1}")
+
+    def do_go(self, arg: str):
+        """Déplace le robot à la position x:y:z donnée.
+           Format: 'go x:y:z' avec x, y et z les composantes du vecteur position, en mm. 
+           Le vecteur position est dans le même référentiel que les vecteurs dans le fichier de config.
+        """
+        try:
+            px, py, pz = arg.split(":")
+        except ValueError:
+            print("Pas le bon nombre d'arguments, il faut trois nombres sous la forme x:y:z")
             return
         
         try:
-            print(self.bot[arg])
-        except KeyError:
-            print("Identifiant de poteau inconnu")
+            px, py, pz = int(px), int(py), int(pz)
+        except ValueError:
+            print(f"Les arguments doivent être trois nombres -> reçu <{px}:{py}:{pz}>")
+            return
+
+        try:
+            self.bot.pos = Vecteur(px, py, pz)
+        except FuniCommException as e:
+            print_exc()
+
+    def do_cal(self, arg):
+        """[PAS IMPLÉMENTÉ] Calibre automatiquement le Funibot"""
+        print("ERREUR: Pas implémenté")
 
 
 def parse_args() -> Any:
@@ -156,6 +204,8 @@ def parse_args() -> Any:
         prog="funibot_" + os.path.basename(__file__))
     parser.add_argument('-f', required=True,
                         help='Fichier de config yaml à utiliser')
+    parser.add_argument('--mock', action='store_true',
+                        help='Mock le port série si présent')
 
     return parser.parse_args()
 
@@ -177,7 +227,7 @@ if __name__ == '__main__':
         print("Port ou baudrate manquants dans le fichier de config")
         exit(2)
 
-    cli_funibot = CLIFunibot(port=port, baud=baud)
+    cli_funibot = CLIFunibot(port=port, baud=baud, mock=cli_args.mock)
     try:
         cli_funibot.initialiser_poteaux(config["poteaux"])
     except KeyError:

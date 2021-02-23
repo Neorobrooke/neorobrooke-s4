@@ -11,4 +11,4 @@ class TestsPoteau(unittest.TestCase):
         poteau = Poteau(nom="poteau_test",
                         position_pole=position_pole, position_accroche=position_accroche)
         self.assertTrue(poteau.__repr__(
-        ) == "Poteau[poteau_test](10;2;4)(0;0;1)", msg=f"__repr__() donne: {poteau.__repr__()}")
+        ) == "Poteau[-1:poteau_test](10;2;4)(0;0;1)", msg=f"__repr__() donne: {poteau.__repr__()}")

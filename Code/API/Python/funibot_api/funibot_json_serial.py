@@ -113,12 +113,31 @@ class FuniErreur:
 
 class MockSerial:
 
+    def __init__(self):
+        self.reponse = '{"vide"}'
+        self.json_encoder = JSONEncoder()
+        self.json_decoder = JSONDecoder()
+
     def write(self, contenu):
-        print(contenu)
+        print(f"MOCK_RECEIVE -> <{contenu}>")
+        try:
+            self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
+            self.reponse = self.reponse
+        except:
+            print_exc()
+            self.reponse = '{"erreur"}'
+            return
+        
+        try:
+            self.reponse["type"] = "ack"
+        except KeyError:
+            self.reponse = '{"vide"}'
+        else:
+            self.reponse = bytes(self.json_encoder.encode(self.reponse), encoding='utf8')
 
     def readline(self) -> str:
-        ligne = input()
-        return ligne
+        print(f"MOCK_SEND -> <{self.reponse}>")
+        return self.reponse
 
 
 class FuniSerial():
