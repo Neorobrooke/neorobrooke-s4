@@ -26,8 +26,8 @@ Ce script crée un environnement virtuel et y installe les dépendances.
 Il faut ensuite activer l'environnement à l'aide d'une commande dépendant du shell utilisé:
 
 Windows (CMD) : `'./.venv/Scripts/activate.bat'`  
-Windows (PowerShell) : `'./.venv/Scripts/Activate.ps1'` 
-Windows (git-bash) : `source ./.venv/Scripts/activate`
+Windows (PowerShell) : `'./.venv/Scripts/Activate.ps1'`  
+Windows (git-bash) : `source ./.venv/Scripts/activate`  
 Linux/Mac (bash, zsh, etc.) : `source ./.venv/bin/activate`
 
 L'environnement doit être réactivé chaque fois qu'on veut exécuter le module ou un autre module ou script qui en dépend.
