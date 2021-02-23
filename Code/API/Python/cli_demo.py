@@ -110,11 +110,8 @@ class CLIFunibot(cmd.Cmd):
             print(item)
 
     def do_shell(self, arg):
-        """Exécute la """
+        """Exécute la commande dans le shell sous-jacent. S'utilise aussi avec ! suivi de la commande."""
         os.system(arg)
-
-    def do_echo(self, _):
-        print("Test de commande")
 
     def do_clear(self, _):
         """Efface le terminal"""
@@ -125,17 +122,17 @@ class CLIFunibot(cmd.Cmd):
         exit(0)
 
     def do_pos(self, _):
+        """Demande et affiche la position du robot"""
         print(self.bot.pos)
 
     def do_serial(self, arg):
+        """Envoie une commande série directement au OpenCR, et affiche la réponse"""
         self.serial.write(bytes(arg, encoding='utf8'))
         time.sleep(1.2)
         print(str(self.serial.read_all().decode('utf8')))
 
-    def do_load(self, arg):
-        with open("config.yaml", "r") as f:
-            config_file = load(f, Loader=Loader)
-        pprint(config_file)
+    def do_(self, arg):
+        pass
 
 
 def parse_args() -> Any:

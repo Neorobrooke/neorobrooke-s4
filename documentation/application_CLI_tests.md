@@ -1,27 +1,74 @@
 # Commandes de l'application de tests en CLI
 
 ## Initialisation
-- Paramètre "-N" pour une liste de noeuds et leurs coordonnées
-  - Paramètre de la forme suivante: "x1:y1 x2:y2 x3:y3 x4:y4"
-- Paramètre "-p" pour le numéro du port série à utiliser
+- Paramètre "-f" pour le fichier de config à utiliser
+  - Format YAML
+  - Exemple pour deux poteaux nommés `moteur1` et `moteur4`
+  ```yaml
+  ---
+  serial:
+    port: COM5
+    baudrate: 57600
+  poteaux: # distances en mm
+    moteur1:
+      poles:
+        x: 0
+        y: 0
+        z: 0
+      accroches:
+        x: -55
+        y: 100
+        z: 0
+    moteur4:
+      poles:
+        x: 1180
+        y: 0
+        z: 0
+      accroches:
+        x: 55
+        y: 100
+        z: 0
+  ...
+  ```
+  - `poles` est un vecteur position indiquant le dernier contact entre le poteau et le câble
+  - `accroche` est un vecteur indiquant la position de l'attache du câble sur la nacelle, par rapport au TCP (Tool Center Point, le point qu'on cherche à positionner dans l'espace)
+  - Tous les vecteurs doivent être dans la même base vectorielles
+    - La base doit respecter la règle de la main droite
+  - L'axe `y` doit être dans le sens opposé à la gravité
+    - Il doit donc être vertical orienté vers le haut
 
 ## Menu principal
-- Commande "exit" ou "quitter" pour quitter
-- Commande "cal" ou "calibrer" pour calibrer
-- Commande "ls" ou "liste" pour afficher la position des pôles et la longueur des câbles
-- Commande "ll" ou "liste-tout" pour afficher, pour chaque pôle:
-  - Les coordonnées du pôle
-  - La longueur du câble
-  - Le couple du moteur [À VALIDER]
-  - Le courant dans le moteur [À VALIDER]
-  - Autre informations pertinentes [À AJOUTER]
-- Commande "pos" ou "position" pour afficher la position de la charge
-- Commande "dep" ou "deplacer" pour contrôler le robot avec les flèches du clavier
-- Commande "go" ou "aller" pour déplacer le robot à une position spécifique
+- Commande `exit` pour quitter
+- Commande `clear` pour effacer le terminal
+- Commande `stop` pour arrêter tout mouvement du robot
+- Commande `cal` pour calibrer automatiquement [PAS IMPLÉMENTÉ]
+- Commande `ls` pour afficher la position des pôles et la longueur des câbles
+  - [PARTIELLEMENT IMPLÉMENTÉ] Ne donne que la position des pôles et des attaches, pas la longueur des câbles
+- Commande `pos` pour afficher la position de la charge
+- Commande `dep` pour déplacer le robot dans une direction simple donnée
+  - Pour arrêter le robot, utiliser la commande `stop`
+  - Format:
+    - Une châine contenant les caractères `+`, `-`, `x`, `y`, et `z`
+    - x, y, et z sont les mêmes axes que les vecteurs du fichier de config
+    - Une lettre présente sans signe `+` ou `-` en avant est considérée comme `+`
+    - Une lettre absente est considérée comme 0 (pas de déplacement dans cet axe)
+  - Exemples:
+    - `dep xy` -> Déplacement selon le vecteur `(1;1;0)`
+    - `dep -yz` -> Déplacement selon le vecteur `(0;-1;1)`
+    - `dep -xy-z` -> Déplacement selon le vecteur `(-1;1;-1)`
+    - `dep -z` -> Déplacement selon le vecteur `(0;0;-1)`
+- Commande `cable` pour calibrer manuellement selon la longueur des câbles
+  - Requis une seule fois au lancement ou reset de l'OpenCR
+  - Peut être faite en tout temps pour recalibrer le robot
+  - Format:
+    - `cable nom_poteau_1:longueur_1 [nom_poteau_2:longueur_2 ...]`
+    - Un ou plusieurs câbles peuvent être calibrés en une commande
+  - `longueur_i` doit être un nombre réel
+  - `nom_poteau_i` doit correspondre à un nom de poteau existant dans le fichier de configuration
+- Commande `go` pour déplacer le robot à une position spécifique
+- Commande `serial` pour envoyer manuellement une commande JSON au robot et afficher sa réponse.
+  - Voir le document [sur la documentation série ici](./communication_serie.md).
 
 ## Autres actions
- - Ctrl-C pour annuler un déplacement en cours
+ - Ctrl-C pour annuler un déplacement en cours [PAS IMPLÉMENTÉ]
  - Ctrl-C pour quitter si on est au menu principal
- - Flèches pour déplacer en mode 'dep'
- - WASD pour déplacer en mode 'dep'
- - HJKL pour déplacer en mode 'dep'
