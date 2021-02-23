@@ -21,8 +21,7 @@ class CLIFunibot(cmd.Cmd):
 
     def __init__(self, port: str, baud: int, completekey: str = 'tab', stdin: Any = None, stdout: Any = None) -> None:
         super().__init__(completekey=completekey, stdin=stdin, stdout=stdout)
-        print(port)
-        print(baud)
+        print(f"Ouverture du port série [{port}] avec un baudrate de <{baud}>")
         self.port_serie = port
         self.baud_rate = baud
         try:
@@ -50,7 +49,7 @@ class CLIFunibot(cmd.Cmd):
             nouveau_pot = Poteau(nom=key, position_pole=Vecteur(px, py, pz),
                                  position_accroche=Vecteur(ax, ay, az))
             liste_poteaux.append(nouveau_pot)
-
+        self.liste_poteaux = liste_poteaux
         try:
             self.bot = Funibot(self.funi_serial, liste_poteaux)
         except:
@@ -73,12 +72,14 @@ class CLIFunibot(cmd.Cmd):
             except KeyError as e:
                 print(f"Erreur: {e}")
                 return
+            except ValueError:
+                print(f"La longueur doit être un nombre -> reçu [{valeur}]")
 
     def do_dep(self, arg: str):
         """Déplace dans une direction, jusqu'à ce que la commande "stop" soit envoyée
            La direction est du format "*x*y*z", où les étoiles sont des + (par défaut, peuvent être absents) ou des moins
            Pour ignore une direction, ne pas inclure la lettre.
-           
+
            Exemples:
              - Déplacement en x positif:            "x" ou "+x"
              - Déplacement en y négatif:            "-y"
@@ -98,7 +99,7 @@ class CLIFunibot(cmd.Cmd):
     def do_err(self, _):
         """Affiche la liste des erreurs en provenance du OpenCR
            Format -> FuniErreur<timestamp>(M)[code:NOM_ERREUR]
-           
+
            * La partie "(M)" signifie "erreur majeure", et n'est pas affichée pour une erreur mineure
         """
         try:
@@ -131,8 +132,23 @@ class CLIFunibot(cmd.Cmd):
         time.sleep(1.2)
         print(str(self.serial.read_all().decode('utf8')))
 
-    def do_(self, arg):
-        pass
+    def do_ls(self, arg):
+        if arg == "":
+            for poteau in self.bot.values():
+                print(poteau)
+            return
+        
+        try:
+            print(self.bot.poteaux_id[int(arg)])
+        except ValueError:
+            pass
+        else:
+            return
+        
+        try:
+            print(self.bot[arg])
+        except KeyError:
+            print("Identifiant de poteau inconnu")
 
 
 def parse_args() -> Any:

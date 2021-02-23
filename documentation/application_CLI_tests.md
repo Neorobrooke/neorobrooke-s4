@@ -40,10 +40,16 @@
 ## Menu principal
 - Commande `exit` pour quitter
 - Commande `clear` pour effacer le terminal
+- Commande `shell` pour exécuter une commande dans le shell sous-jacent
+  - Utilisable aussi en précédant la commande externe d'un `!`
+- Commande `help` pour avoir de l'information sur une commande
+  - Utilisable aussi en précédant le nom d'une commande d'un `?`
 - Commande `stop` pour arrêter tout mouvement du robot
-- Commande `cal` pour calibrer automatiquement [PAS IMPLÉMENTÉ]
+- Commande `cal` pour calibrer automatiquement `[PAS IMPLÉMENTÉ]`
 - Commande `ls` pour afficher la position des pôles et la longueur des câbles
-  - [PARTIELLEMENT IMPLÉMENTÉ] Ne donne que la position des pôles et des attaches, pas la longueur des câbles
+  - `[PARTIELLEMENT IMPLÉMENTÉ]` Ne donne que la position des pôles et des attaches, pas la longueur des câbles
+  - Peut être utilisé avec un argument pour ne donner les informations que sur un poteau
+    - L'argument peut être le nom du poteau ou son ID selon le OpenCR (un entier)
 - Commande `pos` pour afficher la position de la charge
 - Commande `dep` pour déplacer le robot dans une direction simple donnée
   - Pour arrêter le robot, utiliser la commande `stop`
@@ -66,9 +72,12 @@
   - `longueur_i` doit être un nombre réel
   - `nom_poteau_i` doit correspondre à un nom de poteau existant dans le fichier de configuration
 - Commande `go` pour déplacer le robot à une position spécifique
+  - Format: `go x:y:z`, avec `x`, `y` et `z` comme des nombres
 - Commande `serial` pour envoyer manuellement une commande JSON au robot et afficher sa réponse.
-  - Voir le document [sur la documentation série ici](./communication_serie.md).
+  - Voir le document [sur la documentation série ici.](./communication_serie.md)
+- Commande `err` pour demander et afficher toutes les erreurs générées par le OpenCR, avec un timestamp.
+  - Voir le [dictionnaire des erreurs ici.](../Code/positionnement/dictionnaireErreur.txt)
 
 ## Autres actions
- - Ctrl-C pour annuler un déplacement en cours [PAS IMPLÉMENTÉ]
+ - Ctrl-C pour annuler un déplacement en cours `[PAS IMPLÉMENTÉ]`
  - Ctrl-C pour quitter si on est au menu principal
