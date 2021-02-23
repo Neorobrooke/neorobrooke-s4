@@ -10,10 +10,7 @@
 
 Le projet consiste à réaliser un montage et une librairie pour contrôler un robot suspendu par quatre câbles.
 La librairie est principalement en langage Arduino.
-Une API pour la librairie sera développée dans les langages suivants:
-- Python
-- C++
-- C
+Une API pour la librairie sera développée en Python.
 
 # git-fls
 Ce répertoir utilise git-lfs pour les fichiers volumineux.
