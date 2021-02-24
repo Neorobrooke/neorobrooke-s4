@@ -88,8 +88,12 @@ class CLIFunibot(cmd.Cmd):
              - Déplacement en y négatif:            "-y"
              - Déplacement oblique en +x et -y:     "x-y" ou "+x-y"
         """
-        direction = Direction(arg)
-        self.bot.deplacer_vers(direction=direction)
+        try:
+            direction = Direction(arg)
+        except:
+            print(f"La direction spécifiée n'est pas valide. Ne doit contenir que les caractères [{', '.join('+-xyz')}]")
+        else:
+            self.bot.deplacer_vers(direction=direction)
 
     def do_stop(self, _):
         """Arrête le mouvement du robot"""

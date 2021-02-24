@@ -1,25 +1,36 @@
-`serial {"comm": "dep", "type": "set", "args" : {"mode": "start", "axe_y": 20}}`
-serial {"comm": "dep", "type": "set", "args" : {"mode": "start", "axe_y": 20}}
-
-`serial {"comm": "dep", "type": "set", "args" : {"mode": "start", "axe_y": -20}}`
-serial {"comm": "dep", "type": "set", "args" : {"mode": "start", "axe_y": -20}}
-
-`serial {"comm": "dep", "type": "set", "args" : {"mode": "stop"}}`
-serial {"comm": "dep", "type": "set", "args" : {"mode": "stop"}}
-
-`serial {"comm": "dep", "type": "set", "args" : {"pos_x": 700, "pos_y": -662.7}}`
-serial {"comm": "pos", "type": "set", "args" : {"pos_x": 700, "pos_y": -600.7}}
-
-`serial {"comm": "dep", "type": "set", "args" : {"mode": 0}}`
-
-`serial {"comm": "dep", "type": "set", "args" : {"mode": 0}}`
-
-`serial {"comm": "dep", "type": "set", "args" : {"mode": 0}}`
-
-cable moteur2:670 moteur3:600
-
-
-{"comm": "cal", "type": "set", "args" : {"mode":"cable","long":570,"id":0}}
-{"comm": "cal", "type": "set", "args" : {"mode":"cable","long":750,"id":1}}
-{"comm": "pos", "type": "get", "args" : {"mode":"cable","long":750,"id":1}}
-{"comm": "pos", "type": "set", "args" : {"pos_x": 500, "pos_y": -500}}
+# Calibration
+cable moteur1:705 moteur4:770
+pos
+# Déplacement au centre du cadre
+go 600:-500:0
+pos
+# Déplacement en direction x positif
+dep x
+stop
+# Déplacement en diagonal (x et y négatifs)
+dep -x-y
+# Changement de direction
+dep y
+stop
+clear
+# Déplacement dans un coin
+go 300:-900:0
+pos
+# Phénomène de changement de direction du moteur 1
+go 900:-500:0
+pos
+# Autres commandes: voir la position des poteaux
+ls
+ls moteur1
+ls :1
+# Autres commandes: aide et documentation des commandes
+help
+help go
+# Remonter les erreurs
+dep x
+stop
+err
+clear
+# Autres fonctionnalités: appels systèmes
+!ls -la
+exit
