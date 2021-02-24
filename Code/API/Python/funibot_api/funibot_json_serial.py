@@ -119,7 +119,7 @@ class MockSerial:
         self.json_decoder = JSONDecoder()
 
     def write(self, contenu):
-        print(f"MOCK_RECEIVE -> <{contenu}>")
+        print(f"MOCK_RECEIVE <- <{contenu}>")
         try:
             self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
             self.reponse = self.reponse
