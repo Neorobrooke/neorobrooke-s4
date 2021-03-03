@@ -3,10 +3,9 @@ from __future__ import annotations
 from math import sqrt
 from traceback import print_exc
 from numbers import Number
-from typing import ContextManager, ItemsView, Iterator, KeysView, List, ValuesView, Union
+from typing import Dict, ItemsView, Iterator, KeysView, List, ValuesView, Union, Tuple, Optional
 from contextlib import contextmanager
 
-from serial import Serial
 from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType
 
 
@@ -18,11 +17,13 @@ class FuniCommException(Exception):
 class JamaisInitialise(Exception):
     """Exception pour un poteau jamais initialisé par un Funibot qui essaie de communiquer en série"""
 
-    def __init__(self, poteau: Poteau = None, message=None):
+    def __init__(self, poteau: Poteau = None, message: str = None):
         if poteau is None:
-            poteau = "Ce Poteau"
+            n_poteau: Union[Poteau, str] = "Ce Poteau"
+        else:
+            n_poteau: Union[Poteau, str] = poteau
 
-        self.message = f"{poteau} n'est pas initialisé dans un Funibot et n'a pas de port série"
+        self.message = f"{n_poteau} n'est pas initialisé dans un Funibot et n'a pas de port série"
         if message is not None:
             self.message = f"{self.message} -> Impossible d'accéder à '{message}'"
 
@@ -50,21 +51,21 @@ class Vecteur:
 
         try:
             return Vecteur(self.x + other.x, self.y + other.y, self.z + other.z)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
-    def __iadd__(self, other) -> Vecteur:
+    def __iadd__(self, other: Vecteur) -> None:
         """Permet d'ajouter un autre vecteur à celui-ci"""
         if not isinstance(other, self.__class__):
-            return NotImplemented
+            return NotImplemented # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x += other.x
             self.y += other.y
             self.z += other.z
-        except ... as e:
+        except Exception as e:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -78,21 +79,21 @@ class Vecteur:
 
         try:
             return Vecteur(self.x - other.x, self.y - other.y, self.z - other.z)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
-    def __isub__(self, other) -> Vecteur:
+    def __isub__(self, other) -> None:
         """Permet de soustraire un autre vecteur à celui-ci"""
         if not isinstance(other, self.__class__):
-            return NotImplemented
+            return NotImplemented # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x -= other.x
             self.y -= other.y
             self.z -= other.z
-        except ... as e:
+        except Exception as e:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -106,7 +107,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x * other, self.y * other, self.z * other)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
@@ -114,19 +115,21 @@ class Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
         try:
             return self.__mul__(other)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
-    def __imul__(self, other) -> Vecteur:
+    def __imul__(self, other) -> None:
         """Permet de multiplier ce vecteur par un scalaire"""
+        if not isinstance(other, Number):
+            return NotImplemented # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x *= other
             self.y *= other
             self.z *= other
-        except ... as e:
+        except Exception as e:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -140,19 +143,21 @@ class Vecteur:
 
         try:
             return Vecteur(self.x / other, self.y / other, self.z / other)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
-    def __itruediv__(self, other) -> Vecteur:
+    def __itruediv__(self, other) -> None:
         """Permet de diviser ce vecteur par un scalaire"""
+        if not isinstance(other, Number):
+            return NotImplemented # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x /= other
             self.y /= other
             self.z /= other
-        except ... as e:
+        except Exception as e:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -166,19 +171,21 @@ class Vecteur:
 
         try:
             return Vecteur(self.x // other, self.y // other, self.z // other)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
-    def __ifloordiv__(self, other) -> Vecteur:
+    def __ifloordiv__(self, other) -> None:
         """Permet de diviser (division entière) ce vecteur par un scalaire"""
+        if not isinstance(other, Number):
+            return NotImplemented # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x //= other
             self.y //= other
             self.z //= other
-        except ... as e:
+        except Exception as e:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -190,7 +197,7 @@ class Vecteur:
         """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
-        except ... as e:
+        except Exception as e:
             print_exc()
             raise e
 
@@ -203,7 +210,7 @@ class Vecteur:
             self.x *= longueur/norme
             self.y *= longueur/norme
             self.z *= longueur/norme
-        except ... as e:
+        except Exception as e:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -212,10 +219,10 @@ class Vecteur:
 
     def unitaire(self) -> Vecteur:
         """Retourne le vecteur unitaire ayant la même direction"""
-        norme_vec = self.norme()
+        norme_vec = self.norme
         return Vecteur(self.x / norme_vec, self.y / norme_vec, self.z / norme_vec)
 
-    def vers_tuple(self) -> tuple(float, float, float):
+    def vers_tuple(self) -> Tuple[float, float, float]:
         return (self.x, self.y, self.z)
 
 
@@ -227,7 +234,7 @@ class Direction:
         self.axe_x, self.axe_y, self.axe_z = Direction._parse(direction)
 
     @staticmethod
-    def _parse(direction: str) -> tuple(int):
+    def _parse(direction: str) -> Tuple[int, int, int]:
         """Transforme une string contenant les caractères 'xyz+-' en direction"""
         allowed = "+-xyz"
         if not set(direction).issubset(set(allowed)):
@@ -243,7 +250,7 @@ class Direction:
             else:
                 directions[axe] = 0
 
-        return directions['x'], directions['y'], directions['z']
+        return (directions['x'], directions['y'], directions['z'])
 
     def __repr__(self) -> str:
         """Présente la direction sous la forme Direction(x:X; y:Y; z:Z).
@@ -289,14 +296,37 @@ class Poteau:
         """
         return f"Poteau[{self.id}:{self.nom}]{self.pos_pole}{self.pos_acccroche}"
 
+    def repr_cable(self) -> str:
+        """Représente le Câble associé au Poteau sous la forme Câble[id:nom] -> longueur"""
+        return f"Câble[{self.id}:{self.nom}] -> {self.longueur_cable}"
+
+    def repr_moteur(self) -> str:
+        """Représente le Moteur associé au Poteau sous la forme Moteur[id:nom] -> I: (courant) T: <couple>"""
+        return f"Moteur[{self.id}:{self.nom}] -> I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
+
+    def repr_complet(self) -> str:
+        """Représente le Poteau sous la forme Poteau[id:nom](px;py;pz)(ax;ay;az) -> L: {longueur} I: (courant) T: <couple>
+           Le vecteur (px;py;pz) représente la position du poteau
+           Le vecteur (ax;ay;az) représente la position de l'attache sur la nacelle par rapport au TCP du robot
+           (Le TCP est le Tool Center Point)
+        """
+        return f"{self.__repr__()} -> L: {{{self.longueur_cable}}} I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
+
     @property
-    def longueur_cable(self) -> float:
+    def longueur_cable(self) -> Union[float, str]:
         """Donne la longueur actuelle du câble associé à ce poteau
            Nécessite une communication série.
         """
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable")
-        raise NotImplementedError("Pas encore codé dans la communication")
+        try:
+            self.dernier_retour = self.serial.cal(
+                FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
+        except:
+            print_exc()
+            self.dernier_retour = "Exception"
+        
+        return self.dernier_retour
 
     @longueur_cable.setter
     def longueur_cable(self, longueur: float) -> None:
@@ -306,10 +336,11 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
-            self.dernier_retour = self.serial.cal(FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
+            self.dernier_retour = self.serial.cal(
+                FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
         except:
             print_exc()
-            return "Exception"
+            self.dernier_retour = "Exception"
 
     @property
     def courant_moteur(self) -> float:
@@ -362,11 +393,11 @@ class Funibot:
         """Retourne le poteau ayant le nom demandé"""
         return self.poteaux[nom]
 
-    def keys(self) -> ValuesView:
+    def keys(self) -> KeysView:
         """Retourne une vue sur les clés du dict des poteaux"""
         return self.poteaux.keys()
 
-    def values(self) -> KeysView:
+    def values(self) -> ValuesView[Poteau]:
         """Retourne une vue sur les valeurs du dict des poteaux"""
         return self.poteaux.values()
 
@@ -383,7 +414,7 @@ class Funibot:
         return f"Funibot[{self.serial}]({self.poteaux.values()})"
 
     @contextmanager
-    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None) -> Union[float, None]:
+    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
         """Déplace le Funibot dans la direction indiquée par 'direction'.
            Utilisable comme un contextmanager (avec 'with')
            Si 'distance' n'est pas None, arrête après avoir parcouru 'distance'.
@@ -436,9 +467,10 @@ class Funibot:
         self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
         return None
 
-    def erreur(self) -> Union[None, List[FuniErreur, str]]:
+    def erreur(self) -> Union[None, Tuple[List[FuniErreur], List[str]]]:
         try:
-            return self.serial.err(FuniType.GET)
+            erreurs, messages = self.serial.err(FuniType.GET)
+            return (erreurs, messages)
         except:
             print_exc()
             return
@@ -453,12 +485,12 @@ class Funibot:
 
     def _initialiser_poteaux(self):
         """Donne un ID et assigne l'objet serial à chaque poteau"""
-        self.poteaux_id = []
+        self.poteaux_id: List[Poteau]= []
         for poteau in self.poteaux.values():
             try:
                 poteau.init_poteau(
                     id=len(self.poteaux_id), comm_serie=self.serial)
-            except ... as e:
+            except Exception as e:
                 print_exc()
                 raise e
             self.poteaux_id.append(poteau)

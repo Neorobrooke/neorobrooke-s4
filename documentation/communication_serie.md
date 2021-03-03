@@ -24,10 +24,12 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
 - Choisir un port série pour le système
   - Pas de comande
 - Calibrer le système [À DÉTAILLER]
+  - Calibration manuelle avec le mode `cable` et la longueur des câbles
+  - Utilisation avec `get` et le mode `cable` pour obtenir la longueur des câbles
   ```json
   {
     "comm": "cal",
-    "type": "set | ack",
+    "type": "get | set | ack",
     "args":
     {
       "mode": "cable",

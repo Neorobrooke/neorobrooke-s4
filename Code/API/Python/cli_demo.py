@@ -91,7 +91,8 @@ class CLIFunibot(cmd.Cmd):
         try:
             direction = Direction(arg)
         except:
-            print(f"La direction spécifiée n'est pas valide. Ne doit contenir que les caractères [{', '.join('+-xyz')}]")
+            print(
+                f"La direction spécifiée n'est pas valide. Ne doit contenir que les caractères [{', '.join('+-xyz')}]")
         else:
             self.bot.deplacer_vers(direction=direction)
 
@@ -103,6 +104,9 @@ class CLIFunibot(cmd.Cmd):
         """Appelé pour une commande inconnue"""
         print("ERREUR: Commande inconnue")
 
+    def emptyline(self):
+        pass
+
     def do_err(self, _):
         """Affiche la liste des erreurs en provenance du OpenCR
            Format -> FuniErreur<timestamp>(M)[code:NOM_ERREUR]
@@ -111,11 +115,15 @@ class CLIFunibot(cmd.Cmd):
         """
         try:
             erreurs = self.bot.erreur()
-        except:
+        except Exception as e:
             print_exc()
+            raise e
 
-        for item in erreurs[0]:
-            print(item)
+        if erreurs is not None:
+            for item in erreurs[0]:
+                print(item)
+        else:
+            print("")
 
     def do_shell(self, arg):
         """Exécute la commande dans le shell sous-jacent. S'utilise aussi avec ! suivi de la commande."""
@@ -162,7 +170,8 @@ class CLIFunibot(cmd.Cmd):
             except ValueError:
                 print(
                     f"L'index doit être un entier entre 0 et {len(self.liste_poteaux) - 1}")
-                print("Ne pas mettre de ':' pour utiliser l'identifiant du poteau tel qu'indiqué dans le fichier de configuration")
+                print(
+                    "Ne pas mettre de ':' pour utiliser l'identifiant du poteau tel qu'indiqué dans le fichier de configuration")
                 return
             except IndexError:
                 print(
@@ -174,7 +183,44 @@ class CLIFunibot(cmd.Cmd):
             except KeyError:
                 print("Identifiant de poteau inconnu.")
                 print(f"Choisir parmi [{', '.join(self.bot.keys())}]")
-                print(f"Préfixer l'argument avec ':' pour utiliser un index de poteau entre 0 et {len(self.liste_poteaux) - 1}")
+                print(
+                    f"Préfixer l'argument avec ':' pour utiliser un index de poteau entre 0 et {len(self.liste_poteaux) - 1}")
+
+    def do_len(self, arg):
+        """Affiche la longueur des câbles.
+           Format de la commande:
+               'len'                -> Affiche tous les poteaux
+               'len nom_poteau'     -> Affiche seulement un poteau selon son nom dans le fichier de config
+               'len :id_poteau'     -> Affiche seulement un poteau selon son id entier attribué par le OpenCR
+           Format de la sortie:
+               Câble[id:nom] -> longueur
+               id est -1 si le poteau n'est pas initialisé au niveau du OpenCR
+        """
+        if arg == "":
+            for poteau in self.bot.values():
+                print(poteau.repr_cable())
+        elif ':' in arg:
+            _, num = arg.split(':')
+            try:
+                print(self.bot.poteaux_id[int(num)].repr_cable())
+            except ValueError:
+                print(
+                    f"L'index doit être un entier entre 0 et {len(self.liste_poteaux) - 1}")
+                print(
+                    "Ne pas mettre de ':' pour utiliser l'identifiant du poteau tel qu'indiqué dans le fichier de configuration")
+                return
+            except IndexError:
+                print(
+                    f"Index inconnu, doit être entre 0 et {len(self.liste_poteaux) - 1}")
+                return
+        else:
+            try:
+                print(self.bot[arg].repr_cable())
+            except KeyError:
+                print("Identifiant de poteau inconnu.")
+                print(f"Choisir parmi [{', '.join(self.bot.keys())}]")
+                print(
+                    f"Préfixer l'argument avec ':' pour utiliser un index de poteau entre 0 et {len(self.liste_poteaux) - 1}")
 
     def do_go(self, arg: str):
         """Déplace le robot à la position x:y:z donnée.
@@ -184,13 +230,15 @@ class CLIFunibot(cmd.Cmd):
         try:
             px, py, pz = arg.split(":")
         except ValueError:
-            print("Pas le bon nombre d'arguments, il faut trois nombres sous la forme x:y:z")
+            print(
+                "Pas le bon nombre d'arguments, il faut trois nombres sous la forme x:y:z")
             return
-        
+
         try:
             px, py, pz = int(px), int(py), int(pz)
         except ValueError:
-            print(f"Les arguments doivent être trois nombres -> reçu <{px}:{py}:{pz}>")
+            print(
+                f"Les arguments doivent être trois nombres -> reçu <{px}:{py}:{pz}>")
             return
 
         try:
