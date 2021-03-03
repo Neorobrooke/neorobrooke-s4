@@ -22,6 +22,10 @@
     - Vecteur créé à partir de la str `[À VENIR]`
   - Arrêt avec la méthode `stop`
     - Annule aussi un déplacement avec toute autre manière, dont une assignation à `pos`
+- Accès aux erreurs du Funibot sur le OpenCR sous forme de `list` avec la méthode `erreur`
+  - Retourne un `tuple` contenant deux listes
+    - Une liste des erreurs `FuniErreur`
+    - Une liste des messages `str` sur les erreurs de communication lors de l'obtention des erreurs
 
 ### Classe `Direction`
  - Créé avec 1 à 3 axes, avec + (implicite) ou - pour chacun, peu importe l'ordre
