@@ -47,13 +47,14 @@
   - Utilisable aussi en précédant le nom d'une commande d'un `?`
 - Commande `stop` pour arrêter tout mouvement du robot
 - Commande `cal` pour calibrer automatiquement `[PAS IMPLÉMENTÉ]`
-- Commande `ls` pour afficher la position des pôles et la longueur des câbles
-  - `[PARTIELLEMENT IMPLÉMENTÉ]` Ne donne que la position des pôles et des attaches, pas la longueur des câbles
+- Commande `ls` pour afficher la position des pôles
   - Peut être utilisé avec un argument pour ne donner les informations que sur un poteau
     - L'argument peut être le nom du poteau ou son ID selon le OpenCR (un entier)
       - Pour utiliser l'ID selon le OpenCR, ajouter un `:` devant
       - Exemple: `ls 1` liste le poteau dont le nom est `1` dans le fichier de config
       - Exemple: `ls :1` liste le poteau dont l'ID est `1` selon le OpenCR
+- Commande `len` pour afficher la longueur des câbles
+  - Même format que la commande `ls` ci-dessus.
 - Commande `pos` pour afficher la position de la charge
 - Commande `dep` pour déplacer le robot dans une direction simple donnée
   - Pour arrêter le robot, utiliser la commande `stop`
