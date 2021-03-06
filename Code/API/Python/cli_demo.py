@@ -1,5 +1,6 @@
 import cmd
 import os
+from string import digits
 from traceback import print_exc
 from serial import Serial
 from serial.serialutil import SerialException
@@ -95,6 +96,58 @@ class CLIFunibot(cmd.Cmd):
                 f"La direction spécifiée n'est pas valide. Ne doit contenir que les caractères [{', '.join('+-xyz')}]")
         else:
             self.bot.deplacer(direction=direction)
+
+    def do_depv(self, arg: str):
+        """Déplace dans une direction, jusqu'à la longueur du vecteur indiqué
+        La direction est du format "*K1x*K2y*K3z", où les étoiles sont des + (par défaut, peuvent être absents) ou des moins
+        Pour ignore une direction, ne pas inclure la lettre.
+        Les Ki sont des coefficients réels. S'il est absent, est assumé être 1.
+
+        Exemples:
+            - Déplacement en x positif de 12:       "12x" ou "+12x"
+            - Déplacement en y négatif de 1:        "-1y" ou "-y"
+            - Déplacement oblique en +x et -y:      "x-y" ou "+x-y"
+        """
+        try:
+            direction = Direction(arg)
+        except:
+            print(
+                f"La direction spécifiée n'est pas valide. Ne doit contenir que les caractères [{', '.join(f'+-xyz{digits}')}]")
+        else:
+            self.bot.deplacer(direction=direction, distance=0)
+
+    def do_depl(self, arg: str):
+        """Déplace dans une direction, jusqu'à la longueur indiquée
+        La direction est du format "*K1x*K2y*K3z :L", où les étoiles sont des + (par défaut, peuvent être absents) ou des moins
+        Pour ignore une direction, ne pas inclure la lettre.
+        Les Ki sont des coefficients réels. S'il est absent, est assumé être 1.
+        L est la longueur. Si elle est absente, est considérée comme 1.
+        Le vecteur nul peut être obtenu avec la valeur spéciale 0, soit comme direction ou comme longueur.
+
+        Exemples:
+            - Déplacement en x positif de 12:               "x :12" ou "+x :12"
+            - Déplacement en y négatif de 1:                "-y" ou "-y :1"
+            - Déplacement oblique en +x et -y de 213:       "x-y :213" ou "+x-y :213"
+        """
+
+        try:
+            direction, longueur = arg.split(" :")
+        except:
+            print(f"Format inconnu. Doit être de la forme 'direction :longueur'")
+            return
+
+        try:
+            direction = Direction(direction)
+        except:
+            print("La direction spécifiée n'est pas valide. Ne doit contenir que les caractères",
+                  f"[{', '.join(f'+-xyz{digits}')}], dont obligatoirement un caractère parmi [{', '.join(f'xyz0')}]")
+        else:
+            try:
+                longueur = float(longueur)
+            except ValueError:
+                print(f"Erreur: 'longueur' doit être un nombre réel")
+            else:
+                self.bot.deplacer(direction=direction, distance=longueur)
 
     def do_stop(self, _):
         """Arrête le mouvement du robot"""

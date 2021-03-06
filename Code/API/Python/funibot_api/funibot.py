@@ -5,7 +5,6 @@ from traceback import print_exc
 from numbers import Real
 from string import digits
 from typing import Dict, ItemsView, Iterator, KeysView, List, ValuesView, Union, Tuple, Optional
-from contextlib import contextmanager
 
 from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
 
@@ -216,7 +215,10 @@ class Vecteur:
     def unitaire(self) -> Vecteur:
         """Retourne le vecteur unitaire ayant la même direction"""
         norme_vec = self.norme
-        return Vecteur(self.x / norme_vec, self.y / norme_vec, self.z / norme_vec)
+        try:
+            return Vecteur(self.x / norme_vec, self.y / norme_vec, self.z / norme_vec)
+        except ZeroDivisionError:
+            return Vecteur(0, 0, 0)
 
     def vers_tuple(self) -> Tuple[float, float, float]:
         return (self.x, self.y, self.z)
@@ -239,30 +241,38 @@ class Direction:
             raise ValueError(
                 f"'{direction}' contient des caractères qui ne sont pas dans '{allowed}'")
 
+        if direction == '0':
+            return (0, 0, 0)
+
         directions = {}
 
         val = ''
         axes = 'xyz'
-        check_moins = True
+        check_signe = True
         for index in range(len(direction)):
-            if direction[index] in f'-{digits}':
+            if direction[index] in f'+-{digits}':
                 val = f"{val}{direction[index]}"
-                if not check_moins and direction[index] == '-':
-                    raise ValueError("Double moins ou moins pas au début")
-            check_moins = False
+                if not check_signe and direction[index] in '+-':
+                    raise ValueError("Double signe ou signe ailleurs qu'au début")
+            check_signe = False
 
             if direction[index] in axes:
-                if val == '-' or val == '':
+                if val in '+-' or val == '':
                     val = f"{val}1"
                 directions[direction[index]] = float(val)
-                check_moins = True
+                check_signe = True
                 val = ''
 
+        pas_dans_direction = []
         for axe in axes:
             try:
                 directions[axe]
             except KeyError:
+                pas_dans_direction.append(axe)
                 directions[axe] = 0
+
+        if len(pas_dans_direction) == len(axes):
+            raise ValueError("L'argument ne contient aucun axe")
 
         return (directions['x'], directions['y'], directions['z'])
 
