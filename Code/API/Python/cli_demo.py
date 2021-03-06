@@ -94,7 +94,7 @@ class CLIFunibot(cmd.Cmd):
             print(
                 f"La direction spécifiée n'est pas valide. Ne doit contenir que les caractères [{', '.join('+-xyz')}]")
         else:
-            self.bot.deplacer_vers(direction=direction)
+            self.bot.deplacer(direction=direction)
 
     def do_stop(self, _):
         """Arrête le mouvement du robot"""

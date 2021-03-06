@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from math import sqrt
 from traceback import print_exc
-from numbers import Number
+from numbers import Real
+from string import digits
 from typing import Dict, ItemsView, Iterator, KeysView, List, ValuesView, Union, Tuple, Optional
 from contextlib import contextmanager
 
@@ -97,7 +98,7 @@ class Vecteur:
 
     def __mul__(self, other) -> Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
-        if not isinstance(other, Number):
+        if not isinstance(other, Real):
             return NotImplemented
 
         try:
@@ -116,7 +117,7 @@ class Vecteur:
 
     def __imul__(self, other) -> None:
         """Permet de multiplier ce vecteur par un scalaire"""
-        if not isinstance(other, Number):
+        if not isinstance(other, Real):
             return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
@@ -133,7 +134,7 @@ class Vecteur:
 
     def __truediv__(self, other) -> Vecteur:
         """Permet de diviser un vecteur par un scalaire"""
-        if not isinstance(other, Number):
+        if not isinstance(other, Real):
             return NotImplemented
 
         try:
@@ -144,7 +145,7 @@ class Vecteur:
 
     def __itruediv__(self, other) -> None:
         """Permet de diviser ce vecteur par un scalaire"""
-        if not isinstance(other, Number):
+        if not isinstance(other, Real):
             return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
@@ -161,7 +162,7 @@ class Vecteur:
 
     def __floordiv__(self, other) -> Vecteur:
         """Permet de diviser (division entière) un vecteur par un scalaire"""
-        if not isinstance(other, Number):
+        if not isinstance(other, Real):
             return NotImplemented
 
         try:
@@ -172,7 +173,7 @@ class Vecteur:
 
     def __ifloordiv__(self, other) -> None:
         """Permet de diviser (division entière) ce vecteur par un scalaire"""
-        if not isinstance(other, Number):
+        if not isinstance(other, Real):
             return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
@@ -231,18 +232,36 @@ class Direction:
     @staticmethod
     def _parse(direction: str) -> Tuple[int, int, int]:
         """Transforme une string contenant les caractères 'xyz+-' en direction"""
-        allowed = "+-xyz"
+
+        allowed = f"+-xyz{digits}"
+
         if not set(direction).issubset(set(allowed)):
             raise ValueError(
                 f"'{direction}' contient des caractères qui ne sont pas dans '{allowed}'")
+
         directions = {}
-        for axe in 'xyz':
-            if axe in direction:
-                if direction[direction.find(axe) - 1] == '-':
-                    directions[axe] = -1
-                else:
-                    directions[axe] = 1
-            else:
+
+        val = ''
+        axes = 'xyz'
+        check_moins = True
+        for index in range(len(direction)):
+            if direction[index] in f'-{digits}':
+                val = f"{val}{direction[index]}"
+                if not check_moins and direction[index] == '-':
+                    raise ValueError("Double moins ou moins pas au début")
+            check_moins = False
+
+            if direction[index] in axes:
+                if val == '-' or val == '':
+                    val = f"{val}1"
+                directions[direction[index]] = float(val)
+                check_moins = True
+                val = ''
+
+        for axe in axes:
+            try:
+                directions[axe]
+            except KeyError:
                 directions[axe] = 0
 
         return (directions['x'], directions['y'], directions['z'])
@@ -408,53 +427,25 @@ class Funibot:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
         return f"Funibot[{self.serial}]({self.poteaux.values()})"
 
-    @contextmanager
     def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
         """Déplace le Funibot dans la direction indiquée par 'direction'.
-           Utilisable comme un contextmanager (avec 'with')
            Si 'distance' n'est pas None, arrête après avoir parcouru 'distance'.
-           Sinon, arrête à la fin du 'with'.
-           Retourne la durée prévue du déplacement, ou None si aucune distance n'est précisée.
+           Si 'distance' est la valeur spéciale 0, arrête après avoir parcouru la distance correspondant à la norme du vecteur
+           Sinon, arrête avec un appel à 'stop'
            Nécessite une communication série.
         """
-
-        raise NotImplementedError
-
-        # if isinstance(direction, str):
-        #     direction = Direction(direction=direction)
-
-        # if isinstance(direction, Direction):
-        #     direction = direction.vecteur()
-
-        # if distance is not None:
-        #     # Envoyer un commencer
-        #     try:
-        #         yield 0.0
-        #     except KeyboardInterrupt:
-        #         pass
-
-        #     # Attendre fin du déplacement si distance non-nulle
-        #     try:
-        #         # Attendre
-        #         pass
-        #     except KeyboardInterrupt:
-        #         pass
-
-        #     # Envoyer un stop
-
-        # else:
-        #     # Envoyer un déplacement
-        #     return None
-
-    def deplacer_vers(self, direction: Union[Direction, Vecteur, str]) -> Union[float, None]:
-        """Commence un déplacement dans une certaine direction"""
         if isinstance(direction, str):
             direction = Direction(direction=direction)
 
         if isinstance(direction, Direction):
             direction = direction.vecteur()
 
-        self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.START,
+        mode = FuniModeDeplacement.START if distance is None else FuniModeDeplacement.DISTANCE
+
+        if distance is not None and distance != 0:
+            direction = direction.unitaire() * distance
+
+        self.serial.dep(type=FuniType.SET, mode=mode,
                         direction=direction.vers_tuple())
         return None
 
