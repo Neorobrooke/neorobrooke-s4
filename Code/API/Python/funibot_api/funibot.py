@@ -6,12 +6,7 @@ from numbers import Number
 from typing import Dict, ItemsView, Iterator, KeysView, List, ValuesView, Union, Tuple, Optional
 from contextlib import contextmanager
 
-from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType
-
-
-class FuniCommException(Exception):
-    """Exception lancée lors d'une erreur de communication ou de paramètres"""
-    pass
+from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
 
 
 class JamaisInitialise(Exception):
@@ -58,7 +53,7 @@ class Vecteur:
     def __iadd__(self, other: Vecteur) -> None:
         """Permet d'ajouter un autre vecteur à celui-ci"""
         if not isinstance(other, self.__class__):
-            return NotImplemented # type: ignore
+            return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
@@ -86,7 +81,7 @@ class Vecteur:
     def __isub__(self, other) -> None:
         """Permet de soustraire un autre vecteur à celui-ci"""
         if not isinstance(other, self.__class__):
-            return NotImplemented # type: ignore
+            return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
@@ -122,7 +117,7 @@ class Vecteur:
     def __imul__(self, other) -> None:
         """Permet de multiplier ce vecteur par un scalaire"""
         if not isinstance(other, Number):
-            return NotImplemented # type: ignore
+            return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
@@ -150,7 +145,7 @@ class Vecteur:
     def __itruediv__(self, other) -> None:
         """Permet de diviser ce vecteur par un scalaire"""
         if not isinstance(other, Number):
-            return NotImplemented # type: ignore
+            return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
@@ -178,7 +173,7 @@ class Vecteur:
     def __ifloordiv__(self, other) -> None:
         """Permet de diviser (division entière) ce vecteur par un scalaire"""
         if not isinstance(other, Number):
-            return NotImplemented # type: ignore
+            return NotImplemented  # type: ignore
 
         bckup = (self.x, self.y, self.z)
         try:
@@ -313,7 +308,7 @@ class Poteau:
         return f"{self.__repr__()} -> L: {{{self.longueur_cable}}} I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
 
     @property
-    def longueur_cable(self) -> Union[float, str]:
+    def longueur_cable(self) -> Optional[Union[float, str]]:
         """Donne la longueur actuelle du câble associé à ce poteau
            Nécessite une communication série.
         """
@@ -325,7 +320,7 @@ class Poteau:
         except:
             print_exc()
             self.dernier_retour = "Exception"
-        
+
         return self.dernier_retour
 
     @longueur_cable.setter
@@ -467,13 +462,13 @@ class Funibot:
         self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
         return None
 
-    def erreur(self) -> Union[None, Tuple[List[FuniErreur], List[str]]]:
+    def erreur(self) -> Optional[List[FuniErreur]]:
         try:
-            erreurs, messages = self.serial.err(FuniType.GET)
-            return (erreurs, messages)
+            erreurs = self.serial.err(FuniType.GET)
+            return erreurs
         except:
             print_exc()
-            return
+            return None
 
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:
@@ -485,7 +480,7 @@ class Funibot:
 
     def _initialiser_poteaux(self):
         """Donne un ID et assigne l'objet serial à chaque poteau"""
-        self.poteaux_id: List[Poteau]= []
+        self.poteaux_id: List[Poteau] = []
         for poteau in self.poteaux.values():
             try:
                 poteau.init_poteau(

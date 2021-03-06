@@ -115,12 +115,12 @@ class CLIFunibot(cmd.Cmd):
         """
         try:
             erreurs = self.bot.erreur()
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
         if erreurs is not None:
-            for item in erreurs[0]:
+            for item in erreurs:
                 print(item)
         else:
             print("")
