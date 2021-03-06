@@ -210,6 +210,19 @@ void mainCommunication()
                 Serial.println();
             }
         }
+        else if(type == "get")
+        {
+            String mode = (const char*)input["args"]["mode"];
+            if(mode == "cable")
+            {
+                int id = input["args"]["id"];
+
+                input["type"] = "ack";
+                input["args"]["long"] = global.bot.getLongueurCable(id);
+                serializeJson(input,Serial);
+                Serial.println();
+            }
+        }
     }
 }
 
