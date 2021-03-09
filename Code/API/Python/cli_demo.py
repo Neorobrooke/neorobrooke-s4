@@ -13,7 +13,8 @@ from pprint import pprint
 from pathlib import Path
 
 from funibot_api.funibot import Direction, FuniCommException, Funibot, Poteau, Vecteur
-from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType, MockSerial
+from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
+from funibot_api.tests.mock_opencr import MockType, MockSerial
 
 
 class CLIFunibot(cmd.Cmd):
@@ -32,7 +33,7 @@ class CLIFunibot(cmd.Cmd):
                 print("Port série introuvable")
                 exit(1)
         else:
-            self.serial = MockSerial()
+            self.serial = MockSerial(MockType.CLI)
 
         self.funi_serial = FuniSerial(self.serial)
 
