@@ -21,3 +21,11 @@ class TestsPoteau(unittest.TestCase):
         serial = FuniSerial(mock)
         poteau = Poteau(nom="test_init")
         poteau.init_poteau(12, serial)
+
+
+class TestVecteur(unittest.TestCase):
+
+    def test_repr(self):
+        VecteurTest = Vecteur(3, -2, 7)
+        self.assertTrue(VecteurTest.__repr__() == "(3;-2;7)",
+                        msg=f"__repr__() donne: {VecteurTest.__repr__()}")
