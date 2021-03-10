@@ -1,10 +1,9 @@
 from traceback import print_exc
 from benedict import benedict
-from json.decoder import JSONDecoder, JSONDecodeError
-from json.encoder import JSONEncoder
-from enum import Enum, auto
+from json import JSONDecoder, JSONEncoder, JSONDecodeError
+from enum import Enum
 from typing import Union, Tuple, List, Optional
-from queue import Queue, Empty
+from tests.mock_serial import IMockSerial
 
 from serial import Serial
 
@@ -118,83 +117,6 @@ class FuniErreur:
     def __repr__(self) -> str:
         """Affiche une FuniErreur"""
         return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.erreur.value}:{self.erreur.name}]"
-
-
-class IMockSerial:
-    def write(self, contenu: bytes) -> None: ...
-    def readline(self) -> bytes: ...
-    def read_all(self) -> bytes: ...
-
-
-class MockType(Enum):
-    """Type de Mock série"""
-    CLI = auto,
-    TEST = auto
-
-
-class MockSerial(IMockSerial):
-    """Représente une fausse communication par port série"""
-
-    def __init__(self, type: MockType = MockType.TEST) -> None:
-        """Initialise une réponse vide pour l'objet"""
-        self.reponse = b'{"vide"}'
-        self.buffer = Queue()
-        self.json_encoder = JSONEncoder()
-        self.json_decoder = JSONDecoder()
-        self.is_cli = (type is MockType.CLI)
-
-    def write(self, contenu: bytes) -> None:
-        """Stocke une réponse à un message reçu ou ajoute le message à la queue"""
-        if self.is_cli:
-            print(f"MOCK_RECEIVE <- <{contenu}>")
-
-        try:
-            self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
-        except JSONDecodeError:
-            if self.is_cli:
-                print(f"ERREUR: JSON invalide -> {contenu.decode('utf8')}")
-                self.reponse = b'{"erreur"}'
-                return
-            else:
-                raise
-
-        if self.is_cli:
-            try:
-                self.reponse["type"] = "ack"
-            except KeyError:
-                self.reponse = b'{"vide"}'
-            else:
-                self.reponse = bytes(self.json_encoder.encode(
-                    self.reponse), encoding='utf8')
-        else:
-            self.buffer.put(self.reponse)
-
-    def readline(self) -> bytes:
-        """Envoie la réponse stockée ou envoie le premier message de la queue"""
-        if self.is_cli:
-            print(f"MOCK_SEND -> <{self.reponse}>")
-            return self.reponse
-        else:
-            valeur = self.buffer.get()
-            self.buffer.task_done()
-            return valeur
-
-    def read_all(self) -> bytes:
-        """Envoie la réponse stockée"""
-        if self.is_cli:
-            return self.readline()
-        else:
-            liste = []
-            try:
-                while True:
-                    valeur = self.buffer.get_nowait()
-                    self.buffer.task_done()
-                    liste.append(valeur)
-            except Empty:
-                if len(liste) == 0:
-                    return b'{"vide"}'
-                else:
-                    return b'\n'.join(liste)
 
 
 class FuniSerial():

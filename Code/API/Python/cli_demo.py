@@ -14,7 +14,7 @@ from pathlib import Path
 
 from funibot_api.funibot import Direction, FuniCommException, Funibot, Poteau, Vecteur
 from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
-from funibot_api.tests.mock_opencr import MockType, MockSerial
+from tests.mock_serial import MockSerial, MockType
 
 
 class CLIFunibot(cmd.Cmd):
