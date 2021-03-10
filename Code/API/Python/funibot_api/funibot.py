@@ -39,6 +39,9 @@ class Vecteur:
         """Représentation du vecteur sous la forme (x;y;z)"""
         return f"({self.x};{self.y};{self.z})"
 
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, self.__class__) and self.x == other.x and self.y == other.y and self.z == other.z
+
     def __add__(self, other) -> Vecteur:
         """Permet d'additionner deux vecteurs ensemble"""
         if not isinstance(other, self.__class__):
