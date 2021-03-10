@@ -7,7 +7,11 @@ class TestVecteur(unittest.TestCase):
     def test_repr(self):
         """ Test d'un vecteur pour voir s'il se représente bien"""
         VecteurTest = Vecteur(3,-2,7)
-        self.assertTrue(VecteurTest.__repr__()== "(3;-2;7)",msg=f"__repr__() donne: {VecteurTest.__repr__()}")
+        self.assertTrue(repr(VecteurTest)== "(3;-2;7)",msg=f"__repr__() donne: {VecteurTest.__repr__()}")
     
-    def test_add(self,other):
-        pass
+    def test_add(self):
+        VecteurBase = Vecteur(2,7,-4)
+        VecteurAdd = Vecteur(-7,2,10)
+        self.assertTrue(VecteurBase + VecteurAdd == Vecteur(-5,9,6), msg=f"__add__() donne: {VecteurBase + VecteurAdd}")
+
+        
