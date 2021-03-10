@@ -289,7 +289,7 @@ class Direction:
 class Poteau:
     """Représente un pôle du Funibot"""
 
-    def __init__(self, nom, position_pole: Vecteur = Vecteur(0, 0, 0),
+    def __init__(self, nom: str, position_pole: Vecteur = Vecteur(0, 0, 0),
                  position_accroche: Vecteur = Vecteur(0, 0, 0)) -> None:
         """Initialise un Poteau pour le Funibot.
            'nom=' est l'identifiant du Poteau

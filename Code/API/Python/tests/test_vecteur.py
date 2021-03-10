@@ -9,5 +9,5 @@ class TestVecteur(unittest.TestCase):
         VecteurTest = Vecteur(3,-2,7)
         self.assertTrue(VecteurTest.__repr__()== "(3;-2;7)",msg=f"__repr__() donne: {VecteurTest.__repr__()}")
     
-    def test_add(self,other):
+    def test_add(self):
         pass
