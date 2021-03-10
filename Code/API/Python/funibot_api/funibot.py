@@ -303,8 +303,9 @@ class Poteau:
         self.pos_pole = position_pole
         self.pos_acccroche = position_accroche
         self.pos_resultante = position_pole - position_accroche
-        self.dernier_retour = None
+
         self.id = -1
+        self.serial = None
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
@@ -347,13 +348,11 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable")
         try:
-            self.dernier_retour = self.serial.cal(
+            return self.serial.cal(
                 FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
         except:
             print_exc()
-            self.dernier_retour = "Exception"
-
-        return self.dernier_retour
+            raise
 
     @longueur_cable.setter
     def longueur_cable(self, longueur: float) -> None:
@@ -363,11 +362,11 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
-            self.dernier_retour = self.serial.cal(
+            self.serial.cal(
                 FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
         except:
             print_exc()
-            self.dernier_retour = "Exception"
+            raise
 
     @property
     def courant_moteur(self) -> float:
