@@ -46,9 +46,9 @@ class Vecteur:
 
         try:
             return Vecteur(self.x + other.x, self.y + other.y, self.z + other.z)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     def __iadd__(self, other: Vecteur) -> None:
         """Permet d'ajouter un autre vecteur à celui-ci"""
@@ -60,12 +60,12 @@ class Vecteur:
             self.x += other.x
             self.y += other.y
             self.z += other.z
-        except Exception as e:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
-            raise e
+            raise
 
     def __sub__(self, other) -> Vecteur:
         """Permet de soustraire deux vecteurs l'un de l'autre"""
@@ -74,9 +74,9 @@ class Vecteur:
 
         try:
             return Vecteur(self.x - other.x, self.y - other.y, self.z - other.z)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     def __isub__(self, other) -> None:
         """Permet de soustraire un autre vecteur à celui-ci"""
@@ -88,12 +88,12 @@ class Vecteur:
             self.x -= other.x
             self.y -= other.y
             self.z -= other.z
-        except Exception as e:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
-            raise e
+            raise
 
     def __mul__(self, other) -> Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
@@ -102,17 +102,17 @@ class Vecteur:
 
         try:
             return Vecteur(self.x * other, self.y * other, self.z * other)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     def __rmul__(self, other) -> Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
         try:
             return self.__mul__(other)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     def __imul__(self, other) -> None:
         """Permet de multiplier ce vecteur par un scalaire"""
@@ -124,12 +124,12 @@ class Vecteur:
             self.x *= other
             self.y *= other
             self.z *= other
-        except Exception as e:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
-            raise e
+            raise
 
     def __truediv__(self, other) -> Vecteur:
         """Permet de diviser un vecteur par un scalaire"""
@@ -138,9 +138,9 @@ class Vecteur:
 
         try:
             return Vecteur(self.x / other, self.y / other, self.z / other)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     def __itruediv__(self, other) -> None:
         """Permet de diviser ce vecteur par un scalaire"""
@@ -152,12 +152,12 @@ class Vecteur:
             self.x /= other
             self.y /= other
             self.z /= other
-        except Exception as e:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
-            raise e
+            raise
 
     def __floordiv__(self, other) -> Vecteur:
         """Permet de diviser (division entière) un vecteur par un scalaire"""
@@ -166,9 +166,9 @@ class Vecteur:
 
         try:
             return Vecteur(self.x // other, self.y // other, self.z // other)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     def __ifloordiv__(self, other) -> None:
         """Permet de diviser (division entière) ce vecteur par un scalaire"""
@@ -180,21 +180,21 @@ class Vecteur:
             self.x //= other
             self.y //= other
             self.z //= other
-        except Exception as e:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
-            raise e
+            raise
 
     @property
     def norme(self) -> float:
         """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
-        except Exception as e:
+        except:
             print_exc()
-            raise e
+            raise
 
     @norme.setter
     def norme(self, longueur) -> None:
@@ -205,12 +205,12 @@ class Vecteur:
             self.x *= longueur/norme
             self.y *= longueur/norme
             self.z *= longueur/norme
-        except Exception as e:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
-            raise e
+            raise
 
     def unitaire(self) -> Vecteur:
         """Retourne le vecteur unitaire ayant la même direction"""
