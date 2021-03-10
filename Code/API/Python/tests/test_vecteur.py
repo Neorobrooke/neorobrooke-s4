@@ -12,6 +12,6 @@ class TestVecteur(unittest.TestCase):
     def test_add(self):
         VecteurBase = Vecteur(2,7,-4)
         VecteurAdd = Vecteur(-7,2,10)
-        self.assertTrue(VecteurBase + VecteurAdd)
+        self.assertTrue(VecteurBase + VecteurAdd == Vecteur(-5,9,6), msg=f"__add__() donne: {VecteurBase + VecteurAdd}")
 
         
