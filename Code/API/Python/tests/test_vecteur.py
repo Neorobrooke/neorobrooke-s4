@@ -14,6 +14,9 @@ class TestVecteur(unittest.TestCase):
         VecteurAdd = Vecteur(-7,2,10)
         self.assertTrue(VecteurBase + VecteurAdd == Vecteur(-5,9,6), msg=f"__add__() donne: {VecteurBase + VecteurAdd}")
 
+    def test_add_null(self):
+        self.assertTrue(Vecteur() + Vecteur(2,5,8.5) == Vecteur(2,5,8.5),  msg=f"__add__() donne: {Vecteur() + Vecteur(2,5,8.5)}")
+    
     def test_add_err(self):
         VecteurBase = Vecteur(5,-2,13)
         Reel = 8
