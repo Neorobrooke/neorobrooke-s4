@@ -13,3 +13,9 @@ class TestsPoteau(unittest.TestCase):
                         position_pole=position_pole, position_accroche=position_accroche)
         self.assertTrue(poteau.__repr__(
         ) == "Poteau[-1:poteau_test](10;2;4)(0;0;1)", msg=f"__repr__() donne: {poteau.__repr__()}")
+
+class TestVecteur(unittest.TestCase):
+
+    def test_repr(self):
+        VecteurTest = Vecteur(3,-2,7)
+        self.assertTrue(VecteurTest.__repr__()== "(3;-2;7)",msg=f"__repr__() donne: {VecteurTest.__repr__()}")
