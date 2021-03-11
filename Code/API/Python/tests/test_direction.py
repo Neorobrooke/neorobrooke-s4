@@ -19,5 +19,5 @@ class TestsDirection(unittest.TestCase):
         """ Autres caracteres que xyz """
         
         with self.assertRaises(ValueError, msg="Aucune erreur pour un autre caractères que xyz"):
-            Direction("4a-8y+z")
+            Direction("4x-8y+c")
 
