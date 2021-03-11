@@ -11,13 +11,19 @@ class TestsDirection(unittest.TestCase):
     
     def test_repr_DoubleSigne(self):
         """ Double signe """
-        
         with self.assertRaises(ValueError, msg="Aucune erreur pour un double signe"):
             Direction("4x+-8y+z")
     
     def test_repr_Variables(self):
         """ Autres caracteres que xyz """
-        
         with self.assertRaises(ValueError, msg="Aucune erreur pour un autre caractères que xyz"):
             Direction("4x-8y+c")
+    
+    def test_repr_SansDirection(self):
+        """ Sans caracteres que x ou y ou z """
+        with self.assertRaises(ValueError, msg="Aucune erreur pour valeur sans direction"):
+            Direction("4+4y+4z")
+    
+# deux fois la meme variables genre 4x+4x+y
+# 
 
