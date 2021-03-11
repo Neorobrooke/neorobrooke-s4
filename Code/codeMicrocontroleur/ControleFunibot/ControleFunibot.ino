@@ -2,23 +2,27 @@
 #include <ArduinoJson.h> //nécessite ArduinoJson : arduinojson.org
 #include "Funibot.h"
 #include "moteur.h"
+#include "Encodeur.h"
 
 #define BAUDRATE  57600
 
-#define periodeCommunication 500
 #define periodeControle 100
-#define periodeMoteur 100
-#define periodeEncodeur 10
 
 #define NBR_CABLES 2
 
+
 struct aglomerationVariable
 {
+    //encodeur
+    Encodeur encod [2] = 
+    {
+        Encodeur(3,5),
+        Encodeur(4,6)
+    };
+    const double mmParTic = 0.75071069;
+
     //timers
-    long lastCommunication = 0;
     long lastControle = 0;
-    long lastMoteur = 0;
-    long lastEncodeur = 0;
 
     //robot
     Funibot bot;
@@ -26,8 +30,11 @@ struct aglomerationVariable
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
     double vitesse = 200;
     double seuilPosition = 0.5;
+
     //retour encodeur
     double cable[NBR_CABLES] = {710,790};
+    double offsetCable[NBR_CABLES] = {0,0};
+
     //commande au moteur
     double commandeVitesseCable[NBR_CABLES] = {0};
 
@@ -41,10 +48,14 @@ struct aglomerationVariable
 //création des variables globales
 aglomerationVariable global;
 
-//fonctions lancées à chaques périodes
+//fonction de modification de la taille des cable
+inline void setCable(int id, double taille)
+{
+    global.cable[id] = taille;
+    global.offsetCable[id] = taille - global.encod[id].read() * global.mmParTic;
+}
 
 //fonction de communication, communication entre utilisateur et microcontroleur
-
 
 void mainCommunication()
 {
@@ -200,7 +211,7 @@ void mainCommunication()
 
                 if(id < NBR_CABLES)
                 {
-                    global.cable[id] = longueur;
+                    setCable(id,longueur);
                 }
 
                 input["type"] = "ack";
@@ -289,6 +300,20 @@ void moteurs()
 //fonction des encodeurs, assure un bon suivie de la longueur des cables
 void encodeurs()
 {
+    for(int i = 0; i < NBR_CABLES; i++)
+    {
+        global.cable[i] = global.encod[i].read() * global.mmParTic + global.offsetCable[i];
+    }
+}
+
+//fonctions pour les interrupts des encodeurs
+void interrupt0 ()
+{
+    global.encod[0].interruptFct();
+}
+void interrupt1 ()
+{
+    global.encod[1].interruptFct();
 }
 
 //setup
@@ -303,45 +328,27 @@ void setup()
     
     //enregistrement du temps
     long temps = millis();
-    global.lastCommunication = temps;
-    global.lastMoteur = temps;
     global.lastControle = temps;
-    global.lastEncodeur = temps;
 
-    moteurSetup(NBR_CABLES);
+    //mise en place des interrupts
+    attachInterrupt(global.encod[0].pinInterrupt(),interrupt0, CHANGE);
+    attachInterrupt(global.encod[1].pinInterrupt(),interrupt1, CHANGE);
+
+    //initialisation des moteurs
+    moteurSetup(NBR_CABLES,global.cable);
 }
 
 //loop
 void loop()
 {
     long temps = millis();
-    //Fonction de communication
-    /*if(global.SerialEvent)
-    {
-         Serial.println(global.SerialEvent);
-        global.SerialEvent = false;
-        mainCommunication();
-        Serial.println(global.SerialEvent);
-    }*/
-    //Fonction de contrôle
+
     if (temps - global.lastControle >= periodeControle)
     {
+        encodeurs();
         controle();
         moteurs();
         global.lastControle = temps;
     }
-    /*//Fonction des encodeurs
-    if(temps - global.lastEncodeur >= periodeEncodeur)
-    {
-        encodeurs();
-        global.lastEncodeur = temps;
-    }
-    //Fonction des moteurs
-    if(temps - global.lastMoteur >= periodeControle)
-    {
-        moteurs();
-        global.lastMoteur = temps;
-    }*/
-
     
 }
