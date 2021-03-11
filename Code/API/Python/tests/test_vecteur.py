@@ -36,3 +36,9 @@ class TestVecteur(unittest.TestCase):
         """ Soustraction par un vecteur null"""
         self.assertTrue(Vecteur(2,5,8.5) - Vecteur() == Vecteur(2,5,8.5),  msg=f"__add__() donne: {Vecteur(2,5,8.5)-Vecteur()}")
     
+    def test_sub_err(self):
+        """ Test de soustraction d'un nombre réel à un vecteur"""
+        VecteurBase = Vecteur(5,-2,13)
+        Reel = 8
+        with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
+            VecteurBase - Reel
