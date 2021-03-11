@@ -5,7 +5,7 @@ from funibot_api.funibot import Vecteur
 class TestVecteur(unittest.TestCase):
 
     def test_repr(self):
-        """ Test d'un vecteur pour voir s'il se représente bien"""
+        """Test d'un vecteur pour voir s'il se représente bien"""
         VecteurTest = Vecteur(3,-2,7)
         self.assertTrue(repr(VecteurTest)== "(3;-2;7)",msg=f"__repr__() donne: {VecteurTest.__repr__()}")
     

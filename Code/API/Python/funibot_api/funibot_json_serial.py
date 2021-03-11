@@ -181,6 +181,8 @@ class FuniSerial():
         args = {}
         if not isinstance(id, int):
             raise TypeError("id n'est pas un entier")
+        if id < 0:
+            raise ValueError("id est inférieur à 0")
 
         args["id"] = id
         if type is FuniType.SET:
@@ -217,11 +219,15 @@ class FuniSerial():
         args["mode"] = mode.value
         if not isinstance(id, int):
             raise TypeError("id n'est pas un entier")
+        if id < 0:
+            raise ValueError("id est inférieur à 0")
 
         args["id"] = id
         if type is FuniType.SET:
             if longueur is None:
                 raise ValueError("longueur est None")
+            elif longueur < 0:
+                raise ValueError("longueur est inférieure à zéro")
             args["long"] = longueur
         else:
             args["long"] = None
