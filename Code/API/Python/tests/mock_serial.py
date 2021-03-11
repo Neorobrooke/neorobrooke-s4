@@ -25,6 +25,7 @@ class MockSerial(IMockSerial):
     def __init__(self, type: MockType = MockType.TEST, timeout: float = 2) -> None:
         """Initialise une réponse vide pour l'objet"""
         self.reponse = b'{"vide"}'
+        self.requete = b'{"vide"}'
         self.buffer = Queue()
         self.json_encoder = JSONEncoder()
         self.json_decoder = JSONDecoder()
@@ -35,6 +36,7 @@ class MockSerial(IMockSerial):
         """Stocke une réponse à un message reçu ou ajoute le message à la queue"""
         if self.is_cli:
             print(f"MOCK_RECEIVE <- <{contenu}>")
+            self.requete = contenu
 
             try:
                 self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
