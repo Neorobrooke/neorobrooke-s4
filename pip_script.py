@@ -2,18 +2,16 @@ from sys import platform, executable
 import pathlib
 import os
 
-if platform == 'win32':
-    python_exec = executable.split('\\\\')[-1]
-else:
-    python_exec = executable.split('/')[-1]
+python_exec = pathlib.Path(executable)
+python_exec = f"{python_exec.stem}{python_exec.suffix}"
 
 if not pathlib.Path(".venv").exists():
     os.system(f"{python_exec} -m pip install -U pip")
     os.system(f"{python_exec} -m venv .venv")
 
 if platform == 'win32':
-    python_venv_exec = str(pathlib.Path(".venv/Scripts/python.exe"))
+    python_venv_exec = str(pathlib.Path(f".venv/Scripts/{python_exec}"))
 else:
-    python_venv_exec = str(pathlib.Path(".venv/bin/python"))
+    python_venv_exec = str(pathlib.Path(f".venv/bin/{python_exec}"))
 
 os.system(f"{python_venv_exec} -m pip install -r requirements.txt")
