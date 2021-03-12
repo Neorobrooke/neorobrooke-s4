@@ -25,3 +25,60 @@ class TestVecteur(unittest.TestCase):
         Reel = 8
         with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
             VecteurBase + Reel 
+
+    def test_sub(self):
+        """ Test soustraction de deux vecteurs"""
+        VecteurBase = Vecteur(2,7,-4)
+        VecteurSub = Vecteur(-7,2,10)
+        self.assertTrue(VecteurBase - VecteurSub == Vecteur(9,5,-14), msg=f"__sub__() donne: {VecteurBase - VecteurSub}")
+
+    def test_sub_null(self):
+        """ Soustraction par un vecteur null"""
+        self.assertTrue(Vecteur(2,5,8.5) - Vecteur() == Vecteur(2,5,8.5),  msg=f"__sub__() donne: {Vecteur(2,5,8.5)-Vecteur()}")
+    
+    def test_sub_err(self):
+        """ Test de soustraction d'un nombre réel à un vecteur"""
+        VecteurBase = Vecteur(5,-2,13)
+        Reel = 8
+        with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
+            VecteurBase - Reel
+
+    def test_mul_err(self):
+        """ Test multiplication de deux vecteurs"""
+        VecteurBase = Vecteur(2,7,-4)
+        VecteurMul = Vecteur(-7,2,10)
+        with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
+            VecteurBase * VecteurMul
+
+    def test_mul_null(self):
+        """ Test de multiplication par zéro"""
+        self.assertTrue(Vecteur(2,5,8.5) * 0 == Vecteur(),  msg=f"__mul__() donne: {Vecteur(2,5,8.5)*0}")
+    
+    def test_mul(self):
+        """ Test de multiplication d'un nombre réel à un vecteur"""
+        VecteurBase = Vecteur(5,-2,13)
+        Reel = 8
+        self.assertTrue(VecteurBase * Reel == Vecteur(40,-16,104), msg=f"__mul__() donne: {VecteurBase * Reel}")
+
+    def test_truediv_err(self):
+        """ Test division de deux vecteurs"""
+        VecteurBase = Vecteur(2,7,-4)
+        VecteurMul = Vecteur(-7,2,10)
+        with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
+            VecteurBase / VecteurMul
+
+    def test_truediv_err_0(self):
+        """ Test division par zéro"""
+        VecteurBase = Vecteur(2,7,-4)
+        with self.assertRaises(ZeroDivisionError, msg = f"Aucune erreur n'a été trouvé"):
+            VecteurBase / 0
+
+    def test_truediv_null(self):
+        """ Test de vecteur null"""
+        self.assertTrue(Vecteur() / 9 == Vecteur(),  msg=f"__truediv__() donne: {Vecteur()/9}")
+    
+    def test_truediv(self):
+        """ Test de division d'un nombre réel à un vecteur"""
+        VecteurBase = Vecteur(5,-2,13)
+        Reel = 8
+        self.assertTrue(VecteurBase / Reel == Vecteur(5/8,-1/4,13/8), msg=f"__truediv__() donne: {VecteurBase / Reel}")
