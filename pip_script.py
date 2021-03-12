@@ -1,13 +1,19 @@
-from sys import platform
+from sys import platform, executable
 import pathlib
 import os
 
+if platform == 'win32':
+    python_exec = executable.split('\\\\')[-1]
+else:
+    python_exec = executable.split('/')[-1]
 
 if not pathlib.Path(".venv").exists():
-    os.system("py -m pip install -U pip")
-    os.system("py -m venv .venv")
+    os.system(f"{python_exec} -m pip install -U pip")
+    os.system(f"{python_exec} -m venv .venv")
 
 if platform == 'win32':
-    os.system("\"%cd%/.venv/Scripts/activate.bat\" && py -m pip install -r requirements.txt")
+    python_venv_exec = str(pathlib.Path(".venv/Scripts/python.exe"))
 else:
-    os.system("source .venv/Scripts/activate && py -m pip install -r requirements.txt")
+    python_venv_exec = str(pathlib.Path(".venv/bin/python"))
+
+os.system(f"{python_venv_exec} -m pip install -r requirements.txt")
