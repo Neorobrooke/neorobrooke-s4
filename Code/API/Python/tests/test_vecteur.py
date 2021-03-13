@@ -31,6 +31,18 @@ class TestVecteur(unittest.TestCase):
         v += Vecteur(-7,2,10)
         self.assertTrue(v == Vecteur(-5,9,6), msg = f"Vecteur(2,7,-4) += Vecteur(-7,2,10) donne: {v}")
 
+    def test_iadd_nul(self):
+        """Test d'addition += d'un vecteur nul avec un vecteur ayant des valeurs"""
+        v = Vecteur()
+        v += Vecteur(2,5,8.5)
+        self.assertTrue(v == Vecteur(2,5,8.5),  msg = f"Vecteur() += Vecteur(2,5,8.5) donne: {v}")
+    
+    def test_iadd_entier(self):
+        """Test d'addition += d'un nombre entier à un vecteur"""
+        v = Vecteur(5,-2,13)
+        with self.assertRaises(TypeError, msg = f"L'addition += avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
+            v += 8 
+
     def test_sub(self):
         """Test soustraction de deux vecteurs"""
         self.assertTrue(Vecteur(2,7,-4) - Vecteur(-7,2,10) == Vecteur(9,5,-14), msg = f"Vecteur(2,7,-4) - Vecteur(-7,2,10) donne: {Vecteur(2,7,-4) - Vecteur(-7,2,10)}")
@@ -45,6 +57,24 @@ class TestVecteur(unittest.TestCase):
         scalaire_entier = 8
         with self.assertRaises(TypeError, msg = f"La soustraction avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             vecteur_base - scalaire_entier
+
+    def test_isub(self):
+        """Test de soustraction -= de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        v -= Vecteur(-7,2,10)
+        self.assertTrue(v == Vecteur(9,5,-14), msg = f"Vecteur(2,7,-4) -= Vecteur(-7,2,10) donne: {v}")
+
+    def test_isub_nul(self):
+        """Test de soustraction -= d'un vecteur nul avec un vecteur ayant des valeurs"""
+        v = Vecteur()
+        v -= Vecteur(2,5,8.5)
+        self.assertTrue(v == Vecteur(-2,-5,-8.5),  msg = f"Vecteur() -= Vecteur(2,5,8.5) donne: {v}")
+    
+    def test_isub_entier(self):
+        """Test de soustraction -= d'un nombre entier à un vecteur"""
+        v = Vecteur(5,-2,13)
+        with self.assertRaises(TypeError, msg = f"La soustraction -= avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
+            v -= 8 
 
     def test_mul_vecteur(self):
         """Test multiplication de deux vecteurs"""
