@@ -497,7 +497,7 @@ class Funibot:
             try:
                 poteau.init_poteau(
                     id=len(self.poteaux_id), comm_serie=self.serial)
-            except Exception as e:
+            except Exception:
                 print_exc()
-                raise e
+                raise
             self.poteaux_id.append(poteau)
