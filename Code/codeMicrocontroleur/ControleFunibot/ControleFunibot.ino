@@ -16,10 +16,10 @@ struct aglomerationVariable
     //encodeur
     Encodeur encod [2] = 
     {
-        Encodeur(2,3),
-        Encodeur(4,7)
+        Encodeur(2,A0),
+        Encodeur(4,A1)
     };
-    const double mmParTic = 0.75071069/2;
+    const double mmParTic = 0.75071069;
 
     //timers
     long lastControle = 0;
@@ -32,7 +32,7 @@ struct aglomerationVariable
     double seuilPosition = 0.5;
 
     //retour encodeur
-    double cable[NBR_CABLES] = {710,790};
+    double cable[NBR_CABLES] = {700,710};
     double offsetCable[NBR_CABLES] = {0,0};
 
     //commande au moteur
@@ -306,21 +306,13 @@ void encodeurs()
 }
 
 //fonctions pour les interrupts des encodeurs
-void interrupt01 ()
+void interrupt0 ()
 {
     global.encod[0].interruptFct();
 }
-void interrupt11 ()
+void interrupt1 ()
 {
     global.encod[1].interruptFct();
-}
-void interrupt02 ()
-{
-    global.encod[0].interruptFct2();
-}
-void interrupt12 ()
-{
-    global.encod[1].interruptFct2();
 }
 //setup
 void setup()
@@ -340,10 +332,8 @@ void setup()
     for (int i = 0; i< NBR_CABLES; i++)setCable(i,global.cable[i]);
 
     //mise en place des interrupts
-    attachInterrupt(global.encod[0].pinInterrupt(),interrupt01, CHANGE);
-    attachInterrupt(global.encod[1].pinInterrupt(),interrupt11, CHANGE);
-    attachInterrupt(global.encod[0].pinInterrupt2(),interrupt02, CHANGE);
-    attachInterrupt(global.encod[1].pinInterrupt2(),interrupt12, CHANGE);
+    attachInterrupt(global.encod[0].pinInterrupt(),interrupt0, CHANGE);
+    attachInterrupt(global.encod[1].pinInterrupt(),interrupt1, CHANGE);
 
     //initialisation des moteurs
     moteurSetup(NBR_CABLES,global.cable);

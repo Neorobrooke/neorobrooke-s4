@@ -27,20 +27,14 @@ int Encodeur::pinInterrupt2()
 void Encodeur::interruptFct()
 {
 
-    int pin2_h = digitalReadFast(pin2);
+    int pin2_h = analogRead(pin2)  >= 512;
     int pin1_h = digitalReadFast(pin1);
 
     if (pin1_h ^ pin2_h) {
         valeur ++;
-        Serial.println("+");
-        Serial.println(pin1_h);
-        Serial.println(pin2_h);
     } 
     else {
         valeur --;
-        Serial.println("-");
-        Serial.println(pin1_h);
-        Serial.println(pin2_h);
     }
 }
 
