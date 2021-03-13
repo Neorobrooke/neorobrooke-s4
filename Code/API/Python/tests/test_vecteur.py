@@ -164,3 +164,39 @@ class TestVecteur(unittest.TestCase):
         vecteur_base = Vecteur(5,-2,13)
         scalaire_entier_negatif = -8
         self.assertTrue(vecteur_base / scalaire_entier_negatif == Vecteur(-5/8,1/4,-13/8), msg = f"Vecteur(5,-2,13) / -8 donne: {vecteur_base / scalaire_entier_negatif}")
+
+    def test_itruediv_vecteur(self):
+        """Test division /= de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        with self.assertRaises(TypeError, msg = f"La division /= d'un vecteur par un autre vecteur n'a pas levé d'exception de type TypeError"):
+            v /= Vecteur(-7,2,10)
+
+    def test_itruediv_division_par_zero(self):
+        """Test division /= par zéro"""
+        v = Vecteur(2,7,-4)
+        with self.assertRaises(ZeroDivisionError, msg = f"La division /= d'un vecteur par zéro n'a pas levé d'exception de type ZeroDivisionError"):
+            v /= 0
+
+    def test_itruediv_nul_par_entier(self):
+        """Test divsion /= du vecteur nul par un entier"""
+        v = Vecteur()
+        v /= 9
+        self.assertTrue(v == Vecteur(),  msg = f"Vecteur() /= 9 donne: {v}")
+    
+    def test_itruediv_entier(self):
+        """Test de division /= d'un vecteur par un nombre entier"""
+        v = Vecteur(5,-2,13)
+        v /= 8
+        self.assertTrue(v == Vecteur(5/8,-1/4,13/8), msg = f"Vecteur(5,-2,13) /= 8 donne: {v}")
+
+    def test_itruediv_reel(self):
+        """Test de division /= d'un vecteur par un nombre réel"""
+        v = Vecteur(5,-2,13)
+        v /= 2.5
+        self.assertTrue(v == Vecteur(2,-0.8,5.2), msg = f"Vecteur(5,-2,13) /= 2.5 donne: {v}")
+
+    def test_itruediv_entier_negatif(self):
+        """Test de division /= d'un vecteur par un nombre entier négatif"""
+        v = Vecteur(5,-2,13)
+        v /= -8
+        self.assertTrue(v == Vecteur(-5/8,1/4,-13/8), msg = f"Vecteur(5,-2,13) /= -8 donne: {v}")
