@@ -1,9 +1,9 @@
 from traceback import print_exc
 from benedict import benedict
-from json.decoder import JSONDecoder, JSONDecodeError
-from json.encoder import JSONEncoder
+from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
+from tests.mock_serial import IMockSerial, MockSerial
 
 from serial import Serial
 
@@ -119,51 +119,20 @@ class FuniErreur:
         return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.erreur.value}:{self.erreur.name}]"
 
 
-class MockSerial:
-    """Représente une fausse communication par port série"""
-
-    def __init__(self):
-        """Initialise une réponse vide pour l'objet"""
-        self.reponse = b'{"vide"}'
-        self.json_encoder = JSONEncoder()
-        self.json_decoder = JSONDecoder()
-
-    def write(self, contenu: bytes):
-        """Stocke une réponse à un message reçu"""
-        print(f"MOCK_RECEIVE <- <{contenu}>")
-        try:
-            self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
-        except JSONDecodeError:
-            print(f"ERREUR: JSON invalide -> {contenu.decode('utf8')}")
-            self.reponse = b'{"erreur"}'
-            return
-
-        try:
-            self.reponse["type"] = "ack"
-        except KeyError:
-            self.reponse = b'{"vide"}'
-        else:
-            self.reponse = bytes(self.json_encoder.encode(
-                self.reponse), encoding='utf8')
-
-    def readline(self) -> bytes:
-        """Envoie la réponse stockée"""
-        print(f"MOCK_SEND -> <{self.reponse}>")
-        return self.reponse
-
-    def read_all(self) -> bytes:
-        """Envoie la réponse stockée"""
-        return self.readline()
-
-
 class FuniSerial():
     """Objet Serial possédant des méthodes pour envoyer et recevoir du JSON en lien avec le Funibot"""
 
-    def __init__(self, serial: Union[Serial, MockSerial]):
+    def __init__(self, serial: Union[Serial, IMockSerial]):
         """Initialise le port série"""
         self.serial = serial
         self.json_encoder = JSONEncoder()
         self.json_decoder = JSONDecoder()
+
+    def __repr__(self):
+        if isinstance(self.serial, Serial):
+            return f"{self.serial.portstr}@{self.serial.baudrate}"
+        else:
+            return "Mock"
 
     def envoyer(self, json: dict) -> dict:
         """Envoie du json sous forme de dict"""
@@ -175,7 +144,7 @@ class FuniSerial():
         try:
             reponse = self.serial.readline()
             reponse = self.json_decoder.decode(reponse.decode("utf8"))
-        except:
+        except JSONDecodeError:
             print_exc()
             raise FuniCommException("erreur serial lors du décodage")
 
@@ -218,6 +187,8 @@ class FuniSerial():
         args = {}
         if not isinstance(id, int):
             raise TypeError("id n'est pas un entier")
+        if id < 0:
+            raise ValueError("id est inférieur à 0")
 
         args["id"] = id
         if type is FuniType.SET:
@@ -254,11 +225,15 @@ class FuniSerial():
         args["mode"] = mode.value
         if not isinstance(id, int):
             raise TypeError("id n'est pas un entier")
+        if id < 0:
+            raise ValueError("id est inférieur à 0")
 
         args["id"] = id
         if type is FuniType.SET:
             if longueur is None:
                 raise ValueError("longueur est None")
+            elif longueur < 0:
+                raise ValueError("longueur est inférieure à zéro")
             args["long"] = longueur
         else:
             args["long"] = None

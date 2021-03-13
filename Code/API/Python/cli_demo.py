@@ -13,7 +13,8 @@ from pprint import pprint
 from pathlib import Path
 
 from funibot_api.funibot import Direction, FuniCommException, Funibot, Poteau, Vecteur
-from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType, MockSerial
+from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
+from tests.mock_serial import MockSerial, MockType
 
 
 class CLIFunibot(cmd.Cmd):
@@ -32,7 +33,7 @@ class CLIFunibot(cmd.Cmd):
                 print("Port série introuvable")
                 exit(1)
         else:
-            self.serial = MockSerial()
+            self.serial = MockSerial(MockType.CLI)
 
         self.funi_serial = FuniSerial(self.serial)
 
@@ -309,6 +310,8 @@ def parse_args() -> Any:
         prog="funibot_" + os.path.basename(__file__))
     parser.add_argument('-f', required=True,
                         help='Fichier de config yaml à utiliser')
+    parser.add_argument('-p',
+                        help='Port série à utiliser (a précédence sur celui dans le fichier de config)')
     parser.add_argument('--mock', action='store_true',
                         help='Mock le port série si présent')
 
@@ -324,20 +327,26 @@ if __name__ == '__main__':
         print("Fichier de config non spécifié")
         exit(1)
 
+    if cli_args.p is not None:
+        port = cli_args.p
+    else:
+        try:
+            port = config["serial"]["port"]
+        except KeyError:
+            print("Port manquant dans le fichier de config et non spécifié avec -p")
+            exit(2)
+
     try:
-        port = config["serial"]["port"]
         baud = config["serial"]["baudrate"]
     except KeyError:
-        print_exc()
-        print("Port ou baudrate manquants dans le fichier de config")
-        exit(2)
+        print("Baudrate manquant dans le fichier de config")
+        exit(3)
 
     cli_funibot = CLIFunibot(port=port, baud=baud, mock=cli_args.mock)
     try:
         cli_funibot.initialiser_poteaux(config["poteaux"])
     except KeyError:
-        print_exc()
         print("Dictionnaire des poteaux manquant dans le fichier de config")
-        exit(3)
+        exit(4)
 
     cli_funibot.cmdloop()
