@@ -177,7 +177,7 @@ class FuniSerial():
                     f"{key}: Reçu <{value}>, attendu <{json_envoye_flat[key]}>")
             elif key == "type" and json_envoye_flat[key] not in {"get", "set"}:
                 raise FuniCommException(
-                    f"type: Reçu <{json_envoye_flat[key]}>, attendu <get | set>")
+                    f"type: Envoyé <{json_envoye_flat[key]}>, attendu <get | set>")
 
     def pot(self, type: FuniType, id: int, position: Tuple[float, float, float] = None) -> Optional[Tuple[float, float, float]]:
         """S'occupe de la communication série pour la commande JSON 'pot'"""
@@ -329,7 +329,7 @@ class FuniSerial():
         if type == FuniType.GET:
             args = {}
             args["id"] = 0
-            args["maj"] = False
+            args["maj"] = None
             args["t"] = 0
             args["err_sup"] = 0
         else:
@@ -360,16 +360,18 @@ class FuniSerial():
 
         encore = True
         erreurs = []
+        err_limite = 10
 
         while encore:
             try:
                 retour = self.envoyer(json)
             except FuniCommException:
                 print_exc()
-                continue
-            except serialutil.SerialException:
-                print_exc()
-                break
+                err_limite -= 1
+                if err_limite == 0:
+                    break
+                else:
+                    continue
 
             try:
                 encore = (retour["args"]["err_sup"] > 0)
