@@ -3,17 +3,16 @@ import unittest
 from funibot_api.funibot import Vecteur
 
 class TestVecteur(unittest.TestCase):
+    """ Test sur la classe Vecteur"""
 
     def test_repr(self):
         """Test d'un vecteur pour voir s'il se représente bien"""
-        VecteurTest = Vecteur(3,-2,7)
-        self.assertTrue(repr(VecteurTest)== "(3;-2;7)",msg=f"__repr__() donne: {VecteurTest.__repr__()}")
+        vecteur_test = Vecteur(3,-2,7)
+        self.assertTrue(repr(vecteur_test)== "(3;-2;7)",msg=f"__repr__() donne: {vecteur_test.__repr__()}")
     
     def test_add(self):
         """Test d'addition de deux vecteurs"""
-        VecteurBase = Vecteur(2,7,-4)
-        VecteurAdd = Vecteur(-7,2,10)
-        self.assertTrue(VecteurBase + VecteurAdd == Vecteur(-5,9,6), msg=f"__add__() donne: {VecteurBase + VecteurAdd}")
+        self.assertTrue(Vecteur(2,7,-4) + Vecteur(-7,2,10) == Vecteur(-5,9,6), msg=f"__add__() donne: {Vecteur(2,7,-4) + Vecteur(-7,2,10)}")
 
     def test_add_null(self):
         """Test d'addition d'un vecteur null avec un vecteur ayant des valeurs"""
@@ -21,16 +20,14 @@ class TestVecteur(unittest.TestCase):
     
     def test_add_err(self):
         """Test d'addition d'un nombre réel à un vecteur"""
-        VecteurBase = Vecteur(5,-2,13)
-        Reel = 8
+        vecteur_base = Vecteur(5,-2,13)
+        scalair_reel = 8
         with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
-            VecteurBase + Reel 
+            vecteur_base + scalair_reel 
 
     def test_sub(self):
         """ Test soustraction de deux vecteurs"""
-        VecteurBase = Vecteur(2,7,-4)
-        VecteurSub = Vecteur(-7,2,10)
-        self.assertTrue(VecteurBase - VecteurSub == Vecteur(9,5,-14), msg=f"__sub__() donne: {VecteurBase - VecteurSub}")
+        self.assertTrue(Vecteur(2,7,-4) - Vecteur(-7,2,10) == Vecteur(9,5,-14), msg=f"__sub__() donne: {Vecteur(2,7,-4) - Vecteur(-7,2,10)}")
 
     def test_sub_null(self):
         """ Soustraction par un vecteur null"""
@@ -38,17 +35,15 @@ class TestVecteur(unittest.TestCase):
     
     def test_sub_err(self):
         """ Test de soustraction d'un nombre réel à un vecteur"""
-        VecteurBase = Vecteur(5,-2,13)
-        Reel = 8
+        vecteur_base = Vecteur(5,-2,13)
+        scalair_reel = 8
         with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
-            VecteurBase - Reel
+            vecteur_base - scalair_reel
 
     def test_mul_err(self):
         """ Test multiplication de deux vecteurs"""
-        VecteurBase = Vecteur(2,7,-4)
-        VecteurMul = Vecteur(-7,2,10)
         with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
-            VecteurBase * VecteurMul
+            Vecteur(2,7,-4) * Vecteur(-7,2,10)
 
     def test_mul_null(self):
         """ Test de multiplication par zéro"""
@@ -56,22 +51,19 @@ class TestVecteur(unittest.TestCase):
     
     def test_mul(self):
         """ Test de multiplication d'un nombre réel à un vecteur"""
-        VecteurBase = Vecteur(5,-2,13)
-        Reel = 8
-        self.assertTrue(VecteurBase * Reel == Vecteur(40,-16,104), msg=f"__mul__() donne: {VecteurBase * Reel}")
+        vecteur_base = Vecteur(5,-2,13)
+        scalair_reel = 8
+        self.assertTrue(vecteur_base * scalair_reel == Vecteur(40,-16,104), msg=f"__mul__() donne: {vecteur_base * scalair_reel}")
 
     def test_truediv_err(self):
         """ Test division de deux vecteurs"""
-        VecteurBase = Vecteur(2,7,-4)
-        VecteurMul = Vecteur(-7,2,10)
         with self.assertRaises(TypeError, msg = f"Aucune erreur n'a été trouvé"):
-            VecteurBase / VecteurMul
+            Vecteur(2,7,-4) / Vecteur(-7,2,10)
 
     def test_truediv_err_0(self):
         """ Test division par zéro"""
-        VecteurBase = Vecteur(2,7,-4)
         with self.assertRaises(ZeroDivisionError, msg = f"Aucune erreur n'a été trouvé"):
-            VecteurBase / 0
+            Vecteur(2,7,-4) / 0
 
     def test_truediv_null(self):
         """ Test de vecteur null"""
@@ -79,6 +71,6 @@ class TestVecteur(unittest.TestCase):
     
     def test_truediv(self):
         """ Test de division d'un nombre réel à un vecteur"""
-        VecteurBase = Vecteur(5,-2,13)
-        Reel = 8
-        self.assertTrue(VecteurBase / Reel == Vecteur(5/8,-1/4,13/8), msg=f"__truediv__() donne: {VecteurBase / Reel}")
+        vecteur_base = Vecteur(5,-2,13)
+        scalair_reel = 8
+        self.assertTrue(vecteur_base / scalair_reel == Vecteur(5/8,-1/4,13/8), msg=f"__truediv__() donne: {vecteur_base / scalair_reel}")
