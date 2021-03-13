@@ -31,6 +31,18 @@ class TestVecteur(unittest.TestCase):
         v += Vecteur(-7,2,10)
         self.assertTrue(v == Vecteur(-5,9,6), msg = f"Vecteur(2,7,-4) += Vecteur(-7,2,10) donne: {v}")
 
+    def test_iadd_nul(self):
+        """Test d'addition += d'un vecteur nul avec un vecteur ayant des valeurs"""
+        v = Vecteur()
+        v += Vecteur(2,5,8.5)
+        self.assertTrue(v == Vecteur(2,5,8.5),  msg = f"Vecteur() += Vecteur(2,5,8.5) donne: {v}")
+    
+    def test_iadd_entier(self):
+        """Test d'addition += d'un nombre entier à un vecteur"""
+        v = Vecteur(5,-2,13)
+        with self.assertRaises(TypeError, msg = f"L'addition += avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
+            v += 8 
+
     def test_sub(self):
         """Test soustraction de deux vecteurs"""
         self.assertTrue(Vecteur(2,7,-4) - Vecteur(-7,2,10) == Vecteur(9,5,-14), msg = f"Vecteur(2,7,-4) - Vecteur(-7,2,10) donne: {Vecteur(2,7,-4) - Vecteur(-7,2,10)}")
@@ -45,6 +57,24 @@ class TestVecteur(unittest.TestCase):
         scalaire_entier = 8
         with self.assertRaises(TypeError, msg = f"La soustraction avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             vecteur_base - scalaire_entier
+
+    def test_isub(self):
+        """Test de soustraction -= de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        v -= Vecteur(-7,2,10)
+        self.assertTrue(v == Vecteur(9,5,-14), msg = f"Vecteur(2,7,-4) -= Vecteur(-7,2,10) donne: {v}")
+
+    def test_isub_nul(self):
+        """Test de soustraction -= d'un vecteur nul avec un vecteur ayant des valeurs"""
+        v = Vecteur()
+        v -= Vecteur(2,5,8.5)
+        self.assertTrue(v == Vecteur(-2,-5,-8.5),  msg = f"Vecteur() -= Vecteur(2,5,8.5) donne: {v}")
+    
+    def test_isub_entier(self):
+        """Test de soustraction -= d'un nombre entier à un vecteur"""
+        v = Vecteur(5,-2,13)
+        with self.assertRaises(TypeError, msg = f"La soustraction -= avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
+            v -= 8 
 
     def test_mul_vecteur(self):
         """Test multiplication de deux vecteurs"""
@@ -72,6 +102,36 @@ class TestVecteur(unittest.TestCase):
         vecteur_base = Vecteur(5,-2,13)
         scalaire_entier_negatif = -8
         self.assertTrue(vecteur_base * scalaire_entier_negatif == Vecteur(-40,16,-104), msg = f"Vecteur(5,-2,13) * -8 donne: {vecteur_base * scalaire_entier_negatif}")
+
+    def test_imul_vecteur(self):
+        """Test multiplication *= de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        with self.assertRaises(TypeError, msg = f"La multiplication *= de deux vecteurs n'a pas levé d'exception de type TypeError"):
+            v *= Vecteur(-7,2,10)
+
+    def test_imul_zero(self):
+        """Test de multiplication *= par zéro"""
+        v = Vecteur(2,5,8.5)
+        v *= 0
+        self.assertTrue(v == Vecteur(),  msg = f"Vecteur(2,5,8.5) *= 0 donne: {v}")
+    
+    def test_imul_entier(self):
+        """Test de multiplication *= d'un nombre entier à un vecteur"""
+        v = Vecteur(5,-2,13)
+        v *= 8
+        self.assertTrue(v == Vecteur(40,-16,104), msg = f"Vecteur(5,-2,13) *= 8 donne: {v}")
+
+    def test_imul_reel(self):
+        """Test de multiplication *= d'un nombre réel à un vecteur"""
+        v = Vecteur(5,-2,13)
+        v *= 8.45
+        self.assertTrue(v == Vecteur(42.25,-16.9,109.85), msg = f"Vecteur(5,-2,13) *= 8.45 donne: {v}")
+    
+    def test_imul_entier_negatif(self):
+        """Test de multiplication d'un nombre entier négatif à un vecteur"""
+        v = Vecteur(5,-2,13)
+        v *= -8
+        self.assertTrue(v == Vecteur(-40,16,-104), msg = f"Vecteur(5,-2,13) *= -8 donne: {v}")
 
     def test_truediv_vecteur(self):
         """Test division de deux vecteurs"""
@@ -104,3 +164,39 @@ class TestVecteur(unittest.TestCase):
         vecteur_base = Vecteur(5,-2,13)
         scalaire_entier_negatif = -8
         self.assertTrue(vecteur_base / scalaire_entier_negatif == Vecteur(-5/8,1/4,-13/8), msg = f"Vecteur(5,-2,13) / -8 donne: {vecteur_base / scalaire_entier_negatif}")
+
+    def test_itruediv_vecteur(self):
+        """Test division /= de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        with self.assertRaises(TypeError, msg = f"La division /= d'un vecteur par un autre vecteur n'a pas levé d'exception de type TypeError"):
+            v /= Vecteur(-7,2,10)
+
+    def test_itruediv_division_par_zero(self):
+        """Test division /= par zéro"""
+        v = Vecteur(2,7,-4)
+        with self.assertRaises(ZeroDivisionError, msg = f"La division /= d'un vecteur par zéro n'a pas levé d'exception de type ZeroDivisionError"):
+            v /= 0
+
+    def test_itruediv_nul_par_entier(self):
+        """Test divsion /= du vecteur nul par un entier"""
+        v = Vecteur()
+        v /= 9
+        self.assertTrue(v == Vecteur(),  msg = f"Vecteur() /= 9 donne: {v}")
+    
+    def test_itruediv_entier(self):
+        """Test de division /= d'un vecteur par un nombre entier"""
+        v = Vecteur(5,-2,13)
+        v /= 8
+        self.assertTrue(v == Vecteur(5/8,-1/4,13/8), msg = f"Vecteur(5,-2,13) /= 8 donne: {v}")
+
+    def test_itruediv_reel(self):
+        """Test de division /= d'un vecteur par un nombre réel"""
+        v = Vecteur(5,-2,13)
+        v /= 2.5
+        self.assertTrue(v == Vecteur(2,-0.8,5.2), msg = f"Vecteur(5,-2,13) /= 2.5 donne: {v}")
+
+    def test_itruediv_entier_negatif(self):
+        """Test de division /= d'un vecteur par un nombre entier négatif"""
+        v = Vecteur(5,-2,13)
+        v /= -8
+        self.assertTrue(v == Vecteur(-5/8,1/4,-13/8), msg = f"Vecteur(5,-2,13) /= -8 donne: {v}")
