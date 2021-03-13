@@ -7,7 +7,6 @@ from string import digits
 from typing import Dict, ItemsView, Iterator, KeysView, List, ValuesView, Union, Tuple, Optional
 
 from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
-from tests.test_vecteur import TestVecteur
 
 
 class JamaisInitialise(Exception):
@@ -119,15 +118,7 @@ class Vecteur:
 
     def __rmul__(self, other) -> Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
-<<<<<<< HEAD
         return self * other
-=======
-        try:
-            return self.__mul__(other)
-        except:
-            print_exc()
-            raise
->>>>>>> 241d1b7a978e95830a7f636e61c587d04d097fc0
 
     def __imul__(self, other) -> Vecteur:
         """Permet de multiplier ce vecteur par un scalaire"""
@@ -274,7 +265,8 @@ class Direction:
             if direction[index] in f'+-{digits}':
                 val = f"{val}{direction[index]}"
                 if not check_signe and direction[index] in '+-':
-                    raise ValueError("Double signe ou signe ailleurs qu'au début")
+                    raise ValueError(
+                        "Double signe ou signe ailleurs qu'au début")
             check_signe = False
 
             if direction[index] in axes:
