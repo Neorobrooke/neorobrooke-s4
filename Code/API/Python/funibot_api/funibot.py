@@ -43,7 +43,7 @@ class Vecteur:
         return isinstance(other, self.__class__) and self.x == other.x and self.y == other.y and self.z == other.z
 
     def __ne__(self, other: object) -> bool:
-        return not self.__eq__(other)
+        return not (self == other)
 
     def __add__(self, other) -> Vecteur:
         """Permet d'additionner deux vecteurs ensemble"""
@@ -52,7 +52,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x + other.x, self.y + other.y, self.z + other.z)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -66,7 +66,7 @@ class Vecteur:
             self.x += other.x
             self.y += other.y
             self.z += other.z
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -82,7 +82,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x - other.x, self.y - other.y, self.z - other.z)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -96,7 +96,7 @@ class Vecteur:
             self.x -= other.x
             self.y -= other.y
             self.z -= other.z
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -112,7 +112,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x * other, self.y * other, self.z * other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -130,7 +130,7 @@ class Vecteur:
             self.x *= other
             self.y *= other
             self.z *= other
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -146,7 +146,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x / other, self.y / other, self.z / other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -160,7 +160,7 @@ class Vecteur:
             self.x /= other
             self.y /= other
             self.z /= other
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -176,7 +176,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x // other, self.y // other, self.z // other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -190,7 +190,7 @@ class Vecteur:
             self.x //= other
             self.y //= other
             self.z //= other
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -204,7 +204,7 @@ class Vecteur:
         """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -217,7 +217,7 @@ class Vecteur:
             self.x *= longueur/norme
             self.y *= longueur/norme
             self.z *= longueur/norme
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -302,7 +302,7 @@ class Direction:
 class Poteau:
     """Représente un pôle du Funibot"""
 
-    def __init__(self, nom, position_pole: Vecteur = Vecteur(0, 0, 0),
+    def __init__(self, nom: str, position_pole: Vecteur = Vecteur(0, 0, 0),
                  position_accroche: Vecteur = Vecteur(0, 0, 0)) -> None:
         """Initialise un Poteau pour le Funibot.
            'nom=' est l'identifiant du Poteau
@@ -313,8 +313,8 @@ class Poteau:
         self.pos_pole = position_pole
         self.pos_acccroche = position_accroche
         self.pos_resultante = position_pole - position_accroche
-        self.dernier_retour = None
         self.id = -1
+        self.serial = None
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
@@ -357,13 +357,11 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable")
         try:
-            self.dernier_retour = self.serial.cal(
+            return self.serial.cal(
                 FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
-        except:
+        except Exception:
             print_exc()
-            self.dernier_retour = "Exception"
-
-        return self.dernier_retour
+            raise
 
     @longueur_cable.setter
     def longueur_cable(self, longueur: float) -> None:
@@ -373,11 +371,11 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
-            self.dernier_retour = self.serial.cal(
+            self.serial.cal(
                 FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
-        except:
+        except Exception:
             print_exc()
-            self.dernier_retour = "Exception"
+            raise
 
     @property
     def courant_moteur(self) -> float:
@@ -448,7 +446,7 @@ class Funibot:
 
     def __repr__(self) -> str:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
-        return f"Funibot[{self.serial}]({self.poteaux.values()})"
+        return f"Funibot[{self.serial}]({list(self.poteaux.values())})"
 
     def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
         """Déplace le Funibot dans la direction indiquée par 'direction'.
@@ -480,7 +478,7 @@ class Funibot:
         try:
             erreurs = self.serial.err(FuniType.GET)
             return erreurs
-        except:
+        except Exception:
             print_exc()
             return None
 
