@@ -268,3 +268,12 @@ class TestVecteur(unittest.TestCase):
         v = Vecteur(5,-2,13)
         v //= -1.5
         self.assertTrue(v == Vecteur(-4.0,1.0,-9.0), msg = f"Vecteur(5,-2,13) //= -1.5 donne: {v}")
+
+    def test_unitaire(self):
+        """Test vecteur unitaire"""
+        self.assertTrue(Vecteur(2,-5,3).unitaire() == Vecteur(0.3244428422615251,-0.8111071056538127,0.48666426339228763), msg = f"Le vecteur unitaire de Vecteur(2,-5,3) donne: {Vecteur(2,-5,3).unitaire()}")
+    
+    def test_unitaire_vecteur_nul(self):
+        """Test vecteur unitaire du vecteur nul"""
+        self.assertTrue(Vecteur().unitaire() == Vecteur(), msg = f"Le vecteur unitaire du vecteur nul donne: {Vecteur().unitaire()}")
+            
