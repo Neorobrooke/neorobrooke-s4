@@ -26,7 +26,7 @@ class MockSerial(IMockSerial):
         """Initialise une réponse vide pour l'objet"""
         self.reponse = b'{"vide"}'
         self.requete = b'{"vide"}'
-        self.buffer = Queue()
+        # self.buffer = Queue()
         self.json_encoder = JSONEncoder()
         self.json_decoder = JSONDecoder()
         self.is_cli = (type is MockType.CLI)
@@ -34,57 +34,81 @@ class MockSerial(IMockSerial):
 
     def write(self, contenu: bytes) -> None:
         """Stocke une réponse à un message reçu ou ajoute le message à la queue"""
+        # if self.is_cli:
+        #     print(f"MOCK_RECEIVE <- <{contenu}>")
+        #     self.requete = contenu
+
+        #     try:
+        #         self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
+        #     except JSONDecodeError:
+        #         print(f"ERREUR: JSON invalide -> {contenu.decode('utf8')}")
+        #         self.reponse = b'{"erreur"}'
+        #         return
+            
+        #     try:
+        #         self.reponse["type"] = "ack"
+        #     except KeyError:
+        #         self.reponse = b'{"vide"}'
+        #     else:
+        #         self.reponse = bytes(self.json_encoder.encode(
+        #             self.reponse), encoding='utf8')
+        # else:
+        #     for elem in self.reponse.strip().split(b'\n'):
+        #         self.buffer.put(elem)
+
         if self.is_cli:
             print(f"MOCK_RECEIVE <- <{contenu}>")
-            self.requete = contenu
+        self.requete = contenu
 
-            try:
-                self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
-            except JSONDecodeError:
+        try:
+            self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
+        except JSONDecodeError:
+            if self.is_cli:
                 print(f"ERREUR: JSON invalide -> {contenu.decode('utf8')}")
-                self.reponse = b'{"erreur"}'
-                return
-            
-            try:
-                self.reponse["type"] = "ack"
-            except KeyError:
-                self.reponse = b'{"vide"}'
-            else:
-                self.reponse = bytes(self.json_encoder.encode(
-                    self.reponse), encoding='utf8')
+            self.reponse = b'{"erreur"}'
+            return
+        
+        try:
+            self.reponse["type"] = "ack"
+        except KeyError:
+            self.reponse = b'{"vide"}'
         else:
-            for elem in self.reponse.strip().split(b'\n'):
-                self.buffer.put(elem)
-
+            self.reponse = bytes(self.json_encoder.encode(
+                self.reponse), encoding='utf8')
+        
     def readline(self) -> bytes:
         """Envoie la réponse stockée ou envoie le premier message de la queue"""
+        # if self.is_cli:
+        #     print(f"MOCK_SEND -> <{self.reponse}>")
+        #     return self.reponse
+        # else:
+        #     try:
+        #         valeur = self.buffer.get(timeout=self.timeout)
+        #     except Empty:
+        #         raise
+        #     self.buffer.task_done()
+        #     return valeur
+        
         if self.is_cli:
             print(f"MOCK_SEND -> <{self.reponse}>")
-            return self.reponse
-        else:
-            try:
-                valeur = self.buffer.get(timeout=self.timeout)
-            except Empty:
-                raise
-            self.buffer.task_done()
-            return valeur
+        return self.reponse
 
     def read_all(self) -> bytes:
         """Envoie la réponse stockée"""
-        if self.is_cli:
-            return self.readline()
-        else:
-            liste = []
-            try:
-                while True:
-                    valeur = self.buffer.get_nowait()
-                    self.buffer.task_done()
-                    liste.append(valeur)
-            except Empty:
-                if len(liste) == 0:
-                    return b'{"vide"}'
-                else:
-                    return b'\n'.join(liste)
+        # if self.is_cli:
+        return self.readline()
+        # else:
+        #     liste = []
+        #     try:
+        #         while True:
+        #             valeur = self.buffer.get_nowait()
+        #             self.buffer.task_done()
+        #             liste.append(valeur)
+        #     except Empty:
+        #         if len(liste) == 0:
+        #             return b'{"vide"}'
+        #         else:
+        #             return b'\n'.join(liste)
 
 
 class DualMockSerial(IMockSerial):

@@ -3,7 +3,7 @@ from benedict import benedict
 from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
-from tests.mock_serial import IMockSerial
+from tests.mock_serial import IMockSerial, MockSerial
 
 from serial import Serial
 
@@ -127,6 +127,12 @@ class FuniSerial():
         self.serial = serial
         self.json_encoder = JSONEncoder()
         self.json_decoder = JSONDecoder()
+
+    def __repr__(self):
+        if isinstance(self.serial, Serial):
+            return f"{self.serial.portstr}@{self.serial.baudrate}"
+        else:
+            return "Mock"
 
     def envoyer(self, json: dict) -> dict:
         """Envoie du json sous forme de dict"""

@@ -7,12 +7,14 @@ from tests.mock_serial import DualMockSerial, MockSerial, MockType
 
 
 class TestsPoteau(unittest.TestCase):
+    """Tests sur la classe Poteau de funibot_api"""
 
     def setUp(self) -> None:
-        self.mock = MockSerial(MockType.CLI)
+        """Préparation commune aux différents tests"""
+        self.mock = MockSerial(MockType.TEST)
         self.serial = FuniSerial(self.mock)
 
-        self.emock = MockSerial(MockType.CLI)
+        self.emock = MockSerial(MockType.TEST)
         self.dmock = DualMockSerial(
             canal_lecture=self.mock, canal_ecriture=self.emock)
         self.dserial = FuniSerial(self.dmock)
@@ -164,7 +166,7 @@ class TestsPoteau(unittest.TestCase):
         self.assertEqual(str(re.exception), "longueur est None")
 
     def test_courant_moteur_pas_init(self):
-        """Test d'obtention de longueur du câble avant initialisation"""
+        """Test d'obtention de courant du moteur avant initialisation"""
         poteau = Poteau(nom="test_courant_moteur_pas_init")
 
         with self.assertRaises(JamaisInitialise) as re:
@@ -174,7 +176,7 @@ class TestsPoteau(unittest.TestCase):
             JamaisInitialise(poteau=poteau, message="courant_moteur")))
 
     def test_couple_moteur_pas_init(self):
-        """Test d'obtention de longueur du câble avant initialisation"""
+        """Test d'obtention de couple du moteur avant initialisation"""
         poteau = Poteau(nom="test_courant_moteur_pas_init")
 
         with self.assertRaises(JamaisInitialise) as re:

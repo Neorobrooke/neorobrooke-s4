@@ -437,7 +437,7 @@ class Funibot:
 
     def __repr__(self) -> str:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
-        return f"Funibot[{self.serial}]({self.poteaux.values()})"
+        return f"Funibot[{self.serial}]({list(self.poteaux.values())})"
 
     def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
         """Déplace le Funibot dans la direction indiquée par 'direction'.
