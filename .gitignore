@@ -8,3 +8,4 @@ __pycache__
 googletest
 .coverage
 **/simulation_cpp/src
+htmlcov
