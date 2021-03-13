@@ -103,6 +103,36 @@ class TestVecteur(unittest.TestCase):
         scalaire_entier_negatif = -8
         self.assertTrue(vecteur_base * scalaire_entier_negatif == Vecteur(-40,16,-104), msg = f"Vecteur(5,-2,13) * -8 donne: {vecteur_base * scalaire_entier_negatif}")
 
+    def test_imul_vecteur(self):
+        """Test multiplication *= de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        with self.assertRaises(TypeError, msg = f"La multiplication *= de deux vecteurs n'a pas levé d'exception de type TypeError"):
+            v *= Vecteur(-7,2,10)
+
+    def test_imul_zero(self):
+        """Test de multiplication *= par zéro"""
+        v = Vecteur(2,5,8.5)
+        v *= 0
+        self.assertTrue(v == Vecteur(),  msg = f"Vecteur(2,5,8.5) *= 0 donne: {v}")
+    
+    def test_imul_entier(self):
+        """Test de multiplication *= d'un nombre entier à un vecteur"""
+        v = Vecteur(5,-2,13)
+        v *= 8
+        self.assertTrue(v == Vecteur(40,-16,104), msg = f"Vecteur(5,-2,13) *= 8 donne: {v}")
+
+    def test_imul_reel(self):
+        """Test de multiplication *= d'un nombre réel à un vecteur"""
+        v = Vecteur(5,-2,13)
+        v *= 8.45
+        self.assertTrue(v == Vecteur(42.25,-16.9,109.85), msg = f"Vecteur(5,-2,13) *= 8.45 donne: {v}")
+    
+    def test_imul_entier_negatif(self):
+        """Test de multiplication d'un nombre entier négatif à un vecteur"""
+        v = Vecteur(5,-2,13)
+        v *= -8
+        self.assertTrue(v == Vecteur(-40,16,-104), msg = f"Vecteur(5,-2,13) *= -8 donne: {v}")
+
     def test_truediv_vecteur(self):
         """Test division de deux vecteurs"""
         with self.assertRaises(TypeError, msg = f"La division d'un vecteur par un autre vecteur n'a pas levé d'exception de type TypeError"):
