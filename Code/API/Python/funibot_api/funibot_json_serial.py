@@ -138,7 +138,7 @@ class FuniSerial():
         try:
             reponse = self.serial.readline()
             reponse = self.json_decoder.decode(reponse.decode("utf8"))
-        except:
+        except JSONDecodeError:
             print_exc()
             raise FuniCommException("erreur serial lors du décodage")
 

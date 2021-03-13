@@ -49,7 +49,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x + other.x, self.y + other.y, self.z + other.z)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -63,7 +63,7 @@ class Vecteur:
             self.x += other.x
             self.y += other.y
             self.z += other.z
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -77,7 +77,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x - other.x, self.y - other.y, self.z - other.z)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -91,7 +91,7 @@ class Vecteur:
             self.x -= other.x
             self.y -= other.y
             self.z -= other.z
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -105,7 +105,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x * other, self.y * other, self.z * other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -113,7 +113,7 @@ class Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
         try:
             return self.__mul__(other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -127,7 +127,7 @@ class Vecteur:
             self.x *= other
             self.y *= other
             self.z *= other
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -141,7 +141,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x / other, self.y / other, self.z / other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -155,7 +155,7 @@ class Vecteur:
             self.x /= other
             self.y /= other
             self.z /= other
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -169,7 +169,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x // other, self.y // other, self.z // other)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -183,7 +183,7 @@ class Vecteur:
             self.x //= other
             self.y //= other
             self.z //= other
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -195,7 +195,7 @@ class Vecteur:
         """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -208,7 +208,7 @@ class Vecteur:
             self.x *= longueur/norme
             self.y *= longueur/norme
             self.z *= longueur/norme
-        except:
+        except Exception:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -350,7 +350,7 @@ class Poteau:
         try:
             return self.serial.cal(
                 FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -364,7 +364,7 @@ class Poteau:
         try:
             self.serial.cal(
                 FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
-        except:
+        except Exception:
             print_exc()
             raise
 
@@ -469,7 +469,7 @@ class Funibot:
         try:
             erreurs = self.serial.err(FuniType.GET)
             return erreurs
-        except:
+        except Exception:
             print_exc()
             return None
 
