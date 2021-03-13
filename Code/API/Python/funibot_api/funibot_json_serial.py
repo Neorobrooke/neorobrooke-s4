@@ -326,7 +326,7 @@ class FuniSerial():
         if type == FuniType.GET:
             args = {}
             args["id"] = 0
-            args["maj"] = False
+            args["maj"] = None
             args["t"] = 0
             args["err_sup"] = 0
         else:

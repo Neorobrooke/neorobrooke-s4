@@ -8,16 +8,18 @@
 
 #define periodeControle 100
 
-#define NBR_CABLES 2
+#define NBR_CABLES 4
 
 
 struct aglomerationVariable
 {
     //encodeur
-    Encodeur encod [2] = 
+    Encodeur encod [4] = 
     {
         Encodeur(2,A0),
-        Encodeur(4,A1)
+        Encodeur(4,A1),
+        Encodeur(7,A2),
+        Encodeur(8,A3)
     };
     const double mmParTic = 0.75071069;
 
@@ -32,7 +34,7 @@ struct aglomerationVariable
     double seuilPosition = 0.5;
 
     //retour encodeur
-    double cable[NBR_CABLES] = {700,710};
+    double cable[NBR_CABLES] = {1300,1300,1300,1300};
     double offsetCable[NBR_CABLES] = {0,0};
 
     //commande au moteur
@@ -314,6 +316,14 @@ void interrupt1 ()
 {
     global.encod[1].interruptFct();
 }
+void interrupt2 ()
+{
+    global.encod[2].interruptFct();
+}
+void interrupt3 ()
+{
+    global.encod[3].interruptFct();
+}
 //setup
 void setup()
 {
@@ -323,6 +333,8 @@ void setup()
     //mise en place des poles:
     global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
     global.bot.addPole(FuniMath::Vecteur(1180,0,0),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(1180,0,1180),FuniMath::Vecteur(0,0,0));
+    global.bot.addPole(FuniMath::Vecteur(0,0,1180),FuniMath::Vecteur(0,0,0));
     
     //enregistrement du temps
     long temps = millis();
@@ -334,6 +346,8 @@ void setup()
     //mise en place des interrupts
     attachInterrupt(global.encod[0].pinInterrupt(),interrupt0, CHANGE);
     attachInterrupt(global.encod[1].pinInterrupt(),interrupt1, CHANGE);
+    attachInterrupt(global.encod[2].pinInterrupt(),interrupt2, CHANGE);
+    attachInterrupt(global.encod[3].pinInterrupt(),interrupt3, CHANGE);
 
     //initialisation des moteurs
     moteurSetup(NBR_CABLES,global.cable);
