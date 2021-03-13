@@ -16,7 +16,7 @@ class TestVecteur(unittest.TestCase):
 
     def test_add_nul(self):
         """Test d'addition d'un vecteur nul avec un vecteur ayant des valeurs"""
-        self.assertTrue(Vecteur() + Vecteur(2,5,8.5) == Vecteur(2,5,8.5),  msg=f"Vecteur() + Vecteur(2,5,8.5) donne: {Vecteur() + Vecteur(2,5,8.5)}")
+        self.assertTrue(Vecteur() + Vecteur(2,5,8.5) == Vecteur(2,5,8.5),  msg = f"Vecteur() + Vecteur(2,5,8.5) donne: {Vecteur() + Vecteur(2,5,8.5)}")
     
     def test_add_entier(self):
         """Test d'addition d'un nombre entier à un vecteur"""
@@ -24,6 +24,12 @@ class TestVecteur(unittest.TestCase):
         scalaire_entier = 8
         with self.assertRaises(TypeError, msg = f"L'addition avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             vecteur_base + scalaire_entier 
+
+    def test_iadd(self):
+        """Test d'addition += de deux vecteurs"""
+        v = Vecteur(2,7,-4)
+        v += Vecteur(-7,2,10)
+        self.assertTrue(v == Vecteur(-5,9,6), msg = f"Vecteur(2,7,-4) += Vecteur(-7,2,10) donne: {v}")
 
     def test_sub(self):
         """Test soustraction de deux vecteurs"""

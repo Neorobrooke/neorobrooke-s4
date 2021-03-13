@@ -7,6 +7,7 @@ from string import digits
 from typing import Dict, ItemsView, Iterator, KeysView, List, ValuesView, Union, Tuple, Optional
 
 from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from tests.test_vecteur import TestVecteur
 
 
 class JamaisInitialise(Exception):
@@ -42,6 +43,9 @@ class Vecteur:
     def __eq__(self, other: object) -> bool:
         return isinstance(other, self.__class__) and self.x == other.x and self.y == other.y and self.z == other.z
 
+    def __ne__(self, other: object) -> bool:
+        return not self.__eq__(other)
+
     def __add__(self, other) -> Vecteur:
         """Permet d'additionner deux vecteurs ensemble"""
         if not isinstance(other, self.__class__):
@@ -49,26 +53,28 @@ class Vecteur:
 
         try:
             return Vecteur(self.x + other.x, self.y + other.y, self.z + other.z)
-        except Exception:
+        except:
             print_exc()
             raise
 
-    def __iadd__(self, other: Vecteur) -> None:
+    def __iadd__(self, other: Vecteur) -> Vecteur:
         """Permet d'ajouter un autre vecteur à celui-ci"""
         if not isinstance(other, self.__class__):
-            return NotImplemented  # type: ignore
+            return NotImplemented
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x += other.x
             self.y += other.y
             self.z += other.z
-        except Exception:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
             raise
+
+        return self
 
     def __sub__(self, other) -> Vecteur:
         """Permet de soustraire deux vecteurs l'un de l'autre"""
@@ -77,26 +83,28 @@ class Vecteur:
 
         try:
             return Vecteur(self.x - other.x, self.y - other.y, self.z - other.z)
-        except Exception:
+        except:
             print_exc()
             raise
 
-    def __isub__(self, other) -> None:
+    def __isub__(self, other) -> Vecteur:
         """Permet de soustraire un autre vecteur à celui-ci"""
         if not isinstance(other, self.__class__):
-            return NotImplemented  # type: ignore
+            return NotImplemented
 
         bckup = (self.x, self.y, self.z)
         try:
             self.x -= other.x
             self.y -= other.y
             self.z -= other.z
-        except Exception:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
             raise
+
+        return self
 
     def __mul__(self, other) -> Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
@@ -105,7 +113,7 @@ class Vecteur:
 
         try:
             return Vecteur(self.x * other, self.y * other, self.z * other)
-        except Exception:
+        except:
             print_exc()
             raise
 
@@ -113,11 +121,11 @@ class Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
         try:
             return self.__mul__(other)
-        except Exception:
+        except:
             print_exc()
             raise
 
-    def __imul__(self, other) -> None:
+    def __imul__(self, other) -> Vecteur:
         """Permet de multiplier ce vecteur par un scalaire"""
         if not isinstance(other, Real):
             return NotImplemented  # type: ignore
@@ -127,12 +135,14 @@ class Vecteur:
             self.x *= other
             self.y *= other
             self.z *= other
-        except Exception:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
             raise
+
+        return self
 
     def __truediv__(self, other) -> Vecteur:
         """Permet de diviser un vecteur par un scalaire"""
@@ -141,11 +151,11 @@ class Vecteur:
 
         try:
             return Vecteur(self.x / other, self.y / other, self.z / other)
-        except Exception:
+        except:
             print_exc()
             raise
 
-    def __itruediv__(self, other) -> None:
+    def __itruediv__(self, other) -> Vecteur:
         """Permet de diviser ce vecteur par un scalaire"""
         if not isinstance(other, Real):
             return NotImplemented  # type: ignore
@@ -155,12 +165,14 @@ class Vecteur:
             self.x /= other
             self.y /= other
             self.z /= other
-        except Exception:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
             raise
+
+        return self
 
     def __floordiv__(self, other) -> Vecteur:
         """Permet de diviser (division entière) un vecteur par un scalaire"""
@@ -169,11 +181,11 @@ class Vecteur:
 
         try:
             return Vecteur(self.x // other, self.y // other, self.z // other)
-        except Exception:
+        except:
             print_exc()
             raise
 
-    def __ifloordiv__(self, other) -> None:
+    def __ifloordiv__(self, other) -> Vecteur:
         """Permet de diviser (division entière) ce vecteur par un scalaire"""
         if not isinstance(other, Real):
             return NotImplemented  # type: ignore
@@ -183,19 +195,21 @@ class Vecteur:
             self.x //= other
             self.y //= other
             self.z //= other
-        except Exception:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
             self.z = bckup[2]
             raise
 
+        return self
+
     @property
     def norme(self) -> float:
         """Calcule la norme du vecteur"""
         try:
             return sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
-        except Exception:
+        except:
             print_exc()
             raise
 
@@ -208,7 +222,7 @@ class Vecteur:
             self.x *= longueur/norme
             self.y *= longueur/norme
             self.z *= longueur/norme
-        except Exception:
+        except:
             print_exc()
             self.x = bckup[0]
             self.y = bckup[1]
@@ -292,7 +306,7 @@ class Direction:
 class Poteau:
     """Représente un pôle du Funibot"""
 
-    def __init__(self, nom: str, position_pole: Vecteur = Vecteur(0, 0, 0),
+    def __init__(self, nom, position_pole: Vecteur = Vecteur(0, 0, 0),
                  position_accroche: Vecteur = Vecteur(0, 0, 0)) -> None:
         """Initialise un Poteau pour le Funibot.
            'nom=' est l'identifiant du Poteau
@@ -303,9 +317,8 @@ class Poteau:
         self.pos_pole = position_pole
         self.pos_acccroche = position_accroche
         self.pos_resultante = position_pole - position_accroche
-
+        self.dernier_retour = None
         self.id = -1
-        self.serial = None
 
     def init_poteau(self, id: int, comm_serie: FuniSerial):
         """Initialise le poteau à l'intérieur du Funibot
@@ -348,11 +361,13 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable")
         try:
-            return self.serial.cal(
+            self.dernier_retour = self.serial.cal(
                 FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
-        except Exception:
+        except:
             print_exc()
-            raise
+            self.dernier_retour = "Exception"
+
+        return self.dernier_retour
 
     @longueur_cable.setter
     def longueur_cable(self, longueur: float) -> None:
@@ -362,11 +377,11 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
-            self.serial.cal(
+            self.dernier_retour = self.serial.cal(
                 FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
-        except Exception:
+        except:
             print_exc()
-            raise
+            self.dernier_retour = "Exception"
 
     @property
     def courant_moteur(self) -> float:
@@ -437,7 +452,7 @@ class Funibot:
 
     def __repr__(self) -> str:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
-        return f"Funibot[{self.serial}]({list(self.poteaux.values())})"
+        return f"Funibot[{self.serial}]({self.poteaux.values()})"
 
     def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
         """Déplace le Funibot dans la direction indiquée par 'direction'.
@@ -469,7 +484,7 @@ class Funibot:
         try:
             erreurs = self.serial.err(FuniType.GET)
             return erreurs
-        except Exception:
+        except:
             print_exc()
             return None
 
