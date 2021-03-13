@@ -111,11 +111,7 @@ class Vecteur:
 
     def __rmul__(self, other) -> Vecteur:
         """Permet de multiplier un vecteur par un scalaire"""
-        try:
-            return self.__mul__(other)
-        except Exception:
-            print_exc()
-            raise
+        return self * other
 
     def __imul__(self, other) -> None:
         """Permet de multiplier ce vecteur par un scalaire"""
