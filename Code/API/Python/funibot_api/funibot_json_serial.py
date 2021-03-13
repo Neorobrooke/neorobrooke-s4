@@ -3,6 +3,9 @@ from benedict import benedict
 from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
+
+import serial
+from serial import serialutil
 from tests.mock_serial import IMockSerial, MockSerial
 
 from serial import Serial
@@ -364,6 +367,9 @@ class FuniSerial():
             except FuniCommException:
                 print_exc()
                 continue
+            except serialutil.SerialException:
+                print_exc()
+                break
 
             try:
                 encore = (retour["args"]["err_sup"] > 0)
