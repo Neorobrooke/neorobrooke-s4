@@ -253,7 +253,6 @@ void controle()
     if(!global.bot.erreurs.empty()) global.regime == 0;
     //en fonction du régime
     switch (global.regime)
-
     {
     //arrêt
     case 0:
@@ -329,6 +328,9 @@ void setup()
     //enregistrement du temps
     long temps = millis();
     global.lastControle = temps;
+
+    //mise en place de la distance initiale des cables
+    for (int i = 0; i< NBR_CABLES; i++)setCable(i,global.cable[i]);
 
     //mise en place des interrupts
     attachInterrupt(global.encod[0].pinInterrupt(),interrupt0, CHANGE);
