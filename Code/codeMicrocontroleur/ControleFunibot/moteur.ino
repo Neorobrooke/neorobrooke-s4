@@ -55,7 +55,7 @@ void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
       double deltaAng = radian - old_position_moteurs[i];
       double deltaCable = longueurCable[i] - old_longueur_cable[i];
 
-      if (abs(deltaCable) > 1 && abs(deltaAng) > 0.3)
+      if (abs(deltaCable) > 5 && abs(deltaAng) > 0.3)
       {
           mmprad[i] = deltaCable / deltaAng;
           old_position_moteurs[i] = radian;
