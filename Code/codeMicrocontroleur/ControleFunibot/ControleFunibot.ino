@@ -30,8 +30,8 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 200;
-    double seuilPosition = 0.5;
+    double vitesse = 100;
+    double seuilPosition = 1.7;
 
     //retour encodeur
     double cable[NBR_CABLES] = {1300,1300,1300,1300};
