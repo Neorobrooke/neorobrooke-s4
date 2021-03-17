@@ -3,6 +3,17 @@
 
 #define systemeArduino
 
+bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
+{
+	const double k = (B.y - A.y)/(B.x-A.x);
+	if(isnan(k))return false;
+	const double a = (P.y-A.y-k*(P.x - A.x))/(C.y-A.y-k*(C.x-A.x));
+	if(isnan(a))return false;
+	const double b = (P.x - A.x)/(B.x-A.x) - a*(C.x-A.x)/(B.x-A.x);
+	if(isnan(b))return false;
+	const double c = 1-a-b;
+	return (a >= 0 && b >= 0 && c>=0);
+}
 
 FuniMath::Vecteur FuniMath::operator*(const double u, const FuniMath::Vecteur v)
 {

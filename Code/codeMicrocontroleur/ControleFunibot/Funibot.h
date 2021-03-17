@@ -39,6 +39,8 @@ namespace FuniMath
 	};
 
 	Vecteur operator*(const double vec, const Vecteur v);
+
+	bool inTriangleXY(const Vecteur A, const Vecteur B, const Vecteur C, const Vecteur P); //retourne vrai si P est dans le triangle A,B,C
 }
 
 class Funibot
