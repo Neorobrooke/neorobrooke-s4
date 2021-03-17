@@ -2,10 +2,28 @@
 #include <iostream>
 
 #define systemeArduino
-// #define autoSecure
+#define autoSecure
 
 bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
 {
+	/*debug
+	Serial.println("test du triangle");
+	Serial.print(A.x);
+	Serial.print(":");
+	Serial.print(A.y);
+	Serial.print(",");
+	Serial.print(B.x);
+	Serial.print(":");
+	Serial.print(B.y);
+	Serial.print(",");
+	Serial.print(C.x);
+	Serial.print(":");
+	Serial.println(C.y);
+	Serial.println("avec le point");
+	Serial.print(P.x);
+	Serial.print(":");
+	Serial.println(P.y);*/
+
 	if (abs(A.x - B.x) < 0.00001)
 	{
 		const double k = (B.x - A.x)/(B.y-A.y);
@@ -31,7 +49,7 @@ bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B
 }
 bool FuniMath::inConvexXY(const FuniMath::Vecteur* Cotes, const int nbrCotes, const FuniMath::Vecteur P)
 {
-	if(nbrCotes > 3) return false; //pas d'aire
+	if(nbrCotes < 3) return false; //pas d'aire
 	for (int i = 2 ;  i <  nbrCotes; i++)
 	{
 		if (inTriangleXY(Cotes[0],Cotes[i-1],Cotes[i],P)) return true; //dans au moins 1 triangle
@@ -537,9 +555,10 @@ void Funibot::setupSafeZone(double securite_cote , double securite_toit )
 	toit = getPoleRelatif(0).y;
 	for(int i = 1 ; i < nbrPole; i++)
 	{
-		if (getPoleRelatif(i).y > toit) toit = getPoleRelatif(i).y ;
+		if (getPoleRelatif(i).y < toit) toit = getPoleRelatif(i).y ;
 	}
 	toit -= securite_toit;
+
 	//polygone de securite
 	FuniMath::Vecteur listeVecteur[nbrPole];
 	FuniMath::Vecteur centre = FuniMath::Vecteur(0,0,0);
@@ -573,5 +592,6 @@ bool Funibot::isSafe(FuniMath::Vecteur P)
 	}
 	
 	if (P.y > toit) return false;
-	return FuniMath::inConvexXY(safeCorner,nbrPole,P);
+	FuniMath::Vecteur PXY(P.x,P.z,0);
+	return FuniMath::inConvexXY(safeCorner,nbrPole,PXY);
 }

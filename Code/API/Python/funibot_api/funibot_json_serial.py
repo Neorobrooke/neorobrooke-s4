@@ -52,7 +52,10 @@ FUNI_ERREUR_MESSAGES =\
         "GET_POLE_INEXISTANT",
         "GET_ACCROCHE_INEXISTANTE",
         "GET_LONGUEUR_CABLE_INEXISTANT",
-        "GET_POLE_RELATIF_INEXISTANT"
+        "GET_POLE_RELATIF_INEXISTANT",
+        "SETUP_SECURITE_AVEC_MOINS_DE_3_POLES",
+        "SECURITE_AVEC_MOINS_DE_3_POLES",
+        "SORTIE_DE_ZONE_DE_SECURITE"
     ]
 
 FUNI_ERREUR_MAJ =\
@@ -75,7 +78,12 @@ FUNI_ERREUR_MAJ =\
         True,   # 15
         True,   # 16
         True,   # 17
-        True    # 18
+        True,   # 18
+        True,   # 19
+        True,   # 20
+        True,   # 21
+        True,   # 22
+        False,  # 23
     ]
 
 
@@ -100,6 +108,11 @@ class eFuniErreur(Enum):
     GET_ACCROCHE_INEXISTANTE = 16
     GET_LONGUEUR_CABLE_INEXISTANT = 17
     GET_POLE_RELATIF_INEXISTANT = 18
+    POLES_CONFONDUES_2D = 19
+    POLES_CONFONDUES_3D = 20
+    SETUP_SECURITE_AVEC_MOINS_DE_3_POLES = 21
+    SECURITE_AVEC_MOINS_DE_3_POLES = 22
+    SORTIE_DE_ZONE_DE_SECURITE = 23
 
 
 class FuniErreur:
@@ -325,10 +338,10 @@ class FuniSerial():
 
         if type == FuniType.GET:
             args = {}
-            args["id"] = 0
+            args["id"] = None
             args["maj"] = None
-            args["t"] = 0
-            args["err_sup"] = 0
+            args["t"] = None
+            args["err_sup"] = None
         else:
             args = {}
 

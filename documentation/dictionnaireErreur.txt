@@ -97,4 +97,8 @@ id:		fonction
 	Fonction annulée, false retourné
 	La Fonction requis au minimum 3 pôles
 
+23:	controle
+	Deplacement annulée
+	Sortie de la zone de sécurité
+
 

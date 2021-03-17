@@ -63,7 +63,7 @@ public:
 	double* deplacementDirectionnel(FuniMath::Vecteur dir, double pasTemps, double vitesse, double* vitesseCable);
 	double* deplacementPosition(FuniMath::Vecteur pos, double pasTemps, double vitesse, double* vitesseCable);
 
-	void setupSafeZone(double securite_cote = 100, double securite_toit = 200);
+	void setupSafeZone(double securite_cote = 0, double securite_toit = 200);
 	bool isSafe(FuniMath::Vecteur P);
 
 

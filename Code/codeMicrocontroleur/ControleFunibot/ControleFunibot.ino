@@ -13,6 +13,7 @@
 
 struct aglomerationVariable
 {
+    bool outOfZone = false;
     //encodeur
     Encodeur encod [4] = 
     {
@@ -185,7 +186,18 @@ void mainCommunication()
         if(type == "get")
         {
             StaticJsonDocument<1024> output;
-            GestionErreurs::Erreur err = global.bot.erreurs.takeFront();
+            GestionErreurs::Erreur err;
+            if (global.outOfZone)
+            {
+                err.id = 23;
+                err.majeur = false;
+                err.moment = millis();
+                global.outOfZone = false;
+            }
+            else
+            {
+                err = global.bot.erreurs.takeFront();
+            }
 
             output["comm"] = "err";
             output["type"] = "ack";
@@ -267,15 +279,17 @@ void controle()
     case 1:
     {
         FuniMath::Vecteur dirr = global.objectif/global.objectif.norme();
-        double distDeplacement = global.vitesse * (double)periodeControle / (double)1000;
+        double distDeplacement = global.vitesse * ((double)periodeControle / (double)1000);
         FuniMath::Vecteur cible = global.bot.getPosition() + 2* distDeplacement * dirr; //facteur de sécurité de 2
         
         if (NBR_CABLES < 3 || global.bot.isSafe(cible))
         {
+            global.outOfZone = false;
             global.bot.deplacementDirectionnel(global.objectif,(double)periodeControle/(double)1000.0,global.vitesse,global.commandeVitesseCable);
         }
         else
         {
+            global.outOfZone = true;
             global.regime = 0;
             for(unsigned i = 0; i < NBR_CABLES; i++)
             {
@@ -305,9 +319,13 @@ void controle()
             double distDeplacement = global.vitesse * (double)periodeControle / (double)1000;
             FuniMath::Vecteur cible = position + 2* distDeplacement * deplacement;
             if (NBR_CABLES < 3 || global.bot.isSafe(cible))
+            {
+                global.outOfZone = false;
                 global.bot.deplacementPosition(global.objectif,(double)periodeControle/(double)1000.0,global.vitesse,global.commandeVitesseCable);
+            }
             else
             {
+                global.outOfZone = true;
                 global.regime = 0;
                 for(unsigned i = 0; i < NBR_CABLES; i++)
                 {
