@@ -46,3 +46,5 @@ class TestsFunibot(unittest.TestCase):
         val_position = bot.pos
 
         self.assertEqual(position, val_position, msg=f"Position est {position} au lieu de {val_position}")
+
+        
