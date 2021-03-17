@@ -1,6 +1,7 @@
 from __future__ import annotations
+from typing import Tuple
 import unittest
-from funibot_api.funibot import Vecteur
+from funibot_api.funibot import Vecteur, ChangerNormeVecteurNulErreur
 
 class TestVecteur(unittest.TestCase):
     """Test sur la classe Vecteur"""
@@ -411,11 +412,9 @@ class TestVecteur(unittest.TestCase):
 
     def  test_norme_changement_vecteur_null(self):
         """Test du changement de norme d'un vecteur null"""
-        vecteur_base = Vecteur(0,0,0)
-        vecteur_base.norme = 2.5
-        self.assertTrue(vecteur_base.x == 0, msg = f"La composante en x du Vecteur(0,0,0) en imposant sa norme à 2.5 donne: {vecteur_base.x}")
-        self.assertTrue(vecteur_base.y == 0, msg = f"La composante en y du Vecteur(0,0,0) en imposant sa norme à 2.5 donne: {vecteur_base.y}")
-        self.assertTrue(vecteur_base.z == 0, msg = f"La composante en z du Vecteur(0,0,0) en imposant sa norme à 2.5 donne: {vecteur_base.z}")
+        vecteur_null = Vecteur(0,0,0)
+        with self.assertRaises(ChangerNormeVecteurNulErreur, msg = f"La modification de la norme d'un vecteur null n'a pas levé d'exception de type ChangerNormeVecteurNulErreur"):
+            vecteur_null.norme = 2.5
 
     def  test_norme_changement_none(self):
         """Test du changement de norme par un None"""
@@ -425,3 +424,12 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(vecteur_base.x == 3, msg = f"Après l'erreur du changement de norme, la composante en x du vecteur modifié {vecteur_base.x} n'égale pas la composante en x du vecteur de base 3")
         self.assertTrue(vecteur_base.y == 4, msg = f"Après l'erreur du changement de norme, la composante en y du vecteur modifié {vecteur_base.y} n'égale pas la composante en y du vecteur de base 4")
         self.assertTrue(vecteur_base.z == 0, msg = f"Après l'erreur du changement de norme, la composante en z du vecteur modifié {vecteur_base.z} n'égale pas la composante en z du vecteur de base 0")
+
+    def  test_tuple(self):
+        """Test de la création d'un tuple"""
+        v = Vecteur(1,2,3)
+        v_tuple = v.vers_tuple()
+        self.assertTrue(type(v_tuple) == tuple, msg = f"La création d'un tuple à partir du vecteur n'a pas fonctionné")
+        self.assertTrue(v_tuple[0] == v.x, msg = f"La valeur du Tuple à la position 0, {v_tuple[0]} n'égale pas la composante en x du Vecteur de départ, {v.x}")
+        self.assertTrue(v_tuple[1] == v.y, msg = f"La valeur du Tuple à la position 1, {v_tuple[1]} n'égale pas la composante en y du Vecteur de départ, {v.y}")
+        self.assertTrue(v_tuple[2] == v.z, msg = f"La valeur du Tuple à la position 2, {v_tuple[2]} n'égale pas la composante en z du Vecteur de départ, {v.z}")
