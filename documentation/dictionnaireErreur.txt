@@ -89,4 +89,12 @@ id:		fonction
 	fonction annulée, vecteur nul retourné
 	poles confondus
 
+21:	Funibot::setupSafeZone
+	Fonction annulée
+	La fonction requis au minimum 3 pôles
+
+22:	Funibot::isSafe
+	Fonction annulée, false retourné
+	La Fonction requis au minimum 3 pôles
+
 

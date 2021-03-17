@@ -5,14 +5,37 @@
 
 bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
 {
-	const double k = (B.y - A.y)/(B.x-A.x);
-	if(isnan(k))return false;
-	const double a = (P.y-A.y-k*(P.x - A.x))/(C.y-A.y-k*(C.x-A.x));
-	if(isnan(a))return false;
-	const double b = (P.x - A.x)/(B.x-A.x) - a*(C.x-A.x)/(B.x-A.x);
-	if(isnan(b))return false;
-	const double c = 1-a-b;
-	return (a >= 0 && b >= 0 && c>=0);
+	if (abs(A.x - B.x) < 0.00001)
+	{
+		const double k = (B.x - A.x)/(B.y-A.y);
+		if(isnan(k))return false;
+		double a = (P.x-A.x-k*(P.y - A.y))/(C.x-A.x-k*(C.y-A.y));
+		if(isnan(a))return false;
+		const double b = (P.y - A.y)/(B.y-A.y) - a*(C.y-A.y)/(B.y-A.y);
+		if(isnan(b))return false;
+		const double c = 1-a-b;
+		return (a >= 0 && b >= 0 && c>=0);
+	}
+	else
+	{
+		const double k = (B.y - A.y)/(B.x-A.x);
+		if(isnan(k))return false;
+		double a = (P.y-A.y-k*(P.x - A.x))/(C.y-A.y-k*(C.x-A.x));
+		if(isnan(a))return false;
+		const double b = (P.x - A.x)/(B.x-A.x) - a*(C.x-A.x)/(B.x-A.x);
+		if(isnan(b))return false;
+		const double c = 1-a-b;
+		return (a >= 0 && b >= 0 && c>=0);
+	}
+}
+bool FuniMath::inConvexXY(const FuniMath::Vecteur* Cotes, const int nbrCotes, const FuniMath::Vecteur P)
+{
+	if(nbrCotes > 3) return false; //pas d'aire
+	for (int i = 2 ;  i <  nbrCotes; i++)
+	{
+		if (inTriangleXY(Cotes[0],Cotes[i-1],Cotes[i],P)) return true; //dans au moins 1 triangle
+	}
+	return false; // dans aucun triangle
 }
 
 FuniMath::Vecteur FuniMath::operator*(const double u, const FuniMath::Vecteur v)
@@ -63,6 +86,8 @@ void Funibot::addPole(FuniMath::Vecteur positionPole, FuniMath::Vecteur position
 	pole[nbrPole] = positionPole;
 	accroche[nbrPole] = positionAccroche;
 	nbrPole++;
+
+	if(nbrPole >= 3) setupSafeZone();
 }
 
 void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniMath::Vecteur positionAccroche)
@@ -81,6 +106,7 @@ void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniM
 
 	pole[index] = positionPole;
 	accroche[index] = positionAccroche;
+	if(nbrPole >= 3) setupSafeZone();
 }
 
 void Funibot::setLongueurCable(unsigned char index, double longueur)
@@ -486,4 +512,61 @@ FuniMath::Vecteur Funibot::getPoleRelatif(unsigned char index)
 		return FuniMath::Vecteur();
 	}
 	return pole[index] - accroche[index];
+}
+
+void Funibot::setupSafeZone(double securite_cote = 100, double securite_toit = 200)
+{
+	//pas en 3D
+	if(nbrPole < 3)
+	{
+		GestionErreurs::Erreur erreur;
+		erreur.id = 21;
+		#ifdef systemeArduino
+			erreur.moment = millis();
+		#endif
+		erreurs.addBack(erreur);
+		return;
+	}
+
+	//mise en place du toit
+	toit = getPoleRelatif(0).y;
+	for(int i = 1 ; i < nbrPole; i++)
+	{
+		if (getPoleRelatif(i).y > toit) toit = getPoleRelatif(i).y ;
+	}
+	toit -= securite_toit;
+	//polygone de securite
+	FuniMath::Vecteur listeVecteur[nbrPole];
+	FuniMath::Vecteur centre = FuniMath::Vecteur(0,0,0);
+	for(int i = 0 ; i < nbrPole; i++)
+	{
+		FuniMath::Vecteur pole = getPoleRelatif(i);
+		listeVecteur[i] = FuniMath::Vecteur(pole.x,pole.z,0);
+		centre = centre + listeVecteur[i];
+	}
+	centre =  centre / nbrPole;
+	for( int i = 0; i < nbrPole; i++)
+	{
+		FuniMath::Vecteur dir = centre - listeVecteur[i];
+		dir = dir / dir.norme();
+		safeCorner[i] = listeVecteur[i] + securite_cote * dir;
+	}
+
+}
+bool Funibot::isSafe(FuniMath::Vecteur P)
+{
+	//pas en 3D
+	if(nbrPole < 3)
+	{
+		GestionErreurs::Erreur erreur;
+		erreur.id = 22;
+		#ifdef systemeArduino
+			erreur.moment = millis();
+		#endif
+		erreurs.addBack(erreur);
+		return false;
+	}
+	
+	if (P.y > toit) return false;
+	return FuniMath::inConvexXY(safeCorner,nbrPole,P);
 }
