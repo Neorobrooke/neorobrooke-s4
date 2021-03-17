@@ -99,3 +99,10 @@ class TestPointDansTriangle(unittest.TestCase):
             B = self.C,
             C = Vecteur(),
             P = Vecteur(1, 1)))
+
+    def test_triangle_origine_symetrie(self):
+        self.assertTrue(point_triangle(
+            A = Vecteur(),
+            B = self.C,
+            C = self.B,
+            P = Vecteur(1, 1)))
