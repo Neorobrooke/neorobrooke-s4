@@ -21,13 +21,16 @@ class TestsDirection(unittest.TestCase):
     
     def test_repr_sans_direction(self):
         """Test de la représentation d'une direction en ne mettant pas un des caracteres"""
-        with self.assertRaises(ValueError, msg = "L'absence d'un caractere dans la direction n'a pas levé d'exception de type ValueError"):
+        with self.assertRaises(ValueError, msg = "L'absence d'un caractere dans la direction n'a pas levé d'exception de type ValueError") as re:
             Direction("4+4y+4z")
+        self.assertEqual(str(re.exception), "Double signe ou signe ailleurs qu'au début")
 
     def test_repr_double_variable(self):
         """Test de la représentation d'une direction en mettant deux caractères identiques"""
-        direction = Direction("4x+4x+y")
-        self.assertTrue(repr(direction) == "Direction(x:8.0; y:1.0; z:0.0)", msg = f"__repr__() donne: {repr(direction)}")
+        with self.assertRaises(ValueError, msg = "Avoir deux fois le même caractère n'a pas levé d'exception de type ValueError") as re:
+            Direction("4x+4x+4y")
+        self.assertEqual(str(re.exception), "L'axe <x> apparaît plusieurs fois")
+
     
 # deux fois la meme variables genre 4x+4x+y
 # 

@@ -280,7 +280,7 @@ class Direction:
             if direction[index] in axes:
                 if direction[index] in directions:
                     raise ValueError(
-                        f"L'axe {direction[index]} apparaît plusieurs fois")
+                        f"L'axe <{direction[index]}> apparaît plusieurs fois")
                 if val in '+-' or val == '':
                     val = f"{val}1"
                 directions[direction[index]] = float(val)
