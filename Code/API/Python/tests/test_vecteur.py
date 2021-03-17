@@ -105,38 +105,67 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(Vecteur(5,-2,13) == vecteur_base, msg = f"Après l'erreur de soustraction -=, le vecteur {Vecteur(5,-2,13)} n'égale pas {vecteur_base}")
 
     def test_mul_vecteur(self):
-        """Test multiplication de deux vecteurs"""
+        """Test multiplication de deux vecteurs (vecteur * scalaire)"""
         with self.assertRaises(TypeError, msg = f"La multiplication de deux vecteurs n'a pas levé d'exception de type TypeError"):
             Vecteur(2,7,-4) * Vecteur(-7,2,10)
 
     def test_mul_zero(self):
-        """Test de multiplication par zéro"""
+        """Test de multiplication par zéro (vecteur * scalaire)"""
         self.assertTrue(Vecteur(2,5,8.5) * 0 == Vecteur(),  msg = f"Vecteur(2,5,8.5) * 0 donne: {Vecteur(2,5,8.5) * 0}")
     
     def test_mul_entier(self):
-        """Test de multiplication d'un nombre entier à un vecteur"""
+        """Test de multiplication d'un nombre entier à un vecteur (vecteur * scalaire)"""
         vecteur_base = Vecteur(5,-2,13)
         scalaire_entier = 8
         self.assertTrue(vecteur_base * scalaire_entier == Vecteur(40,-16,104), msg = f"Vecteur(5,-2,13) * 8 donne: {vecteur_base * scalaire_entier}")
 
     def test_mul_reel(self):
-        """Test de multiplication d'un nombre réel à un vecteur"""
+        """Test de multiplication d'un nombre réel à un vecteur (vecteur * scalaire)"""
         vecteur_base = Vecteur(5,-2,13)
         scalaire_reel = 8.45
         self.assertTrue(vecteur_base * scalaire_reel == Vecteur(42.25,-16.9,109.85), msg = f"Vecteur(5,-2,13) * 8.45 donne: {vecteur_base * scalaire_reel}")
     
     def test_mul_entier_negatif(self):
-        """Test de multiplication d'un nombre entier négatif à un vecteur"""
+        """Test de multiplication d'un nombre entier négatif à un vecteur (vecteur * scalaire)"""
         vecteur_base = Vecteur(5,-2,13)
         scalaire_entier_negatif = -8
         self.assertTrue(vecteur_base * scalaire_entier_negatif == Vecteur(-40,16,-104), msg = f"Vecteur(5,-2,13) * -8 donne: {vecteur_base * scalaire_entier_negatif}")
 
     def test_mul_none(self):
-        """Test de multiplication de deux vecteurs avec un None dans un des vecteurs"""
+        """Test de multiplication d'un vecteur ayant un None et un scalaire (vecteur * scalaire)"""
+        vecteur_none = Vecteur(5,-2,None)
+        scalaire = 4
+        with self.assertRaises(TypeError, msg = f"La multiplicaiton d'un vecteur ayant un None et un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_none * scalaire
+
+    def test_rmul_zero(self):
+        """Test de multiplication par zéro (sclaire * vecteur)"""
+        self.assertTrue(0 * Vecteur(2,5,8.5) == Vecteur(),  msg = f"0 * Vecteur(2,5,8.5) donne: {0 * Vecteur(2,5,8.5)}")
+    
+    def test_rmul_entier(self):
+        """Test de multiplication d'un nombre entier à un vecteur (sclaire * vecteur)"""
         vecteur_base = Vecteur(5,-2,13)
-        vecteur_none = Vecteur(1,5,None)
-        with self.assertRaises(TypeError, msg = f"La multiplicaiton de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
-            vecteur_base * vecteur_none
+        scalaire_entier = 8
+        self.assertTrue(scalaire_entier * vecteur_base == Vecteur(40,-16,104), msg = f"8 * Vecteur(5,-2,13) donne: {scalaire_entier * vecteur_base}")
+
+    def test_rmul_reel(self):
+        """Test de multiplication d'un nombre réel à un vecteur (sclaire * vecteur)"""
+        vecteur_base = Vecteur(5,-2,13)
+        scalaire_reel = 8.45
+        self.assertTrue(scalaire_reel * vecteur_base == Vecteur(42.25,-16.9,109.85), msg = f"8.45 * Vecteur(5,-2,13) donne: {scalaire_reel * vecteur_base}")
+    
+    def test_rmul_entier_negatif(self):
+        """Test de multiplication d'un nombre entier négatif à un vecteur (sclaire * vecteur)"""
+        vecteur_base = Vecteur(5,-2,13)
+        scalaire_entier_negatif = -8
+        self.assertTrue(scalaire_entier_negatif * vecteur_base == Vecteur(-40,16,-104), msg = f"-8 * Vecteur(5,-2,13) donne: {scalaire_entier_negatif * vecteur_base}")
+
+    def test_rmul_none(self):
+        """Test de multiplication d'un vecteur ayant un None et un scalaire (sclaire * vecteur)"""
+        vecteur_none = Vecteur(5,-2,None)
+        scalaire = 4
+        with self.assertRaises(TypeError, msg = f"La multiplicaiton d'un scalaire avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
+            scalaire * vecteur_none
 
     def test_imul_vecteur(self):
         """Test multiplication *= de deux vecteurs"""
@@ -169,11 +198,11 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(v == Vecteur(-40,16,-104), msg = f"Vecteur(5,-2,13) *= -8 donne: {v}")
 
     def test_imul_none(self):
-        """Test de multiplication *= de deux vecteurs avec un None dans un des vecteurs"""
-        vecteur_base = Vecteur(5,-2,13)
-        with self.assertRaises(TypeError, msg = f"La multiplicaiton *= de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
-            vecteur_base *= Vecteur(1,5,None)
-        self.assertTrue(Vecteur(5,-2,13) == vecteur_base, msg = f"Après l'erreur de multiplicaiton *=, le vecteur {Vecteur(5,-2,13)} n'égale pas {vecteur_base}")
+        """Test de multiplication *= d'un vecteur ayant un None et d'un scalaire"""
+        vecteur_none = Vecteur(5,-2,None)
+        with self.assertRaises(TypeError, msg = f"La multiplicaiton *= d'un vecteur ayant un None et d'un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_none *= 4
+        self.assertTrue(Vecteur(5,-2,None) == vecteur_none, msg = f"Après l'erreur de multiplicaiton *=, le vecteur {Vecteur(5,-2,None)} n'égale pas {vecteur_none}")
 
     def test_truediv_vecteur(self):
         """Test division de deux vecteurs"""
@@ -208,11 +237,11 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(vecteur_base / scalaire_entier_negatif == Vecteur(-5/8,1/4,-13/8), msg = f"Vecteur(5,-2,13) / -8 donne: {vecteur_base / scalaire_entier_negatif}")
 
     def test_truediv_none(self):
-        """Test de division de deux vecteurs avec un None dans un des vecteurs"""
-        vecteur_base = Vecteur(5,-2,13)
-        vecteur_none = Vecteur(1,5,None)
-        with self.assertRaises(TypeError, msg = f"La division de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
-            vecteur_base / vecteur_none
+        """Test de division d'un vecteur ayant un None avec un scalaire"""
+        vecteur_none = Vecteur(5,-2,None)
+        scalaire = 4
+        with self.assertRaises(TypeError, msg = f"La division d'un vecteur ayant un None par un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_none / scalaire
 
     def test_itruediv_vecteur(self):
         """Test division /= de deux vecteurs"""
@@ -251,11 +280,11 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(v == Vecteur(-5/8,1/4,-13/8), msg = f"Vecteur(5,-2,13) /= -8 donne: {v}")
 
     def test_itruediv_none(self):
-        """Test de division /= de deux vecteurs avec un None dans un des vecteurs"""
-        vecteur_base = Vecteur(5,-2,13)
-        with self.assertRaises(TypeError, msg = f"La division /= de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
-            vecteur_base /= Vecteur(1,5,None)
-        self.assertTrue(Vecteur(5,-2,13) == vecteur_base, msg = f"Après l'erreur de division /=, le vecteur {Vecteur(5,-2,13)} n'égale pas {vecteur_base}")
+        """Test de division /= d'un vecteur ayant un None par un scalaire"""
+        vecteur_none = Vecteur(5,-2,None)
+        with self.assertRaises(TypeError, msg = f"La division /= d'un vecteur ayant un None par un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_none /= 4
+        self.assertTrue(Vecteur(5,-2,None) == vecteur_none, msg = f"Après l'erreur de division /=, le vecteur {Vecteur(5,-2,None)} n'égale pas {vecteur_none}")
 
     def test_floordiv_vecteur(self):
         """Test division // de deux vecteurs"""
@@ -290,11 +319,11 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(vecteur_base // scalaire_reel_negatif == Vecteur(-4.0,1.0,-9.0), msg = f"Vecteur(5,-2,13) // -1.5 donne: {vecteur_base // scalaire_reel_negatif}")
 
     def test_floordiv_none(self):
-        """Test de division // de deux vecteurs avec un None dans un des vecteurs"""
-        vecteur_base = Vecteur(5,-2,13)
-        vecteur_none = Vecteur(1,5,None)
-        with self.assertRaises(TypeError, msg = f"La division // de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
-            vecteur_base // vecteur_none
+        """Test de division // d'un vecteur ayant un None par un scalaire"""
+        vecteur_none = Vecteur(5,-2,None)
+        scalaire = 4
+        with self.assertRaises(TypeError, msg = f"La division // d'un vecteur ayant un None par un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_none // scalaire
 
     def test_ifloordiv_vecteur(self):
         """Test division //= de deux vecteurs"""
@@ -333,11 +362,11 @@ class TestVecteur(unittest.TestCase):
         self.assertTrue(v == Vecteur(-4.0,1.0,-9.0), msg = f"Vecteur(5,-2,13) //= -1.5 donne: {v}")
     
     def test_ifloordiv_none(self):
-        """Test de division //= de deux vecteurs avec un None dans un des vecteurs"""
-        vecteur_base = Vecteur(5,-2,13)
-        with self.assertRaises(TypeError, msg = f"La division /= de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
-            vecteur_base //= Vecteur(1,5,None)
-        self.assertTrue(Vecteur(5,-2,13) == vecteur_base, msg = f"Après l'erreur de division //=, le vecteur {Vecteur(5,-2,13)} n'égale pas {vecteur_base}")
+        """Test de division //= d'un vecteur ayant un None par un scalaire"""
+        vecteur_none = Vecteur(5,-2,None)
+        with self.assertRaises(TypeError, msg = f"La division /= d'un vecteur ayant un None par un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_none //= 4
+        self.assertTrue(Vecteur(5,-2,None) == vecteur_none, msg = f"Après l'erreur de division //=, le vecteur {Vecteur(5,-2,None)} n'égale pas {vecteur_none}")
 
     def test_unitaire(self):
         """Test vecteur unitaire"""
