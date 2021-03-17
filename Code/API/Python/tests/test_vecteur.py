@@ -25,6 +25,13 @@ class TestVecteur(unittest.TestCase):
         with self.assertRaises(TypeError, msg = f"L'addition avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             vecteur_base + scalaire_entier 
 
+    def test_add_except(self):
+        """Test d'addition de deux vecteurs avec un None dans un des vecteurs"""
+        vecteur_base = Vecteur(5,-2,13)
+        vecteur_none = Vecteur(1,5,None)
+        with self.assertRaises(TypeError, msg = f"L'addition de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
+            vecteur_base + vecteur_none
+
     def test_iadd(self):
         """Test d'addition += de deux vecteurs"""
         v = Vecteur(2,7,-4)
@@ -277,3 +284,7 @@ class TestVecteur(unittest.TestCase):
         """Test vecteur unitaire du vecteur nul"""
         self.assertTrue(Vecteur().unitaire() == Vecteur(), msg = f"Le vecteur unitaire du vecteur nul donne: {Vecteur().unitaire()}")
             
+    def test_ne(self):
+        """Test vecteur non égaux"""
+        self.assertTrue(Vecteur(1,2,3) != Vecteur(1,2,4), msg = f"Les vecteurs {Vecteur(1,2,3)} et {Vecteur(1,2,4)} sont égaux")
+           
