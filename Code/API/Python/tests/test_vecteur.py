@@ -50,6 +50,13 @@ class TestVecteur(unittest.TestCase):
         with self.assertRaises(TypeError, msg = f"L'addition += avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             v += 8 
 
+    def test_iadd_except(self):
+        """Test d'addition += de deux vecteurs avec un None dans un des vecteurs"""
+        vecteur_base = Vecteur(5,-2,13)
+        with self.assertRaises(TypeError, msg = f"L'addition += de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
+            vecteur_base += Vecteur(1,5,None)
+        self.assertTrue(Vecteur(5,-2,13) == vecteur_base, msg = f"Le vecteur {Vecteur(5,-2,13)} n'égale pas {vecteur_base}")
+
     def test_sub(self):
         """Test soustraction de deux vecteurs"""
         self.assertTrue(Vecteur(2,7,-4) - Vecteur(-7,2,10) == Vecteur(9,5,-14), msg = f"Vecteur(2,7,-4) - Vecteur(-7,2,10) donne: {Vecteur(2,7,-4) - Vecteur(-7,2,10)}")
@@ -64,6 +71,13 @@ class TestVecteur(unittest.TestCase):
         scalaire_entier = 8
         with self.assertRaises(TypeError, msg = f"La soustraction avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             vecteur_base - scalaire_entier
+
+    def test_sub_except(self):
+        """Test de soustraction de deux vecteurs avec un None dans un des vecteurs"""
+        vecteur_base = Vecteur(5,-2,13)
+        vecteur_none = Vecteur(1,5,None)
+        with self.assertRaises(TypeError, msg = f"La soustraction de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
+            vecteur_base - vecteur_none
 
     def test_isub(self):
         """Test de soustraction -= de deux vecteurs"""
@@ -82,6 +96,13 @@ class TestVecteur(unittest.TestCase):
         v = Vecteur(5,-2,13)
         with self.assertRaises(TypeError, msg = f"La soustraction -= avec autre chose qu'un vecteur (comme un scalaire) n'a pas levé d'exception de type TypeError"):
             v -= 8 
+
+    def test_isub_except(self):
+        """Test de soustraction -= de deux vecteurs avec un None dans un des vecteurs"""
+        vecteur_base = Vecteur(5,-2,13)
+        with self.assertRaises(TypeError, msg = f"La soustraction -= de deux vecteurs avec un vecteur ayant un None n'a pas levé d'exception de type TypeError"):
+            vecteur_base -= Vecteur(1,5,None)
+        self.assertTrue(Vecteur(5,-2,13) == vecteur_base, msg = f"Le vecteur {Vecteur(5,-2,13)} n'égale pas {vecteur_base}")
 
     def test_mul_vecteur(self):
         """Test multiplication de deux vecteurs"""
