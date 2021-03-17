@@ -31,7 +31,7 @@ class TestsDirection(unittest.TestCase):
             Direction("4x+4x+4y")
         self.assertEqual(str(re.exception), "L'axe <x> apparaît plusieurs fois")
 
-    
-# deux fois la meme variables genre 4x+4x+y
-# 
-
+    def test_repr_null(self):
+        """Test de la représentation d'une direction null"""
+        direction = Direction("0")
+        self.assertTrue(repr(direction) == "Direction(x:0; y:0; z:0)", msg = f"__repr__() donne: {repr(direction)}")
