@@ -283,7 +283,10 @@ class Direction:
                         f"L'axe <{direction[index]}> apparaît plusieurs fois")
                 if val in '+-' or val == '':
                     val = f"{val}1"
-                directions[direction[index]] = float(val)
+                try:
+                    directions[direction[index]] = int(val)
+                except ValueError:
+                    directions[direction[index]] = float(val)
                 check_signe = True
                 val = ''
 

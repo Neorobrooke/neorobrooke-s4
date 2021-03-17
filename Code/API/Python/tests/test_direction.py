@@ -7,7 +7,7 @@ class TestsDirection(unittest.TestCase):
     def test_repr_normal(self):
         """Test de la représentation d'une direction"""
         direction = Direction("4x-8y+z")
-        self.assertTrue(repr(direction) == "Direction(x:4.0; y:-8.0; z:1.0)", msg = f"__repr__() donne: {repr(direction)}")
+        self.assertTrue(repr(direction) == "Direction(x:4; y:-8; z:1)", msg = f"__repr__() donne: {repr(direction)}")
     
     def test_repr_double_signe(self):
         """Test de la représentation d'une direction ayant deux signes"""
@@ -31,7 +31,24 @@ class TestsDirection(unittest.TestCase):
             Direction("4x+4x+4y")
         self.assertEqual(str(re.exception), "L'axe <x> apparaît plusieurs fois")
 
-    
-# deux fois la meme variables genre 4x+4x+y
-# 
+    def test_repr_null(self):
+        """Test de la représentation d'une direction null"""
+        direction = Direction("0")
+        self.assertTrue(repr(direction) == "Direction(x:0; y:0; z:0)", msg = f"La représentation d'une direction null donne: {repr(direction)}")
 
+    def test_repr_un_entier(self):
+        """Test de la représentation d'une direction avec un entier sans composante"""
+        with self.assertRaises(ValueError, msg = "Avoir une direction contenant un entier sans composante n'a pas levé d'exception de type ValueError") as re:
+            Direction("12")
+
+    def test_repr_deux_composantes(self):
+        """Test de la représentation d'une direction avec 2 composantes"""
+        direction = Direction("2x+8z")
+        self.assertTrue(repr(direction) == "Direction(x:2; y:0; z:8)", msg = f"La représentation d'une direction avec deux composantes donne: {repr(direction)}")
+
+
+    @unittest.skip("Pas prêt, test avec float")
+    def test_repr_reel(self):
+        """Test de la représentation d'une direction avec des nombres réels"""
+        direction = Direction("2.6x+8.1z")
+        self.assertTrue(repr(direction) == "Direction(x:2.6; y:0; z:8.1)", msg = f"La représentation d'une direction avec des réels donne: {repr(direction)}")
