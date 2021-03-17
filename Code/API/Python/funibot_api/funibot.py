@@ -25,6 +25,10 @@ class JamaisInitialise(Exception):
         super().__init__(self.message)
 
 
+class ChangerNormeVecteurNulErreur(Exception):
+    pass
+
+
 class Vecteur:
     """Représente un vecteur position"""
 
@@ -212,6 +216,9 @@ class Vecteur:
     def norme(self, longueur) -> None:
         """Change la norme du vecteur"""
         norme = self.norme
+        if norme == 0:
+            raise ChangerNormeVecteurNulErreur("Impossible d'assigner une norme au vecteur nul, car il n'as pas d'orientation")
+        
         bckup = (self.x, self.y, self.z)
         try:
             self.x *= longueur/norme

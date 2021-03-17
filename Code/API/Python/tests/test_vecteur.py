@@ -379,4 +379,49 @@ class TestVecteur(unittest.TestCase):
     def test_ne(self):
         """Test vecteur non égaux"""
         self.assertTrue(Vecteur(1,2,3) != Vecteur(1,2,4), msg = f"Les vecteurs {Vecteur(1,2,3)} et {Vecteur(1,2,4)} sont égaux")
-           
+
+    def  test_norme(self):
+        """Test de la norme d'un vecteur"""
+        self.assertTrue(Vecteur(3,4,0).norme == 5, msg = f"La norme du Vecteur(3,4,0) donne: {Vecteur(3,4,0).norme}")
+
+    def  test_norme_null(self):
+        """Test de la norme du vecteur null"""
+        self.assertTrue(Vecteur(0,0,0).norme == 0, msg = f"La norme du Vecteur(0,0,0) donne: {Vecteur(0,0,0).norme}")
+
+    def  test_norme_none(self):
+        """Test de la norme d'un vecteur ayant un None"""
+        with self.assertRaises(TypeError, msg = f"La norme d'un vecteur ayant None n'a pas levé d'exception de type TypeError"):
+            Vecteur(3,4,None).norme == 5
+
+    def  test_norme_changement(self):
+        """Test du changement de norme"""
+        vecteur_base = Vecteur(3,4,0)
+        vecteur_base.norme = 2.5
+        self.assertTrue(vecteur_base.x == 1.5, msg = f"La composante en x du Vecteur(3,4,0) en imposant sa norme à 2.5 donne: {vecteur_base.x}")
+        self.assertTrue(vecteur_base.y == 2, msg = f"La composante en y du Vecteur(3,4,0) en imposant sa norme à 2.5 donne: {vecteur_base.y}")
+        self.assertTrue(vecteur_base.z == 0, msg = f"La composante en z du Vecteur(3,4,0) en imposant sa norme à 2.5 donne: {vecteur_base.z}")
+
+    def  test_norme_changement_pour_0(self):
+        """Test du changement de norme par 0"""
+        vecteur_base = Vecteur(3,4,0)
+        vecteur_base.norme = 0
+        self.assertTrue(vecteur_base.x == 0, msg = f"La composante en x du Vecteur(3,4,0) en imposant sa norme à 0 donne: {vecteur_base.x}")
+        self.assertTrue(vecteur_base.y == 0, msg = f"La composante en y du Vecteur(3,4,0) en imposant sa norme à 0 donne: {vecteur_base.y}")
+        self.assertTrue(vecteur_base.z == 0, msg = f"La composante en z du Vecteur(3,4,0) en imposant sa norme à 0 donne: {vecteur_base.z}")
+
+    def  test_norme_changement_vecteur_null(self):
+        """Test du changement de norme d'un vecteur null"""
+        vecteur_base = Vecteur(0,0,0)
+        vecteur_base.norme = 2.5
+        self.assertTrue(vecteur_base.x == 0, msg = f"La composante en x du Vecteur(0,0,0) en imposant sa norme à 2.5 donne: {vecteur_base.x}")
+        self.assertTrue(vecteur_base.y == 0, msg = f"La composante en y du Vecteur(0,0,0) en imposant sa norme à 2.5 donne: {vecteur_base.y}")
+        self.assertTrue(vecteur_base.z == 0, msg = f"La composante en z du Vecteur(0,0,0) en imposant sa norme à 2.5 donne: {vecteur_base.z}")
+
+    def  test_norme_changement_none(self):
+        """Test du changement de norme par un None"""
+        vecteur_base = Vecteur(3,4,0)
+        with self.assertRaises(TypeError, msg = f"La division /= d'un vecteur ayant un None par un scalaire n'a pas levé d'exception de type TypeError"):
+            vecteur_base.norme = None
+        self.assertTrue(vecteur_base.x == 3, msg = f"Après l'erreur du changement de norme, la composante en x du vecteur modifié {vecteur_base.x} n'égale pas la composante en x du vecteur de base 3")
+        self.assertTrue(vecteur_base.y == 4, msg = f"Après l'erreur du changement de norme, la composante en y du vecteur modifié {vecteur_base.y} n'égale pas la composante en y du vecteur de base 4")
+        self.assertTrue(vecteur_base.z == 0, msg = f"Après l'erreur du changement de norme, la composante en z du vecteur modifié {vecteur_base.z} n'égale pas la composante en z du vecteur de base 0")
