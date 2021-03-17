@@ -16,10 +16,10 @@ struct aglomerationVariable
     //encodeur
     Encodeur encod [4] = 
     {
-        Encodeur(2,A0),
-        Encodeur(4,A1),
-        Encodeur(7,A2),
-        Encodeur(8,A3)
+        Encodeur(2,1),
+        Encodeur(4,5),
+        Encodeur(7,6),
+        Encodeur(8,9)
     };
     const double mmParTic = 0.75071069;
 
@@ -265,11 +265,32 @@ void controle()
         break;
     //direction
     case 1:
-        global.bot.deplacementDirectionnel(global.objectif,(double)periodeControle/(double)1000.0,global.vitesse,global.commandeVitesseCable);
+    {
+        FuniMath::Vecteur dirr = global.objectif/global.objectif.norme();
+        double distDeplacement = global.vitesse * (double)periodeControle / (double)1000;
+        FuniMath::Vecteur cible = global.bot.getPosition() + 2* distDeplacement * dirr; //facteur de sécurité de 2
+        
+        if (NBR_CABLES < 3 || global.bot.isSafe(cible))
+        {
+            global.bot.deplacementDirectionnel(global.objectif,(double)periodeControle/(double)1000.0,global.vitesse,global.commandeVitesseCable);
+        }
+        else
+        {
+            global.regime = 0;
+            for(unsigned i = 0; i < NBR_CABLES; i++)
+            {
+                global.commandeVitesseCable[i] = 0;
+            }
+        }
         break;
+    }
     //position
     case 2:
-        if ((global.bot.getPosition() - global.objectif).norme_carree() < global.seuilPosition)
+    {
+        FuniMath::Vecteur position = global.bot.getPosition();
+        FuniMath::Vecteur deplacement = global.objectif - position;
+        double normeDeplacement = deplacement.norme();
+        if (normeDeplacement < global.seuilPosition)
         {
             global.regime = 0;
             for(unsigned i = 0; i < NBR_CABLES; i++)
@@ -279,9 +300,23 @@ void controle()
         }
         else
         {
-            global.bot.deplacementPosition(global.objectif,(double)periodeControle/(double)1000.0,global.vitesse,global.commandeVitesseCable);
+
+            deplacement = deplacement / normeDeplacement;
+            double distDeplacement = global.vitesse * (double)periodeControle / (double)1000;
+            FuniMath::Vecteur cible = position + 2* distDeplacement * deplacement;
+            if (NBR_CABLES < 3 || global.bot.isSafe(cible))
+                global.bot.deplacementPosition(global.objectif,(double)periodeControle/(double)1000.0,global.vitesse,global.commandeVitesseCable);
+            else
+            {
+                global.regime = 0;
+                for(unsigned i = 0; i < NBR_CABLES; i++)
+                {
+                    global.commandeVitesseCable[i] = 0;
+                }
+            }
         }
         break;
+    }
     //défaut
     default:
         for(unsigned i = 0; i < NBR_CABLES; i++)
@@ -327,9 +362,12 @@ void interrupt3 ()
 //setup
 void setup()
 {
-
     //communication série
     Serial.begin(BAUDRATE);
+    for(int i = 0 ; i < NBR_CABLES; i++) global.encod[i].setup();
+
+
+    
     //mise en place des poles:
     global.bot.addPole(FuniMath::Vecteur(0,0,0),FuniMath::Vecteur(0,0,0));
     global.bot.addPole(FuniMath::Vecteur(1180,0,0),FuniMath::Vecteur(0,0,0));
@@ -351,6 +389,7 @@ void setup()
 
     //initialisation des moteurs
     moteurSetup(NBR_CABLES,global.cable);
+
 }
 
 //loop

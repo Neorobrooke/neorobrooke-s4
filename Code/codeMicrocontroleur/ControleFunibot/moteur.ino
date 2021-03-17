@@ -11,7 +11,7 @@
 
 DynamixelWorkbench dxl_wb;
 
-uint8_t liste_moteurs[4] = {1, 4, 2, 3};
+uint8_t liste_moteurs[4] = {1, 3, 2, 4};
 float old_position_moteurs[4];
 double old_longueur_cable[4];
 double mmprad[4] = {18,18,18,18};

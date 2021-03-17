@@ -13,4 +13,5 @@ class Encodeur
     void interruptFct2();
     int pinInterrupt(); //la pin est dans le bon format pour la fonction attachInterrupt
     int pinInterrupt2();
+    void setup();
 };

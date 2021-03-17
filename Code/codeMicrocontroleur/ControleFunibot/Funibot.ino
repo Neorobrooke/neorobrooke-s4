@@ -2,6 +2,7 @@
 #include <iostream>
 
 #define systemeArduino
+// #define autoSecure
 
 bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
 {
@@ -87,7 +88,9 @@ void Funibot::addPole(FuniMath::Vecteur positionPole, FuniMath::Vecteur position
 	accroche[nbrPole] = positionAccroche;
 	nbrPole++;
 
-	if(nbrPole >= 3) setupSafeZone();
+	#ifdef autoSecure
+		if(nbrPole >= 3) setupSafeZone();
+	#endif
 }
 
 void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniMath::Vecteur positionAccroche)
@@ -106,7 +109,9 @@ void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniM
 
 	pole[index] = positionPole;
 	accroche[index] = positionAccroche;
-	if(nbrPole >= 3) setupSafeZone();
+	#ifdef autoSecure
+		if(nbrPole >= 3) setupSafeZone();
+	#endif
 }
 
 void Funibot::setLongueurCable(unsigned char index, double longueur)
@@ -514,7 +519,7 @@ FuniMath::Vecteur Funibot::getPoleRelatif(unsigned char index)
 	return pole[index] - accroche[index];
 }
 
-void Funibot::setupSafeZone(double securite_cote = 100, double securite_toit = 200)
+void Funibot::setupSafeZone(double securite_cote , double securite_toit )
 {
 	//pas en 3D
 	if(nbrPole < 3)
