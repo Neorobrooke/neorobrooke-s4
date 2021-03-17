@@ -217,8 +217,9 @@ class Vecteur:
         """Change la norme du vecteur"""
         norme = self.norme
         if norme == 0:
-            raise ChangerNormeVecteurNulErreur("Impossible d'assigner une norme au vecteur nul, car il n'as pas d'orientation")
-        
+            raise ChangerNormeVecteurNulErreur(
+                "Impossible d'assigner une norme au vecteur nul, car il n'as pas d'orientation")
+
         bckup = (self.x, self.y, self.z)
         try:
             self.x *= longueur/norme
@@ -277,6 +278,9 @@ class Direction:
             check_signe = False
 
             if direction[index] in axes:
+                if direction[index] in directions:
+                    raise ValueError(
+                        f"L'axe {direction[index]} apparaît plusieurs fois")
                 if val in '+-' or val == '':
                     val = f"{val}1"
                 directions[direction[index]] = float(val)
