@@ -1,5 +1,6 @@
 import cmd
 import os
+import sys
 from string import digits
 from traceback import print_exc
 from serial import Serial
@@ -12,8 +13,10 @@ import time
 from pprint import pprint
 from pathlib import Path
 
-from funibot_api.funibot import Direction, FuniCommException, Funibot, Poteau, Vecteur
+from funibot_api.funiconfig import FuniConfig
+from funibot_api.funilib import Direction, FuniCommException, Poteau, Vecteur
 from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
+from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, MockType
 
 
@@ -21,45 +24,30 @@ class CLIFunibot(cmd.Cmd):
     intro = "Funibot CLI v1.0   ->   Tapez help ou ? pour la liste des commandes.\n"
     prompt = "(Funibot) $ "
 
-    def __init__(self, port: str, baud: int, mock: bool = False, completekey: str = 'tab', stdin: Any = None, stdout: Any = None) -> None:
+    def __init__(self, config: FuniConfig, completekey: str = 'tab', stdin: Any = None, stdout: Any = None) -> None:
         super().__init__(completekey=completekey, stdin=stdin, stdout=stdout)
-        print(f"Ouverture du port série [{port}] avec un baudrate de <{baud}>")
-        self.port_serie = port
-        self.baud_rate = baud
-        if not mock:
+        print(
+            f"Ouverture du port série [{config.port}] avec un baudrate de <{config.baud}>")
+        self.config = config
+        self.port_serie = config.port
+        self.baud_rate = config.baud
+        self.liste_poteaux = config.liste_poteaux
+        if not config.mock:
             try:
-                self.serial = Serial(port=port, baudrate=baud, timeout=10)
+                self.serial = Serial(
+                    port=config.port, baudrate=config.baud, timeout=10)
             except SerialException:
-                print("Port série introuvable")
-                exit(1)
+                # print("Port série introuvable")
+                sys.exit("Port série introuvable")
         else:
             self.serial = MockSerial(MockType.CLI)
 
         self.funi_serial = FuniSerial(self.serial)
 
-    def initialiser_poteaux(self, poteaux: dict) -> None:
-        liste_poteaux = []
-        for key, value in poteaux.items():
-            try:
-                poles = value["poles"]
-                accroches = value["accroches"]
-                px, py, pz = poles["x"], poles["y"], poles["z"]
-                ax, ay, az = accroches["x"], accroches["y"], accroches["z"]
-            except KeyError:
-                print_exc()
-                print(
-                    f"Valeurs manquantes dans le fichier de config pour le poteau [{key}]")
-                exit(4)
-
-            nouveau_pot = Poteau(nom=key, position_pole=Vecteur(px, py, pz),
-                                 position_accroche=Vecteur(ax, ay, az))
-            liste_poteaux.append(nouveau_pot)
-        self.liste_poteaux = liste_poteaux
         try:
-            self.bot = Funibot(self.funi_serial, liste_poteaux)
+            self.bot = Funibot(self.funi_serial, config.liste_poteaux)
         except:
-            print(f"Erreur lors de l'initialisation du bot")
-            exit(5)
+            exit(f"Erreur lors de l'initialisation du bot")
 
     def do_cable(self, arg: str):
         """Calibre en posant la longueur d'un ou de plusieurs cables
@@ -189,7 +177,7 @@ class CLIFunibot(cmd.Cmd):
 
     def do_exit(self, _):
         """Ferme le programme"""
-        exit(0)
+        sys.exit()
 
     def do_pos(self, _):
         """Demande et affiche la position du robot"""
@@ -305,48 +293,8 @@ class CLIFunibot(cmd.Cmd):
         print("ERREUR: Pas implémenté")
 
 
-def parse_args() -> Any:
-    parser = argparse.ArgumentParser(
-        prog="funibot_" + os.path.basename(__file__))
-    parser.add_argument('-f', required=True,
-                        help='Fichier de config yaml à utiliser')
-    parser.add_argument('-p',
-                        help='Port série à utiliser (a précédence sur celui dans le fichier de config)')
-    parser.add_argument('--mock', action='store_true',
-                        help='Mock le port série si présent')
-
-    return parser.parse_args()
-
-
 if __name__ == '__main__':
-    cli_args = parse_args()
-    if cli_args.f is not None:
-        with open(Path(cli_args.f), "r") as f:
-            config = load(f, Loader=Loader)
-    else:
-        print("Fichier de config non spécifié")
-        exit(1)
-
-    if cli_args.p is not None:
-        port = cli_args.p
-    else:
-        try:
-            port = config["serial"]["port"]
-        except KeyError:
-            print("Port manquant dans le fichier de config et non spécifié avec -p")
-            exit(2)
-
-    try:
-        baud = config["serial"]["baudrate"]
-    except KeyError:
-        print("Baudrate manquant dans le fichier de config")
-        exit(3)
-
-    cli_funibot = CLIFunibot(port=port, baud=baud, mock=cli_args.mock)
-    try:
-        cli_funibot.initialiser_poteaux(config["poteaux"])
-    except KeyError:
-        print("Dictionnaire des poteaux manquant dans le fichier de config")
-        exit(4)
+    config = FuniConfig()
+    cli_funibot = CLIFunibot(config=config)
 
     cli_funibot.cmdloop()

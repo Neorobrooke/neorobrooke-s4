@@ -28,6 +28,7 @@ class FuniModeDeplacement(Enum):
 class FuniModeCalibration(Enum):
     """Mode de calibration pour 'cal' (CABLE)"""
     CABLE = 'cable'
+    SOL = 'sol'
 
 
 class FuniCommException(Exception):
@@ -215,7 +216,7 @@ class FuniSerial():
 
         return (retour["args"]["pos_x"], retour["args"]["pos_y"], retour["args"]["pos_z"])
 
-    def cal(self, type: FuniType, mode: FuniModeCalibration, id: int, longueur: Optional[float] = None) -> Optional[float]:
+    def cal(self, type: FuniType, mode: FuniModeCalibration, id: Optional[int] = None, longueur: Optional[float] = None) -> Optional[float]:
         """S'occupe de la communication série pour la commande JSON 'cal'"""
         if not isinstance(type, FuniType):
             raise TypeError("type n'est pas un FuniType")
@@ -226,16 +227,19 @@ class FuniSerial():
 
         args = {}
         args["mode"] = mode.value
-        if not isinstance(id, int):
-            raise TypeError("id n'est pas un entier")
-        if id < 0:
-            raise ValueError("id est inférieur à 0")
+        if mode is not FuniModeCalibration.SOL:
+            if not isinstance(id, int):
+                raise TypeError("id n'est pas un entier")
+            if id < 0:
+                raise ValueError("id est inférieur à 0")
+        else:
+            id = None
 
         args["id"] = id
         if type is FuniType.SET:
             if longueur is None:
                 raise ValueError("longueur est None")
-            elif longueur < 0:
+            elif longueur < 0 and mode is not FuniModeCalibration.SOL:
                 raise ValueError("longueur est inférieure à zéro")
             args["long"] = longueur
         else:

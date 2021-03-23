@@ -1,6 +1,6 @@
 from __future__ import annotations
 import unittest
-from funibot_api.funibot import Direction
+from funibot_api.funilib import Direction
 
 class TestsDirection(unittest.TestCase):
 
