@@ -1,12 +1,15 @@
 from __future__ import annotations
+from collections import OrderedDict
 
-from typing import Any
+from typing import Any, Optional
 import argparse
 import os
 import sys
 from yaml import load, dump, Loader, Dumper
 from pathlib import Path
 from traceback import print_exc
+
+from yaml.cyaml import CDumper
 from funibot_api.funilib import Poteau, Vecteur
 
 class FuniConfig:
@@ -55,14 +58,14 @@ class FuniConfig:
             sys.exit("Baudrate manquant dans le fichier de config")
 
         try:
-            self.sol = self.config["sol"]
-        except KeyError:
-            sys.exit("Position du sol manquante dans le fichier de config")
-
-        try:
             self.initialiser_poteaux(self.config["poteaux"])
         except KeyError:
             sys.exit("Dictionnaire des poteaux manquant dans le fichier de config")
+
+        try:
+            self.sol = self.config["sol"]
+        except KeyError:
+            sys.exit("Position du sol manquante dans le fichier de config")
 
     def initialiser_poteaux(self, poteaux: dict) -> None:
         """Initialise la liste de poteaux à partir du dictionnaire de poteaux dans le fichier de config"""
@@ -81,3 +84,52 @@ class FuniConfig:
                                  position_accroche=Vecteur(ax, ay, az))
             liste_poteaux.append(nouveau_pot)
         self.liste_poteaux = liste_poteaux
+
+    @staticmethod
+    def generer_gabarit_config(fichier: Path = Path.cwd() / "config_gabarit.yaml") -> Optional[Path]:
+        yaml = """---
+  serial:
+    port: COM1
+    baudrate: 57600
+  sol: -1000
+  poteaux: # distances en mm
+    poteau1:
+      poles:
+        x: 0
+        y: 0
+        z: 0
+      accroches:
+        x: 0
+        y: 0
+        z: 0
+    poteau2:
+      poles:
+        x: 0
+        y: 0
+        z: 0
+      accroches:
+        x: 0
+        y: 0
+        z: 0
+    poteau3:
+      poles:
+        x: 0
+        y: 0
+        z: 0
+      accroches:
+        x: 0
+        y: 0
+        z: 0
+    poteau4:
+      poles:
+        x: 0
+        y: 0
+        z: 0
+      accroches:
+        x: 0
+        y: 0
+        z: 0
+...
+"""
+        fichier.write_text(yaml)
+        return fichier

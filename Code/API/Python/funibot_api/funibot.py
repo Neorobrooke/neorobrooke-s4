@@ -3,29 +3,27 @@ from __future__ import annotations
 from traceback import print_exc
 from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
 
-from funibot_api.funibot_json_serial import FuniErreur, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 
 class Funibot:
     """Représente le Funibot"""
 
-    @staticmethod
-    def truc():
-        pass
-
-    def __init__(self, serial: FuniSerial, poteaux: list[Poteau]) -> None:
+    def __init__(self, serial: FuniSerial, config: FuniConfig) -> None:
         self.serial = serial
-        self.poteaux = Funibot._poteaux_liste_a_dict(poteaux)
+        self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
+        self.sol = config.sol
 
     @property
-    def pos(self) -> Vecteur:
+    def pos(self) -> Optional[Vecteur]:
         """Retourne la position actuelle du Funibot.
            Nécessite une communication série.
         """
         valeur = self.serial.pos(FuniType.GET)
-        if isinstance(valeur, str):
-            raise FuniCommException(valeur)
+        if valeur is None:
+            return None
         return Vecteur(*valeur)
 
     @pos.setter
@@ -33,10 +31,21 @@ class Funibot:
         """Déplace le Funibot à la posision vectorielle demandée.
            Nécessite une communication série.
         """
-        valeur = self.serial.pos(FuniType.SET, position.vers_tuple())
-        if isinstance(valeur, str):
-            raise FuniCommException(valeur)
-        return
+        self.serial.pos(FuniType.SET, position.vers_tuple())
+
+    @property
+    def sol(self) -> Optional[float]:
+        """Retourne la position du sol.
+           Nécessite une communication série.
+        """
+        return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
+
+    @sol.setter
+    def sol(self, position: float) -> None:
+        """Change la position du sol.
+           Nécessite une communication série.
+        """
+        self.serial.cal(FuniType.SET, FuniModeCalibration.SOL, longueur=position)
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""

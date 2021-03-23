@@ -5,17 +5,13 @@ from string import digits
 from traceback import print_exc
 from serial import Serial
 from serial.serialutil import SerialException
-from yaml import load, dump, Loader, Dumper
-import argparse
 from typing import Any
 from serial import Serial
 import time
-from pprint import pprint
-from pathlib import Path
 
 from funibot_api.funiconfig import FuniConfig
-from funibot_api.funilib import Direction, FuniCommException, Poteau, Vecteur
-from funibot_api.funibot_json_serial import FuniModeCalibration, FuniSerial, FuniType
+from funibot_api.funilib import Direction, FuniCommException, Vecteur
+from funibot_api.funibot_json_serial import FuniSerial
 from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, MockType
 
@@ -37,7 +33,6 @@ class CLIFunibot(cmd.Cmd):
                 self.serial = Serial(
                     port=config.port, baudrate=config.baud, timeout=10)
             except SerialException:
-                # print("Port série introuvable")
                 sys.exit("Port série introuvable")
         else:
             self.serial = MockSerial(MockType.CLI)
@@ -45,7 +40,7 @@ class CLIFunibot(cmd.Cmd):
         self.funi_serial = FuniSerial(self.serial)
 
         try:
-            self.bot = Funibot(self.funi_serial, config.liste_poteaux)
+            self.bot = Funibot(self.funi_serial, config)
         except:
             exit(f"Erreur lors de l'initialisation du bot")
 
