@@ -81,11 +81,20 @@ class TestsFunibot(unittest.TestCase):
 
     def test_sol(self):
         bot = Funibot(self.dserial, config=self.config)
-        position = Vecteur(12, 45, -647234)
 
         bot.sol = 34
-        validation_requete = bytes(
-            f'{{"comm": "pos", "type": "set", "args": {{"pos_x": {position.x}, "pos_y": {position.y}, "pos_z": {position.z}}}}}', 'utf8')
+    
+        self.assertEqual(bot.sol, bot._sol,
+                         msg=f"Position du sol est {bot.sol} au lieu de {bot._sol}")
 
-        self.assertEqual(self.dmock.ecriture.requete, validation_requete,
-                         msg=f"Position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+    def test_set_sol(self):
+        bot = Funibot(self.serial, config=self.config)
+        long = 12
+        bot.sol = long
+
+        validation_requete = bytes(
+            f'{{"comm": "cal", "type": "set", "args": {{"mode": "sol", "id": null, "long": {long}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Position du sol est {validation_requete} au lieu de {self.mock.requete}")
+
