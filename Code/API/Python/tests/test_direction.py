@@ -1,6 +1,6 @@
 from __future__ import annotations
 import unittest
-from funibot_api.funibot import Direction
+from funibot_api.funibot import Direction, Vecteur
 
 class TestsDirection(unittest.TestCase):
 
@@ -46,9 +46,16 @@ class TestsDirection(unittest.TestCase):
         direction = Direction("2x+8z")
         self.assertTrue(repr(direction) == "Direction(x:2; y:0; z:8)", msg = f"La représentation d'une direction avec deux composantes donne: {repr(direction)}")
 
+    def test_repr_distance_vecteur(self):
+        """Test de la représentation d'une direction en vecteur"""
+        direction = Direction("2x+8z")
+        self.assertTrue(direction.vecteur() == Vecteur(2,0,8), msg = f"La représentation d'une direction en vecteur donne: {direction.vecteur()}")
 
-    @unittest.skip("Pas prêt, test avec float")
+
+    #@unittest.skip("Pas prêt, test avec float")
     def test_repr_reel(self):
         """Test de la représentation d'une direction avec des nombres réels"""
         direction = Direction("2.6x+8.1z")
         self.assertTrue(repr(direction) == "Direction(x:2.6; y:0; z:8.1)", msg = f"La représentation d'une direction avec des réels donne: {repr(direction)}")
+
+# faire comparaison avec .axe_x == et non reps
