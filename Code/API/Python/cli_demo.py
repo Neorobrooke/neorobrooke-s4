@@ -9,7 +9,7 @@ from typing import Any
 from serial import Serial
 import time
 
-from funibot_api.funiconfig import FuniConfig
+from funibot_api.funiconfig import FuniArgs, FuniConfig
 from funibot_api.funilib import Direction, FuniCommException, Vecteur
 from funibot_api.funibot_json_serial import FuniSerial
 from funibot_api.funibot import Funibot
@@ -200,6 +200,7 @@ class CLIFunibot(cmd.Cmd):
         if arg == "":
             for poteau in self.bot.values():
                 print(poteau)
+            print(f"Sol({self.bot.sol})")
         elif ':' in arg:
             _, num = arg.split(':')
             try:
@@ -214,12 +215,14 @@ class CLIFunibot(cmd.Cmd):
                 print(
                     f"Index inconnu, doit être entre 0 et {len(self.liste_poteaux) - 1}")
                 return
+        elif arg == 'sol':
+            print(f"Sol({self.bot.sol})")
         else:
             try:
                 print(self.bot[arg])
             except KeyError:
                 print("Identifiant de poteau inconnu.")
-                print(f"Choisir parmi [{', '.join(self.bot.keys())}]")
+                print(f"Choisir parmi [{', '.join(self.bot.keys())}] ou la valeur <'sol'>")
                 print(
                     f"Préfixer l'argument avec ':' pour utiliser un index de poteau entre 0 et {len(self.liste_poteaux) - 1}")
 
@@ -289,7 +292,7 @@ class CLIFunibot(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    config = FuniConfig()
-    cli_funibot = CLIFunibot(config=config)
+    args = FuniArgs().generer_config()
+    cli_funibot = CLIFunibot(config=args.config)
 
     cli_funibot.cmdloop()

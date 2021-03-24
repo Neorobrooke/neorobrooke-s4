@@ -41,7 +41,7 @@ class Funibot:
         return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
 
     @sol.setter
-    def sol(self, position: float) -> None:
+    def sol(self, position: Optional[float]) -> None:
         """Change la position du sol.
            Nécessite une communication série.
         """
