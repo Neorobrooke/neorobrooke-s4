@@ -52,4 +52,13 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(position, val_position, msg=f"Position est {position} au lieu de {val_position}")
 
-        
+    def test_set_pos(self):
+        bot = Funibot(self.dserial, config=self.config)
+        position = Vecteur(12,45,-647234)
+
+        bot.pos = position
+
+        validation_requete = bytes(
+            f'{{"comm": "pos", "type": "set", "args": {{"pos_x": {position.x}, "pos_y": {position.y}, "pos_z": {position.z}}}}}', 'utf8')
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete, msg=f"Position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
