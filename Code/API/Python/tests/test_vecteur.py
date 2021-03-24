@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Tuple
 import unittest
-from funibot_api.funibot import Vecteur, ChangerNormeVecteurNulErreur
+from funibot_api.funilib import Vecteur, ChangerNormeVecteurNulErreur
 
 class TestVecteur(unittest.TestCase):
     """Test sur la classe Vecteur"""

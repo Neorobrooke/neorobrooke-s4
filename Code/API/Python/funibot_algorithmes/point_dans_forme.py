@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import List
 from funibot_api.funibot import Vecteur
 
 
@@ -21,3 +22,14 @@ def point_dans_triangle_plan_XY(A: Vecteur, B: Vecteur, C: Vecteur, P: Vecteur):
 
     c = 1 - a - b
     return (a >= 0 and b >= 0 and c >= 0)
+
+
+def point_dans_polygone_convexe_plan_XY(cotes: List[Vecteur], P: Vecteur):
+
+    if len(cotes) < 3:
+        return False
+    for index in range(2, len(cotes)):
+        if (point_dans_triangle_plan_XY(cotes[0], cotes[index-1], cotes[index], P)):
+            return True  # dans au moins 1 triangle
+
+    return False  # dans aucun triangle

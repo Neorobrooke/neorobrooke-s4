@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from math import sqrt
 from traceback import print_exc
-from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
+from numbers import Real
+from string import digits
+from typing import Union, Tuple, Optional
 
 from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
-<<<<<<< HEAD
 
 
 class JamaisInitialise(Exception):
@@ -253,7 +255,7 @@ class Direction:
     def _parse(direction: str) -> Tuple[int, int, int]:
         """Transforme une string contenant les caractères 'xyz+-' en direction"""
 
-        allowed = f".+-xyz{digits}"
+        allowed = f"+-xyz{digits}"
 
         if not set(direction).issubset(set(allowed)):
             raise ValueError(
@@ -268,7 +270,7 @@ class Direction:
         axes = 'xyz'
         check_signe = True
         for index in range(len(direction)):
-            if direction[index] in f'.+-{digits}':
+            if direction[index] in f'+-{digits}':
                 val = f"{val}{direction[index]}"
                 if not check_signe and direction[index] in '+-':
                     raise ValueError(
@@ -406,126 +408,3 @@ class Poteau:
         if self.id is None or self.serial is None:
             raise JamaisInitialise(self, "couple_moteur")
         raise NotImplementedError("Pas encore codé dans la communication")
-
-=======
-from funibot_api.funiconfig import FuniConfig
-from funibot_api.funilib import Poteau, Vecteur, Direction
->>>>>>> 8b8c37b28024b1094f6e3fca5598c6e81db6bdc3
-
-class Funibot:
-    """Représente le Funibot"""
-
-    def __init__(self, serial: FuniSerial, config: FuniConfig) -> None:
-        self.serial = serial
-        self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
-        self._initialiser_poteaux()
-        self.sol = config.sol
-
-    @property
-    def pos(self) -> Optional[Vecteur]:
-        """Retourne la position actuelle du Funibot.
-           Nécessite une communication série.
-        """
-        valeur = self.serial.pos(FuniType.GET)
-        if valeur is None:
-            return None
-        return Vecteur(*valeur)
-
-    @pos.setter
-    def pos(self, position: Vecteur) -> None:
-        """Déplace le Funibot à la posision vectorielle demandée.
-           Nécessite une communication série.
-        """
-        self.serial.pos(FuniType.SET, position.vers_tuple())
-
-    @property
-    def sol(self) -> Optional[float]:
-        """Retourne la position du sol.
-           Nécessite une communication série.
-        """
-        return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
-
-    @sol.setter
-    def sol(self, position: float) -> None:
-        """Change la position du sol.
-           Nécessite une communication série.
-        """
-        self.serial.cal(FuniType.SET, FuniModeCalibration.SOL, longueur=position)
-
-    def __getitem__(self, nom: str) -> Poteau:
-        """Retourne le poteau ayant le nom demandé"""
-        return self.poteaux[nom]
-
-    def keys(self) -> KeysView:
-        """Retourne une vue sur les clés du dict des poteaux"""
-        return self.poteaux.keys()
-
-    def values(self) -> ValuesView[Poteau]:
-        """Retourne une vue sur les valeurs du dict des poteaux"""
-        return self.poteaux.values()
-
-    def items(self) -> ItemsView:
-        """Retourne une vue sur les items du dict des poteaux"""
-        return self.poteaux.items()
-
-    def __iter__(self) -> Iterator:
-        """Retourne un générateur pour itérer sur les poteaux du funibot"""
-        return (key for key in self.poteaux.values())
-
-    def __repr__(self) -> str:
-        """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
-        return f"Funibot[{self.serial}]({list(self.poteaux.values())})"
-
-    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
-        """Déplace le Funibot dans la direction indiquée par 'direction'.
-           Si 'distance' n'est pas None, arrête après avoir parcouru 'distance'.
-           Si 'distance' est la valeur spéciale 0, arrête après avoir parcouru la distance correspondant à la norme du vecteur
-           Sinon, arrête avec un appel à 'stop'
-           Nécessite une communication série.
-        """
-        if isinstance(direction, str):
-            direction = Direction(direction=direction)
-
-        if isinstance(direction, Direction):
-            direction = direction.vecteur()
-
-        mode = FuniModeDeplacement.START if distance is None else FuniModeDeplacement.DISTANCE
-
-        if distance is not None and distance != 0:
-            direction = direction.unitaire() * distance
-
-        self.serial.dep(type=FuniType.SET, mode=mode,
-                        direction=direction.vers_tuple())
-        return None
-
-    def stop(self) -> None:
-        self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
-        return None
-
-    def erreur(self) -> Optional[List[FuniErreur]]:
-        try:
-            erreurs = self.serial.err(FuniType.GET)
-            return erreurs
-        except Exception:
-            print_exc()
-            return None
-
-    @staticmethod
-    def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:
-        """Crée un dict avec la liste de poteaux, en utilisant le nom comme clé"""
-        poteaux_dict = {}
-        for poteau in poteaux:
-            poteaux_dict[poteau.nom] = poteau
-        return poteaux_dict
-
-    def _initialiser_poteaux(self):
-        """Donne un ID et assigne l'objet serial à chaque poteau"""
-        self.poteaux_id: List[Poteau] = []
-        for poteau in self.poteaux.values():
-            try:
-                poteau.init_poteau(
-                    id=len(self.poteaux_id), comm_serie=self.serial)
-            except Exception:
-                print_exc()
-                raise
-            self.poteaux_id.append(poteau)

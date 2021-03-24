@@ -26,13 +26,17 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
 - Calibrer le système [À DÉTAILLER]
   - Calibration manuelle avec le mode `cable` et la longueur des câbles
   - Utilisation avec `get` et le mode `cable` pour obtenir la longueur des câbles
+  - Utilisation avec `set` et le mode `sol` pour configurer la position du sol
+    - Sert à définir la zone de travail à l'extérieure de laquelle le robot ne doit pas se rendre
+    - `long` correspond à la position du sol en `y`, par rapport au référentiel global
+    - `id` est ignoré, il peut être `null` ou complètement absent
   ```json
   {
     "comm": "cal",
     "type": "get | set | ack",
     "args":
     {
-      "mode": "cable",
+      "mode": "cable | sol",
       "id": 0,
       "long": 0.0
     }
