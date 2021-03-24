@@ -57,7 +57,7 @@ class MockSerial(IMockSerial):
         #         self.buffer.put(elem)
 
         if self.is_cli:
-            print(f"MOCK_RECEIVE <- <{contenu}>")
+            print(f"\t\t\t\tMOCK_RECEIVE <- <{contenu}>")
         self.requete = contenu
 
         try:
@@ -90,7 +90,7 @@ class MockSerial(IMockSerial):
         #     return valeur
         
         if self.is_cli:
-            print(f"MOCK_SEND -> <{self.reponse}>")
+            print(f"\t\t\t\tMOCK_SEND -> <{self.reponse}>")
         return self.reponse
 
     def read_all(self) -> bytes:
