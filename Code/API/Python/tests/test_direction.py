@@ -73,6 +73,3 @@ class TestsDirection(unittest.TestCase):
         """Test de la représentation d'une direction avec une virgule"""
         direction = Direction("2,6x+2y+8,1z")
         self.assertTrue(repr(direction) == "Direction(x:2.6; y:2; z:8.1)", msg = f"La représentation d'une direction avec des virgules donne: {repr(direction)}")
-        
-    #@unittest.skip("Pas prêt, test avec float")
-# faire comparaison avec .axe_x == et non reps
