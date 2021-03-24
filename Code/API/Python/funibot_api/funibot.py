@@ -7,6 +7,7 @@ from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, Fun
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 
+
 class Funibot:
     """Représente le Funibot"""
 
@@ -47,7 +48,8 @@ class Funibot:
         """Change la position du sol.
            Nécessite une communication série.
         """
-        valeur = self.serial.cal(FuniType.SET, FuniModeCalibration.SOL, longueur=position)
+        valeur = self.serial.cal(
+            FuniType.SET, FuniModeCalibration.SOL, longueur=position)
         if valeur is not None:
             self._sol = valeur
 
@@ -108,7 +110,7 @@ class Funibot:
         except Exception:
             print_exc()
             return None
-    
+
     def repr_sol(self):
         return f"Sol -> {self.sol}"
 

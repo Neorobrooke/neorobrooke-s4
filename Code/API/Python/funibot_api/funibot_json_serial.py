@@ -1,12 +1,12 @@
+from __future__ import annotations
+
 from traceback import print_exc
 from benedict import benedict
 from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
 
-import serial
-from serial import serialutil
-from tests.mock_serial import IMockSerial, MockSerial
+from tests.mock_serial import IMockSerial
 
 from serial import Serial
 

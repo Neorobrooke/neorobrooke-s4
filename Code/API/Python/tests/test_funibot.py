@@ -7,6 +7,7 @@ from funibot_api.funibot_json_serial import FuniSerial
 from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, DualMockSerial, MockType
 
+
 class TestsFunibot(unittest.TestCase):
     """Tests sur la classe Funibot de funibot_api"""
 
@@ -22,11 +23,11 @@ class TestsFunibot(unittest.TestCase):
 
         self.poteaux = [Poteau("pot1", Vecteur(x=1, y=2, z=3), Vecteur(x=11, y=12, z=13)),
                         Poteau("pot2", Vecteur(x=4, y=5, z=8), Vecteur(x=0, y=23, z=9))]
-        
+
         self.config = FuniConfig()
         self.config.liste_poteaux = self.poteaux
         self.config.sol = 0
-    
+
     def test_init(self):
         """Test d'initialisation d'un Funibot"""
         bot = Funibot(self.serial, config=self.config)
@@ -43,13 +44,12 @@ class TestsFunibot(unittest.TestCase):
 
     def test_pos(self):
         bot = Funibot(self.dserial, config=self.config)
-        position = Vecteur(12,45,-647234)
+        position = Vecteur(12, 45, -647234)
 
         self.dmock.lecture.reponse = bytes(
             f'{{"comm": "pos", "type": "ack", "args": {{"pos_x": {position.x}, "pos_y": {position.y}, "pos_z": {position.z}}}}}', 'utf8')
 
         val_position = bot.pos
 
-        self.assertEqual(position, val_position, msg=f"Position est {position} au lieu de {val_position}")
-
-        
+        self.assertEqual(position, val_position,
+                         msg=f"Position est {position} au lieu de {val_position}")
