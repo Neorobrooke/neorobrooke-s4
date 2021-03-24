@@ -1,10 +1,6 @@
 from __future__ import annotations
 import unittest
-<<<<<<< HEAD
-from funibot_api.funibot import Direction, Vecteur
-=======
-from funibot_api.funilib import Direction
->>>>>>> 8b8c37b28024b1094f6e3fca5598c6e81db6bdc3
+from funibot_api.funilib import Direction, Vecteur
 
 class TestsDirection(unittest.TestCase):
 

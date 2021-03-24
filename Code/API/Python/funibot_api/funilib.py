@@ -255,7 +255,7 @@ class Direction:
     def _parse(direction: str) -> Tuple[int, int, int]:
         """Transforme une string contenant les caractères 'xyz+-' en direction"""
 
-        allowed = f"+-xyz{digits}"
+        allowed = f".+-xyz{digits}"
 
         if not set(direction).issubset(set(allowed)):
             raise ValueError(
@@ -270,7 +270,7 @@ class Direction:
         axes = 'xyz'
         check_signe = True
         for index in range(len(direction)):
-            if direction[index] in f'+-{digits}':
+            if direction[index] in f'.+-{digits}':
                 val = f"{val}{direction[index]}"
                 if not check_signe and direction[index] in '+-':
                     raise ValueError(
