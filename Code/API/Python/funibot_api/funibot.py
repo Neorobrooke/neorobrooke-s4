@@ -7,6 +7,7 @@ from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, Fun
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 
+
 class Funibot:
     """Représente le Funibot"""
 
@@ -14,7 +15,7 @@ class Funibot:
         self.serial = serial
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
-        self.sol = config.sol
+        self._sol = config.sol
 
     @property
     def pos(self) -> Optional[Vecteur]:
@@ -35,17 +36,22 @@ class Funibot:
 
     @property
     def sol(self) -> Optional[float]:
-        """Retourne la position du sol.
-           Nécessite une communication série.
-        """
-        return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
+        # """Retourne la position du sol.
+        #    Nécessite une communication série.
+        # """
+        """Retourne la position du sol."""
+        # return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
+        return self._sol
 
     @sol.setter
     def sol(self, position: Optional[float]) -> None:
         """Change la position du sol.
            Nécessite une communication série.
         """
-        self.serial.cal(FuniType.SET, FuniModeCalibration.SOL, longueur=position)
+        valeur = self.serial.cal(
+            FuniType.SET, FuniModeCalibration.SOL, longueur=position)
+        if valeur is not None:
+            self._sol = valeur
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""
@@ -104,6 +110,9 @@ class Funibot:
         except Exception:
             print_exc()
             return None
+
+    def repr_sol(self):
+        return f"Sol -> {self.sol}"
 
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:

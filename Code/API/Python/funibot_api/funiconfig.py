@@ -12,6 +12,7 @@ from traceback import print_exc
 from yaml.cyaml import CDumper
 from funibot_api.funilib import Poteau, Vecteur
 
+
 class FuniConfig:
     """Contient la configuration pour un Funibot"""
 
@@ -36,7 +37,8 @@ class FuniConfig:
             try:
                 self.port = self.config["serial"]["port"]
             except KeyError:
-                sys.exit("Port manquant dans le fichier de config et non spécifié manuellement")
+                sys.exit(
+                    "Port manquant dans le fichier de config et non spécifié manuellement")
 
         try:
             self.baud = self.config["serial"]["baudrate"]
@@ -55,10 +57,12 @@ class FuniConfig:
 
         return self
 
-    def initialiser_poteaux(self, poteaux: dict) -> None:
+    def initialiser_poteaux(self, poteaux: List[dict]) -> None:
         """Initialise la liste de poteaux à partir du dictionnaire de poteaux dans le fichier de config"""
         liste_poteaux = []
-        for key, value in poteaux.items():
+        for poteau in poteaux:
+            key = list(poteau.keys())[0]
+            value = list(poteau.values())[0]
             try:
                 poles = value["poles"]
                 accroches = value["accroches"]
@@ -66,7 +70,8 @@ class FuniConfig:
                 ax, ay, az = accroches["x"], accroches["y"], accroches["z"]
             except KeyError:
                 print_exc()
-                sys.exit(f"Valeurs manquantes dans le fichier de config pour le poteau [{key}]")
+                sys.exit(
+                    f"Valeurs manquantes dans le fichier de config pour le poteau [{key}]")
 
             nouveau_pot = Poteau(nom=key, position_pole=Vecteur(px, py, pz),
                                  position_accroche=Vecteur(ax, ay, az))
@@ -125,24 +130,26 @@ class FuniConfig:
 
 class FuniArgs:
     """Gère les arguments CLI par défaut pour le Funibot"""
+
     def __init__(self, programme: str = "funibot_api." + os.path.basename(__file__)) -> None:
         """Génère et parse les arguments"""
         self.parser = argparse.ArgumentParser(prog=programme)
         self.parser.add_argument('-f', required=True,
-                            help='Fichier de config yaml à utiliser')
+                                 help='Fichier de config yaml à utiliser')
         self.parser.add_argument('-p',
-                            help='Port série à utiliser (a précédence sur celui dans le fichier de config)')
+                                 help='Port série à utiliser (a précédence sur celui dans le fichier de config)')
         self.parser.add_argument('--mock', action='store_true',
-                            help='Mock le port série si présent')
+                                 help='Mock le port série si présent')
 
         self.args = self.parser.parse_args()
 
     def generer_config(self) -> FuniArgs:
         """Génère les attributs pour chaque option de configuration"""
         self.config = FuniConfig()
-        
+
         if self.args.f is not None:
-            self.config.generer_config(Path(self.args.f), self.args.mock, self.args.p)
+            self.config.generer_config(
+                Path(self.args.f), self.args.mock, self.args.p)
         else:
             sys.exit("Fichier de config non spécifié")
 

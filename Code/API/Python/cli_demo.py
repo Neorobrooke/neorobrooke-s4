@@ -200,7 +200,6 @@ class CLIFunibot(cmd.Cmd):
         if arg == "":
             for poteau in self.bot.values():
                 print(poteau)
-            print(f"Sol({self.bot.sol})")
         elif ':' in arg:
             _, num = arg.split(':')
             try:
@@ -215,14 +214,12 @@ class CLIFunibot(cmd.Cmd):
                 print(
                     f"Index inconnu, doit être entre 0 et {len(self.liste_poteaux) - 1}")
                 return
-        elif arg == 'sol':
-            print(f"Sol({self.bot.sol})")
         else:
             try:
                 print(self.bot[arg])
             except KeyError:
                 print("Identifiant de poteau inconnu.")
-                print(f"Choisir parmi [{', '.join(self.bot.keys())}] ou la valeur <'sol'>")
+                print(f"Choisir parmi [{', '.join(self.bot.keys())}]")
                 print(
                     f"Préfixer l'argument avec ':' pour utiliser un index de poteau entre 0 et {len(self.liste_poteaux) - 1}")
 
@@ -283,12 +280,27 @@ class CLIFunibot(cmd.Cmd):
 
         try:
             self.bot.pos = Vecteur(px, py, pz)
-        except FuniCommException as e:
+        except FuniCommException:
             print_exc()
 
     def do_cal(self, arg):
         """[PAS IMPLÉMENTÉ] Calibre automatiquement le Funibot"""
         print("ERREUR: Pas implémenté")
+
+    def do_sol(self, _):
+        """Affiche la position actuelle du sol"""
+        print(self.bot.repr_sol())
+
+    def do_chsol(self, arg):
+        """Modifie la position actuelle du sol"""
+        try:
+            self.bot.sol = float(arg)
+        except ValueError:
+            print("La position du sol doit être un nombre réel")
+        except FuniCommException:
+            print_exc()
+        else:
+            print(self.bot.repr_sol())
 
 
 if __name__ == '__main__':
