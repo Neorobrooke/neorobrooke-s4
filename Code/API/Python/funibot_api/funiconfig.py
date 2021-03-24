@@ -30,7 +30,7 @@ class FuniConfig:
             self.config = load(f, Loader=Loader)
 
         if port is not None:
-            self.port = self.port
+            self.port = port
         else:
             try:
                 self.port = self.config["serial"]["port"]
