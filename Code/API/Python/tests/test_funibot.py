@@ -52,12 +52,35 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(position, val_position, msg=f"Position est {position} au lieu de {val_position}")
 
+    def test_pos_none(self):
+        """Test de position de None"""
+        bot = Funibot(self.dserial, config=self.config)
+        position = Vecteur()
+
+        self.dmock.lecture.reponse = bytes(
+            f'{{"comm": "pos", "type": "set", "args": {{"pos_x": {position.x}, "pos_y": {position.y}, "pos_z": {position.z}}}}}', 'utf8')
+
+        val_position = bot.pos
+
+        self.assertIsNone(val_position, msg=f"Position est {val_position} au lieu d'être None")
+
+
     def test_set_pos(self):
         bot = Funibot(self.dserial, config=self.config)
         position = Vecteur(12,45,-647234)
 
         bot.pos = position
 
+        validation_requete = bytes(
+            f'{{"comm": "pos", "type": "set", "args": {{"pos_x": {position.x}, "pos_y": {position.y}, "pos_z": {position.z}}}}}', 'utf8')
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete, msg=f"Position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+
+    def test_sol(self):
+        bot = Funibot(self.dserial, config=self.config)
+        position = Vecteur(12,45,-647234)
+
+        bot.sol = 34
         validation_requete = bytes(
             f'{{"comm": "pos", "type": "set", "args": {{"pos_x": {position.x}, "pos_y": {position.y}, "pos_z": {position.z}}}}}', 'utf8')
 
