@@ -1,4 +1,4 @@
 #include <DynamixelWorkbench.h>
 
-void moteurSetup(uint8_t nbrMoteur);
-void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable, int dt);
+void moteurSetup(uint8_t nbrMoteur, double *longueurCable);
+void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable);

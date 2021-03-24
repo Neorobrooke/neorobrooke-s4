@@ -8,14 +8,21 @@
 #endif   
 
 #define MOTORBAUDRATE  4500000
-#define mmprad -18
+#define NBR_MOTOR 4
+#define REG_TENSION
 
 DynamixelWorkbench dxl_wb;
 
-uint8_t liste_moteurs[4] = {1, 4, 2, 3};
-float position_moteurs[4];
+uint8_t liste_moteurs[NBR_MOTOR] = {3, 2, 1, 4};
+float old_position_moteurs[NBR_MOTOR];
+double old_longueur_cable[NBR_MOTOR];
+double mmprad[NBR_MOTOR] = {18,18,18,18};
 
-void moteurSetup(uint8_t nbrMoteur)
+#ifdef REG_TENSION
+bool sous_tension[NBR_MOTOR];
+#endif
+
+void moteurSetup(uint8_t nbrMoteur, double *longueurCable)
 {
     dxl_wb.init(DEVICE_NAME,MOTORBAUDRATE);
 
@@ -26,38 +33,86 @@ void moteurSetup(uint8_t nbrMoteur)
       dxl_wb.torqueOff(liste_moteurs[i]);
       dxl_wb.setExtendedPositionControlMode(liste_moteurs[i]);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Velocity", 0);
-      //dxl_wb.setVelocityControlMode(liste_moteurs[i]);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Acceleration", 0);
       dxl_wb.torqueOn(liste_moteurs[i]);
-      //dxl_wb.wheelMode(liste_moteurs[i], 1);
     }
     for (uint8_t i=0; i<nbrMoteur; i++)
     {
-      dxl_wb.getRadian(liste_moteurs[i], position_moteurs+i);
+      dxl_wb.getRadian(liste_moteurs[i], old_position_moteurs+i);
+      old_longueur_cable[i] = longueurCable[i];
+      #ifdef REG_TENSION
+      sous_tension[i] = false;
+      #endif
     }
 }
 
 void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
 {
-  static long t;
+  //delta temps
+  static long t = millis();
   long nt = millis();
-  long dt = nt-t;
+  long dt = nt - t;
   t = nt;
+
+  //controle des moteurs
   for (uint8_t i=0; i<nbrMoteur; i++)
     {
-      
+
+      //prise de données
       float radian;
       dxl_wb.getRadian(liste_moteurs[i], &radian);
-      float deplacement = radian - position_moteurs[i];
-      position_moteurs[i] = radian;
-      /*if (deplacement > PI)
-        deplacement -= 2*PI;
-      if (deplacement < -PI)
-        deplacement += 2*PI;*/
-      longueurCable[i] += deplacement*mmprad;
-      float cible = radian + (vitesse[i]/mmprad)*((float)dt/1000.f);
-      dxl_wb.goalPosition(liste_moteurs[i], cible);
-      //dxl_wb.goalVelocity(liste_moteurs[i], (float)(vitesse[i]/mmprad));
+      double deltaAng = radian - old_position_moteurs[i];
+      double deltaCable = longueurCable[i] - old_longueur_cable[i];
 
+      #ifndef REG_TENSION
+      //calibration
+      if (abs(deltaCable) > 5 && abs(deltaAng) > 0.3)
+      {
+          mmprad[i] = deltaCable / deltaAng;
+          old_position_moteurs[i] = radian;
+          old_longueur_cable[i] = longueurCable[i];
+      }
+      #else
+      //calibration
+      if(abs(deltaAng)> 0.3)
+      {
+        if(abs(deltaCable)>2)
+        {
+          mmprad[i] = deltaCable / deltaAng;
+          old_position_moteurs[i] = radian;
+          old_longueur_cable[i] = longueurCable[i];
+          sous_tension[i] = false;
+        }
+        else
+        {
+          sous_tension[i] = true;
+        }
+      }
+      //resolution des sous tension
+      if(sous_tension[i])
+        {
+          if(abs(deltaCable) < 2 )
+          {
+            if (mmprad[i] < 0)
+            {
+              if (vitesse[i] < 0.5)
+              vitesse[i] = 0.5;
+            }
+            else
+            {
+              if (vitesse[i] > -0.5)
+              vitesse[i] = -0.5;
+            }
+          }
+          else
+          {
+            sous_tension[i] = false;
+          }
+        }
+      #endif
+
+      //consigne du deplacement;
+      float cible = radian + (vitesse[i]/mmprad[i])*((float)dt/1000.f);
+      dxl_wb.goalPosition(liste_moteurs[i], cible);
     }
 }
