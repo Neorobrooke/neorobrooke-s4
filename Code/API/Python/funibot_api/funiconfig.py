@@ -1,15 +1,13 @@
 from __future__ import annotations
-from collections import OrderedDict
 
 from typing import Optional, List, Union
 import argparse
 import os
 import sys
-from yaml import load, dump, Loader, Dumper
+from yaml import load, Loader
 from pathlib import Path
 from traceback import print_exc
 
-from yaml.cyaml import CDumper
 from funibot_api.funilib import Poteau, Vecteur
 
 

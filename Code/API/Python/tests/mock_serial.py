@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum, auto
-from queue import Queue, Empty
 from json import JSONDecoder, JSONEncoder, JSONDecodeError
-from threading import Condition
 from typing import Optional
 
 
@@ -73,15 +71,15 @@ class DualMockSerial(IMockSerial):
             MockType.TEST, timeout=timeout)
         self.ecriture = canal_ecriture if canal_lecture is not None else MockSerial(
             MockType.TEST, timeout=timeout)
-        self.var_cond = Condition()
+        # self.var_cond = Condition()
 
     def write(self, contenu: bytes) -> None:
-        with self.var_cond:
-            try:
-                self.ecriture.write(contenu=contenu)
-            except Empty:
-                raise
-            self.var_cond.notify()
+        # with self.var_cond:
+            # try:
+        self.ecriture.write(contenu=contenu)
+            # except Empty:
+                # raise
+            # self.var_cond.notify()
 
     def readline(self) -> bytes:
         return self.lecture.readline()
