@@ -38,7 +38,7 @@ class TestsDirection(unittest.TestCase):
 
     def test_repr_un_entier(self):
         """Test de la représentation d'une direction avec un entier sans composante"""
-        with self.assertRaises(ValueError, msg = "Avoir une direction contenant un entier sans composante n'a pas levé d'exception de type ValueError") as re:
+        with self.assertRaises(ValueError, msg = "Avoir une direction contenant un entier sans composante n'a pas levé d'exception de type ValueError"):
             Direction("12")
 
     def test_repr_deux_composantes(self):
@@ -49,13 +49,27 @@ class TestsDirection(unittest.TestCase):
     def test_repr_distance_vecteur(self):
         """Test de la représentation d'une direction en vecteur"""
         direction = Direction("2x+8z")
-        self.assertTrue(direction.vecteur() == Vecteur(2,0,8), msg = f"La représentation d'une direction en vecteur donne: {direction.vecteur()}")
+        dir_vect = direction.vecteur()
+        self.assertTrue(direction.axe_x == dir_vect.x, msg = f"La composante en x de la direction en vecteur donne: {dir_vect.x}")
+        self.assertTrue(direction.axe_y == dir_vect.y, msg = f"La composante en y de la direction en vecteur donne: {dir_vect.y}")
+        self.assertTrue(direction.axe_z == dir_vect.z, msg = f"La composante en z de la direction en vecteur donne: {dir_vect.z}")
 
-
-    #@unittest.skip("Pas prêt, test avec float")
     def test_repr_reel(self):
         """Test de la représentation d'une direction avec des nombres réels"""
         direction = Direction("2.6x+8.1z")
         self.assertTrue(repr(direction) == "Direction(x:2.6; y:0; z:8.1)", msg = f"La représentation d'une direction avec des réels donne: {repr(direction)}")
 
-# faire comparaison avec .axe_x == et non reps
+    def test_repr_deux_points_separer(self):
+        """Test avec réel de type 3.4.5 de la représentation d'une direction"""
+        with self.assertRaises(ValueError, msg = "Avoir une direction contenant un réel avec deux points de type 3.4.5 n'a pas levé d'exception de type ValueError"):
+            Direction("2.6.5x+8.1z")
+
+    def test_repr_fausse_reel(self):
+        """Test avec réel de type 3..2 de la représentation d'une direction"""
+        with self.assertRaises(ValueError, msg = "Avoir une direction contenant un réel avec deux points de type 3..2 n'a pas levé d'exception de type ValueError"):
+            Direction("2.5x+8..1z")
+
+    def test_repr_vigule_reel(self):
+        """Test de la représentation d'une direction avec une virgule"""
+        direction = Direction("2,6x+2y+8,1z")
+        self.assertTrue(repr(direction) == "Direction(x:2.6; y:2; z:8.1)", msg = f"La représentation d'une direction avec des virgules donne: {repr(direction)}")
