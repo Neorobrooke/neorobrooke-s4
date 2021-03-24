@@ -592,6 +592,13 @@ bool Funibot::isSafe(FuniMath::Vecteur P)
 	}
 	
 	if (P.y > toit) return false;
+	if (hasSol && P.y < sol) return false;
 	FuniMath::Vecteur PXY(P.x,P.z,0);
 	return FuniMath::inConvexXY(safeCorner,nbrPole,PXY);
+}
+
+void Funibot::setSol(double val_sol)
+{
+	sol = val_sol;
+	hasSol = true;
 }

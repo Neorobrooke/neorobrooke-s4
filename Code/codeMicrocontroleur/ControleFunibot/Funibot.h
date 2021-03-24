@@ -65,6 +65,7 @@ public:
 
 	void setupSafeZone(double securite_cote = 0, double securite_toit = 200);
 	bool isSafe(FuniMath::Vecteur P);
+	void setSol(double val_sol);
 
 
 
@@ -76,4 +77,6 @@ protected:
 
 	FuniMath::Vecteur safeCorner[FuniConst::NBR_POLES];
 	double toit;
+	double sol;
+	bool hasSol;
 };
