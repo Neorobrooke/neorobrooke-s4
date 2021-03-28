@@ -62,7 +62,7 @@ inline void setCable(int id, double taille)
 
 void mainCommunication()
 {
-    StaticJsonDocument<512> input;
+    StaticJsonDocument<256> input;
     deserializeJson(input,Serial);
 
     String comm = (const char*)input["comm"];
