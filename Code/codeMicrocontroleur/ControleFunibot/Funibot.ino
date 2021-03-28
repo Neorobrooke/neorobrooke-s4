@@ -602,3 +602,8 @@ void Funibot::setSol(double val_sol)
 	sol = val_sol;
 	hasSol = true;
 }
+
+double Funibot::getSol()
+{
+	return sol;
+}

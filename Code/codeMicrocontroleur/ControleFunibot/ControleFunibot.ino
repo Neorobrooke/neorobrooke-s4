@@ -234,6 +234,15 @@ void mainCommunication()
                 serializeJson(input,Serial);
                 Serial.println();
             }
+            if(mode == "sol")
+            {
+                double longueur = input["args"]["long"];
+                global.bot.setSol(longueur);
+                input["type"] = "ack";
+                input["args"]["long"] = global.bot.getSol();
+                serializeJson(input,Serial);
+                Serial.println();
+            }
         }
         else if(type == "get")
         {
@@ -244,6 +253,13 @@ void mainCommunication()
 
                 input["type"] = "ack";
                 input["args"]["long"] = global.bot.getLongueurCable(id);
+                serializeJson(input,Serial);
+                Serial.println();
+            }
+            if(mode == "sol")
+            {
+                input["type"] = "ack";
+                input["args"]["long"] = global.bot.getSol();
                 serializeJson(input,Serial);
                 Serial.println();
             }
