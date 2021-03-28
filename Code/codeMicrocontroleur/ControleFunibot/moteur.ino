@@ -74,14 +74,13 @@ void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
       }
       #else
       //calibration
-      if(abs(deltaAng)> 0.3)
+      if(!sous_tension[i] && abs(deltaAng)> 0.3)
       {
         if(abs(deltaCable)>2)
         {
           mmprad[i] = deltaCable / deltaAng;
           old_position_moteurs[i] = radian;
           old_longueur_cable[i] = longueurCable[i];
-          sous_tension[i] = false;
         }
         else
         {
