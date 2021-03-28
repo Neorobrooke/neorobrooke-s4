@@ -343,6 +343,16 @@ void controle()
         }
         break;
     }
+
+    //arrêt en cas d'erreur majeure
+    if (!global.bot.erreurs.empty())
+    {
+        for (int i = 0; i < global.bot.erreurs.size(); i++)
+        {
+            if (global.bot.erreurs[i].majeur)
+            global.regime = 0;
+        }
+    }
 }
 
 //fonction des moteurs, controle les moteurs et s'assure d'obtenir la bonne vitesse
