@@ -65,6 +65,8 @@ void mainCommunication()
     StaticJsonDocument<256> input;
     deserializeJson(input,Serial);
 
+    String type = (const char*)input["type"];
+    if(type == "ack") return;
     String comm = (const char*)input["comm"];
     if(comm == "pot")
     {
@@ -110,7 +112,6 @@ void mainCommunication()
     }
     else if (comm == "dep")
     {
-            String type = (const char*)input["type"];
             if(type == "set")
             {
                 String mode = (const char*)input["args"]["mode"];
@@ -151,7 +152,6 @@ void mainCommunication()
     }
     else if (comm == "pos")
     {
-        String type = (const char*)input["type"];
         if(type == "get")
         {
             StaticJsonDocument<1024> output;
@@ -182,7 +182,6 @@ void mainCommunication()
     }
     else if (comm == "err")
     {
-        String type = (const char*)input["type"];
         if(type == "get")
         {
             StaticJsonDocument<1024> output;
@@ -213,7 +212,6 @@ void mainCommunication()
     }
     else if (comm == "cal")
     {
-        String type = (const char*)input["type"];
         if(type == "set")
         {
             String mode = (const char*)input["args"]["mode"];
