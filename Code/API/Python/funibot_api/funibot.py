@@ -3,7 +3,7 @@ from __future__ import annotations
 from traceback import print_exc
 from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
 
-from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 

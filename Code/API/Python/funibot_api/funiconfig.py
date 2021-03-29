@@ -1,15 +1,13 @@
 from __future__ import annotations
-from collections import OrderedDict
 
 from typing import Optional, List, Union
 import argparse
 import os
 import sys
-from yaml import load, dump, Loader, Dumper
+from yaml import load, Loader
 from pathlib import Path
 from traceback import print_exc
 
-from yaml.cyaml import CDumper
 from funibot_api.funilib import Poteau, Vecteur
 
 
@@ -32,7 +30,7 @@ class FuniConfig:
             self.config = load(f, Loader=Loader)
 
         if port is not None:
-            self.port = self.port
+            self.port = port
         else:
             try:
                 self.port = self.config["serial"]["port"]

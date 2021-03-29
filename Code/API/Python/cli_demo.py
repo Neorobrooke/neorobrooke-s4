@@ -10,8 +10,8 @@ from serial import Serial
 import time
 
 from funibot_api.funiconfig import FuniArgs, FuniConfig
-from funibot_api.funilib import Direction, FuniCommException, Vecteur
-from funibot_api.funibot_json_serial import FuniSerial
+from funibot_api.funilib import Direction, Vecteur
+from funibot_api.funiserial import FuniSerial, FuniCommException
 from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, MockType
 

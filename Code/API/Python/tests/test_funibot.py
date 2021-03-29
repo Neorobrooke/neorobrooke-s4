@@ -3,7 +3,7 @@ import unittest
 
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur
-from funibot_api.funibot_json_serial import FuniSerial
+from funibot_api.funiserial import FuniSerial
 from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, DualMockSerial, MockType
 

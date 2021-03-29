@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import List
-from funibot_api.funibot import Vecteur
+from funibot_api.funilib import Vecteur
 
 
 def point_dans_triangle_plan_XY(A: Vecteur, B: Vecteur, C: Vecteur, P: Vecteur):

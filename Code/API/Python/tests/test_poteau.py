@@ -1,7 +1,7 @@
 from __future__ import annotations
 import unittest
 from funibot_api.funilib import JamaisInitialise, Vecteur, Poteau
-from funibot_api.funibot_json_serial import FuniSerial
+from funibot_api.funiserial import FuniSerial
 from tests.mock_serial import DualMockSerial, MockSerial, MockType
 
 

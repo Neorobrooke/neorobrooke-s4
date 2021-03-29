@@ -1,5 +1,4 @@
 from __future__ import annotations
-from unittest.case import skip
 
 from funibot_algorithmes.point_dans_forme import point_dans_triangle_plan_XY as point_triangle
 from funibot_algorithmes.point_dans_forme import point_dans_polygone_convexe_plan_XY as point_carre

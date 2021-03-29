@@ -6,7 +6,7 @@ from numbers import Real
 from string import digits
 from typing import Union, Tuple, Optional
 
-from funibot_api.funibot_json_serial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
 
 
 class JamaisInitialise(Exception):
