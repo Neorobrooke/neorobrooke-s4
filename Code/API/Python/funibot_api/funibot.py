@@ -18,8 +18,26 @@ class Funibot:
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
         self._sol = config.sol
-        self._initialiser_persistance(config.persistance)
+        
+        self._initialiser_persistance(
+            fichier=config.persistance,
+            auto_persistance=config.auto_persistance,
+            auto_calibration=config.auto_calibration)
+        
         self.config = config
+
+        if self.auto_calibration:
+            try:
+                self.calibrer()
+            except ErreurDonneesIncompatibles:
+                print_exc()
+
+    def __del__(self):
+        if self.auto_persistance:
+            try:
+                self.enregister_calibration()
+            except ErreurDonneesIncompatibles:
+                print_exc()
 
     @property
     def pos(self) -> Optional[Vecteur]:
@@ -118,13 +136,16 @@ class Funibot:
     def repr_sol(self):
         return f"Sol -> {self.sol}"
 
-    def enregister_calibration(self, fichier: Optional[Union[Path, str]] = None) -> None:
+    def enregister_calibration(self) -> None:
         try:
             self.persistance.enregistrer(
                 self._poteaux_config(), self._longueur_cables())
         except AttributeError:
             print(
                 "Impossible d'enregistrer la calibration: aucun fichier de persistance valide fourni.")
+        except ErreurDonneesIncompatibles as e:
+            print("Impossible d'enregistrer", end=': ')
+            print(e)
 
     def calibrer(self):
         try:
@@ -146,7 +167,7 @@ class Funibot:
 
     def _longueur_cables(self) -> List[float]:
         longueurs = []
-        for poteau in self:
+        for poteau in self.poteaux.values():
             longueurs.append(poteau.longueur_cable)
         return longueurs
 
@@ -158,11 +179,17 @@ class Funibot:
                 id=len(self.poteaux_id), comm_serie=self.serial)
             self.poteaux_id.append(poteau)
 
-    def _initialiser_persistance(self, fichier: Optional[Path]):
+    def _initialiser_persistance(self, fichier: Optional[Path],
+                                 auto_calibration: bool,
+                                 auto_persistance: bool):
         if fichier is None:
             self.persistance = None
+            self.auto_persistance = False
+            self.auto_calibration = False
         else:
             self.persistance = FuniPersistance(fichier=fichier)
+            self.auto_persistance = auto_persistance
+            self.auto_calibration = auto_calibration
 
     @staticmethod
     def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:

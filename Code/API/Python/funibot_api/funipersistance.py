@@ -22,23 +22,36 @@ class FuniPersistance:
 
     def enregistrer(self, poteaux: List[dict], longueurs: List[float]):
         """Enregistre la calibration actuelle dans le fichier de persistance"""
-        for poteau, longueur in zip(poteaux, longueurs):
-            cle = list(poteau.keys())[0]
-            poteau[cle]["cable"] = longueur
+        try:
+            self._load()
+        except:
+            self._generer(poteaux, longueurs)
+        else:
+            for poteau, longueur in zip(poteaux, longueurs):
+                cle = list(poteau.keys())[0]
+                if longueur is None:
+                    raise ErreurDonneesIncompatibles(f"La longueur actuelle du câble pour [{cle}] est None")
+                poteau[cle]["cable"] = longueur
 
-            self.fichier["poteaux"][cle] = poteau[cle]
+            for poteau in poteaux:
+                cle = list(poteau.keys())[0]
+                self.fichier["poteaux"][cle] = poteau[cle]
+        self._dump()
 
     def calibrer(self, poteaux: List[dict]) -> Optional[Dict[str, float]]:
         """Retourne un dictionnaire contenant les valeurs permettant de calibrer le Funibot"""
+        self._load()
         longueurs = dict()
         for poteau in poteaux:
             cle = list(poteau.keys())[0]
             if cle not in self.fichier["poteaux"].keys():
-                raise ErreurDonneesIncompatibles(f"{cle} n'est pas dans le fichier")
+                raise ErreurDonneesIncompatibles(f"[{cle}] n'est pas dans le fichier")
             if poteau[cle]["poles"] != self.fichier["poteaux"][cle]["poles"]:
-                raise ErreurDonneesIncompatibles(f"Les pôles pour {cle} ne correspondent pas")
+                raise ErreurDonneesIncompatibles(f"Les pôles pour [{cle}] ne correspondent pas")
             if poteau[cle]["accroches"] != self.fichier["poteaux"][cle]["accroches"]:
-                raise ErreurDonneesIncompatibles(f"Les accroches pour {cle} ne correspondent pas")
+                raise ErreurDonneesIncompatibles(f"Les accroches pour [{cle}] ne correspondent pas")
+            if self.fichier["poteaux"][cle]["cable"] is None:
+                raise ErreurDonneesIncompatibles(f"La longueur du câble pour [{cle}] dans le fichier est None")
             longueurs[cle] = self.fichier["poteaux"][cle]["cable"]
         return longueurs
 
@@ -52,3 +65,15 @@ class FuniPersistance:
         with self.nom_fichier.open('r') as f:
             self.fichier = self.yaml.load(f)
         return self.fichier
+
+    def _generer(self, poteaux: List[dict], longueurs: List[float]):
+        """Génère un fichier de persistance"""
+        dict_poteaux = {}
+        for item, longueur in zip(poteaux, longueurs):
+            cle = list(item.keys())[0]
+            item[cle]["cable"] = longueur
+            dict_poteaux[cle] = item[cle]
+        self.fichier = {}
+        self.fichier["poteaux"] = dict_poteaux
+        self._dump()
+        self._load()

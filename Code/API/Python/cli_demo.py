@@ -11,6 +11,7 @@ import time
 
 from funibot_api.funiconfig import FuniArgs, FuniConfig
 from funibot_api.funilib import Direction, Vecteur
+from funibot_api.funipersistance import ErreurDonneesIncompatibles
 from funibot_api.funiserial import FuniSerial, FuniCommException
 from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, MockType
@@ -172,6 +173,9 @@ class CLIFunibot(cmd.Cmd):
 
     def do_exit(self, _):
         """Ferme le programme"""
+        # La destruction du Funibot avant de quitter permet d'y mettre un breakpoint
+        # Cela permet de déboguer le __del__ du Funibot
+        del self.bot
         sys.exit()
 
     def do_pos(self, _):
@@ -283,9 +287,25 @@ class CLIFunibot(cmd.Cmd):
         except FuniCommException:
             print_exc()
 
-    def do_cal(self, arg):
-        """[PAS IMPLÉMENTÉ] Calibre automatiquement le Funibot"""
-        print("ERREUR: Pas implémenté")
+    def do_cal(self, _):
+        # """[PAS IMPLÉMENTÉ] Calibre automatiquement le Funibot"""
+        """Calibre automatiquement le Funibot selon le fichier de persistance de la calibration.
+           Ce fichier est indiqué dans le fichier de configuration.
+           Il peut aussi provenir d'un argument.
+        """
+        # print("ERREUR: Pas implémenté")
+        try:
+            self.bot.calibrer()
+        except ErreurDonneesIncompatibles as e:
+            print("Impossible de calibrer", end=": ")
+            print(e)
+
+    def do_persi(self, _):
+        """Enregistre la calibration du Funibot dans le fichier de persistance de la calibration.
+           Ce fichier est indiqué dans le fichier de configuration.
+           Il peut aussi provenir d'un argument.
+        """
+        self.bot.enregister_calibration()
 
     def do_sol(self, _):
         """Affiche la position actuelle du sol"""
