@@ -56,10 +56,12 @@ void moteurSetup(uint8_t nbrMoteur, double *longueurCable)
 void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
 {
   //delta temps
+  #ifndef ASS_VITESSE
   static long t = millis();
   long nt = millis();
   long dt = nt - t;
   t = nt;
+  #endif
 
   //controle des moteurs
   for (uint8_t i=0; i<nbrMoteur; i++)

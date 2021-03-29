@@ -15,7 +15,7 @@
         z: 0
     pot1:
       poles:
-        x: 1180
+        x: 1220
         y: 0
         z: 0
       accroches:
@@ -24,7 +24,7 @@
         z: 0
     pot2:
       poles:
-        x: 1180
+        x: 1220
         y: 0
         z: 1180
       accroches:
@@ -35,7 +35,7 @@
       poles:
         x: 0
         y: 0
-        z: 1180
+        z: 1220
       accroches:
         x: 0
         y: 0
