@@ -98,3 +98,16 @@ class TestsFunibot(unittest.TestCase):
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Position du sol est {validation_requete} au lieu de {self.mock.requete}")
 
+    def test_getitem(self):
+        bot = Funibot(self.dserial, config=self.config)
+    
+        nom = "pot1"
+        self.assertIs(bot[nom], bot.poteaux[nom],
+                         msg=f"Le nom du poteau est {bot[nom]} au lieu de {bot.poteaux[nom]}")
+
+    def test_keys(self):
+        bot = Funibot(self.dserial, config=self.config)
+
+        self.assertTrue(bot.keys() == bot.poteaux.keys(),
+                         msg=f"La clé du poteau est {bot.keys()} au lieu de {bot.poteaux.keys()}")
+
