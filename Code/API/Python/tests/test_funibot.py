@@ -128,4 +128,15 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertTrue(list(bot) == list(bot.poteaux.values()),
                          msg=f"L'iteration du poteau est {list(bot)} au lieu de {list(bot.poteaux.values())}")
-        
+
+    def test_set_stop(self):
+        bot = Funibot(self.dserial, config=self.config)
+        bot.stop()
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "stop", "axe_x": null, "axe_y": null, "axe_z": null}}}}', 'utf8')
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete,
+                         msg=f"Après avoir demandé l'arrêt, la position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+ 
+

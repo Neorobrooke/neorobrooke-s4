@@ -93,7 +93,7 @@ class Funibot:
         mode = FuniModeDeplacement.START if distance is None else FuniModeDeplacement.DISTANCE
 
         if distance is not None and distance != 0:
-            direction = direction.unitaire() * distance
+            direction.norme = distance
 
         self.serial.dep(type=FuniType.SET, mode=mode,
                         direction=direction.vers_tuple())
