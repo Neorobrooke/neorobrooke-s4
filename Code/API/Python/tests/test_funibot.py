@@ -111,3 +111,21 @@ class TestsFunibot(unittest.TestCase):
         self.assertTrue(bot.keys() == bot.poteaux.keys(),
                          msg=f"La clé du poteau est {bot.keys()} au lieu de {bot.poteaux.keys()}")
 
+    def test_values(self):
+        bot = Funibot(self.dserial, config=self.config)
+
+        self.assertTrue(list(bot.values()) == list(bot.poteaux.values()),
+                         msg=f"La valeur du poteau est {list(bot.values())} au lieu de {list(bot.poteaux.values())}")
+
+    def test_items(self):
+        bot = Funibot(self.dserial, config=self.config)
+
+        self.assertTrue(bot.items() == bot.poteaux.items(),
+                         msg=f"Les items du poteau sont {bot.items()} au lieu de {bot.poteaux.items()}")
+
+    def test_iter(self):
+        bot = Funibot(self.dserial, config=self.config)
+
+        self.assertTrue(list(bot) == list(bot.poteaux.values()),
+                         msg=f"L'iteration du poteau est {list(bot)} au lieu de {list(bot.poteaux.values())}")
+        
