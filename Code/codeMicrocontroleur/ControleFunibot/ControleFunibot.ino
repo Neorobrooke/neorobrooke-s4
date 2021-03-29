@@ -31,7 +31,7 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 100;
+    double vitesse = 80;
     double seuilPosition = 1.7;
 
     //retour encodeur
