@@ -4,11 +4,13 @@ from typing import Optional, List, Union
 import argparse
 import os
 import sys
+from ruamel.yaml.events import NodeEvent
 from yaml import load, Loader
 from pathlib import Path
 from traceback import print_exc
 
 from funibot_api.funilib import Poteau, Vecteur
+from funibot_api.funipersistance import FuniPersistance
 
 
 class FuniConfig:
@@ -20,9 +22,10 @@ class FuniConfig:
         self.port = None
         self.baud = None
         self.sol = None
+        self.persistance = None
         self.liste_poteaux = []
 
-    def generer_config(self, fichier: Union[Path, str], mock: bool, port: str = None) -> FuniConfig:
+    def generer_config(self, fichier: Union[Path, str], mock: bool, port: str = None, persistance: Union[Path, str] = None) -> FuniConfig:
         """Génère les attributs pour chaque option de configuration"""
         self.mock = (mock == True)
 
@@ -36,7 +39,15 @@ class FuniConfig:
                 self.port = self.config["serial"]["port"]
             except KeyError:
                 sys.exit(
-                    "Port manquant dans le fichier de config et non spécifié manuellement")
+                    "Port manquant dans le fichier de config et non spécifié en argument")
+
+        if persistance is not None:
+            self.persistance = Path(persistance)
+        else:
+            try:
+                self.persistance = Path(self.config["persistance"])
+            except KeyError:
+                self.persistance = None
 
         try:
             self.baud = self.config["serial"]["baudrate"]
@@ -134,6 +145,8 @@ class FuniArgs:
         self.parser = argparse.ArgumentParser(prog=programme)
         self.parser.add_argument('-f', required=True,
                                  help='Fichier de config yaml à utiliser')
+        self.parser.add_argument('-c',
+                                 help='Fichier de persistance de la calibration yaml à utiliser (a précédence sur celui dans le fichier de config)')
         self.parser.add_argument('-p',
                                  help='Port série à utiliser (a précédence sur celui dans le fichier de config)')
         self.parser.add_argument('--mock', action='store_true',

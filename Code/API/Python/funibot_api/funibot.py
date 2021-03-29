@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from traceback import print_exc
 from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
+from pathlib import Path
 
 from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
+from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
 
 
 class Funibot:
@@ -16,6 +18,8 @@ class Funibot:
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
         self._sol = config.sol
+        self._initialiser_persistance(config.persistance)
+        self.config = config
 
     @property
     def pos(self) -> Optional[Vecteur]:
@@ -57,7 +61,7 @@ class Funibot:
         """Retourne le poteau ayant le nom demandé"""
         return self.poteaux[nom]
 
-    def keys(self) -> KeysView:
+    def keys(self) -> KeysView[str]:
         """Retourne une vue sur les clés du dict des poteaux"""
         return self.poteaux.keys()
 
@@ -65,11 +69,11 @@ class Funibot:
         """Retourne une vue sur les valeurs du dict des poteaux"""
         return self.poteaux.values()
 
-    def items(self) -> ItemsView:
+    def items(self) -> ItemsView[str, Poteau]:
         """Retourne une vue sur les items du dict des poteaux"""
         return self.poteaux.items()
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator[Poteau]:
         """Retourne un générateur pour itérer sur les poteaux du funibot"""
         return (key for key in self.poteaux.values())
 
@@ -114,13 +118,37 @@ class Funibot:
     def repr_sol(self):
         return f"Sol -> {self.sol}"
 
-    @staticmethod
-    def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:
-        """Crée un dict avec la liste de poteaux, en utilisant le nom comme clé"""
-        poteaux_dict = {}
-        for poteau in poteaux:
-            poteaux_dict[poteau.nom] = poteau
-        return poteaux_dict
+    def enregister_calibration(self, fichier: Optional[Union[Path, str]] = None) -> None:
+        try:
+            self.persistance.enregistrer(
+                self._poteaux_config(), self._longueur_cables())
+        except AttributeError:
+            print(
+                "Impossible d'enregistrer la calibration: aucun fichier de persistance valide fourni.")
+
+    def calibrer(self):
+        try:
+            for cle, longueur in self.persistance.calibrer(self._poteaux_config()).items():
+                self.poteaux[cle].longueur_cable = longueur
+        except AttributeError:
+            print("Impossible de calibrer: aucun fichier de persistance valide fourni.")
+
+    def _poteaux_config(self) -> List[dict]:
+        poteaux = []
+        for poteau in self.poteaux.values():
+            pole = {"x": poteau.pos_pole.x,
+                    "y": poteau.pos_pole.y, "z": poteau.pos_pole.z}
+            accroche = {"x": poteau.pos_acccroche.x,
+                        "y": poteau.pos_acccroche.y, "z": poteau.pos_acccroche.z}
+            dict_poteau = {poteau.nom: {"poles": pole, "accroches": accroche}}
+            poteaux.append(dict_poteau)
+        return poteaux
+
+    def _longueur_cables(self) -> List[float]:
+        longueurs = []
+        for poteau in self:
+            longueurs.append(poteau.longueur_cable)
+        return longueurs
 
     def _initialiser_poteaux(self):
         """Donne un ID et assigne l'objet serial à chaque poteau"""
@@ -133,3 +161,17 @@ class Funibot:
                 print_exc()
                 raise
             self.poteaux_id.append(poteau)
+
+    def _initialiser_persistance(self, fichier: Optional[Path]):
+        if fichier is None:
+            self.persistance = None
+        else:
+            self.persistance = FuniPersistance(fichier=fichier)
+
+    @staticmethod
+    def _poteaux_liste_a_dict(poteaux: list[Poteau]) -> dict[str, Poteau]:
+        """Crée un dict avec la liste de poteaux, en utilisant le nom comme clé"""
+        poteaux_dict = {}
+        for poteau in poteaux:
+            poteaux_dict[poteau.nom] = poteau
+        return poteaux_dict
