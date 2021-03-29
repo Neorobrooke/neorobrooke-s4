@@ -23,6 +23,8 @@ class FuniConfig:
         self.baud = None
         self.sol = None
         self.persistance = None
+        self.auto_calibration = False
+        self.auto_persistance = False
         self.liste_poteaux = []
 
     def generer_config(self, fichier: Union[Path, str], mock: bool,
