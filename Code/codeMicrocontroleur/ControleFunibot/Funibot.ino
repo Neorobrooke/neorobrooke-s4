@@ -3,26 +3,10 @@
 
 #define systemeArduino
 #define autoSecure
+//#define optiPole
 
 bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
 {
-	/*debug
-	Serial.println("test du triangle");
-	Serial.print(A.x);
-	Serial.print(":");
-	Serial.print(A.y);
-	Serial.print(",");
-	Serial.print(B.x);
-	Serial.print(":");
-	Serial.print(B.y);
-	Serial.print(",");
-	Serial.print(C.x);
-	Serial.print(":");
-	Serial.println(C.y);
-	Serial.println("avec le point");
-	Serial.print(P.x);
-	Serial.print(":");
-	Serial.println(P.y);*/
 
 	if (abs(A.x - B.x) < 0.00001)
 	{
@@ -190,9 +174,36 @@ FuniMath::Vecteur Funibot::getPosition()
 			}
 
 		// Correction en fonction de la position des accroches
+		#ifdef optiPole
+		//recherche des cables courts
+		int indexOpti[3] = {0,0,0};
+		for (int i = 0; i < nbrPole; i++)
+		{
+			int id_pole = i;
+			for (int j = 0; j < 3; j++)
+			{
+				if (indexOpti[j] == 0)
+				{
+					indexOpti[j] = id_pole;
+					break;
+				}
+				if (cable[id_pole] < cable[indexOpti[j]])
+				{
+					int n_id = indexOpti[j];
+					indexOpti[j] = id_pole;
+					id_pole = indexOpti[j];
+				}
+			}
+		}
+		//calcul des corrections
+		FuniMath::Vecteur C1 = pole[indexOpti[0]] - accroche[indexOpti[0]];
+		FuniMath::Vecteur C2 = pole[indexOpti[1]] - accroche[indexOpti[1]];
+		FuniMath::Vecteur C3 = pole[indexOpti[2]] - accroche[indexOpti[2]];
+		#else
 		FuniMath::Vecteur C1 = pole[0] - accroche[0];
 		FuniMath::Vecteur C2 = pole[1] - accroche[1];
 		FuniMath::Vecteur C3 = pole[2] - accroche[2];
+		#endif
 
 		// Direction d'un pôle à l'autre
 		FuniMath::Vecteur Dirr1 = C2 - C1;
@@ -219,11 +230,20 @@ FuniMath::Vecteur Funibot::getPosition()
 		}
 
 		// Longueur du premier câble au carré (utilisée à plusieurs reprises)
+		#ifdef optiPole
+		double r1Carr = cable[indexOpti[0]] * cable[indexOpti[0]];
+		#else
 		double r1Carr = cable[0] * cable[0];
+		#endif
 
 		// Recherche des centres de jonctions tels que c1 + ki*Dirri = centre de jonction entre C1 et C(i+1)
+		#ifdef optiPole
+		double k1 = (r1Carr - (cable[indexOpti[1]] * cable[indexOpti[1]]) + (dist1 * dist1)) / (2 * dist1);
+		double k2 = (r1Carr - (cable[indexOpti[2]] * cable[indexOpti[2]]) + (dist2 * dist2)) / (2 * dist2);
+		#else
 		double k1 = (r1Carr - (cable[1] * cable[1]) + (dist1 * dist1)) / (2 * dist1);
 		double k2 = (r1Carr - (cable[2] * cable[2]) + (dist2 * dist2)) / (2 * dist2);
+		#endif
 
 		// Création de base orthonormées dans le plan (c1,c2,c3) ayant c1 comme centre
 		FuniMath::Vecteur base1 = Dirr1u;
