@@ -97,7 +97,7 @@ class Funibot:
         mode = FuniModeDeplacement.START if distance is None else FuniModeDeplacement.DISTANCE
 
         if distance is not None and distance != 0:
-            direction = direction.unitaire() * distance
+            direction.norme = distance
 
         self.serial.dep(type=FuniType.SET, mode=mode,
                         direction=direction.vers_tuple())
@@ -154,12 +154,8 @@ class Funibot:
         """Donne un ID et assigne l'objet serial à chaque poteau"""
         self.poteaux_id: List[Poteau] = []
         for poteau in self.poteaux.values():
-            try:
-                poteau.init_poteau(
-                    id=len(self.poteaux_id), comm_serie=self.serial)
-            except Exception:
-                print_exc()
-                raise
+            poteau.init_poteau(
+                id=len(self.poteaux_id), comm_serie=self.serial)
             self.poteaux_id.append(poteau)
 
     def _initialiser_persistance(self, fichier: Optional[Path]):
