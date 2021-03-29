@@ -10,7 +10,7 @@
 #define MOTORBAUDRATE  4500000
 #define NBR_MOTOR 4
 #define REG_TENSION
-//#define ASS_VITESSE
+#define ASS_VITESSE
 
 DynamixelWorkbench dxl_wb;
 
@@ -35,6 +35,7 @@ void moteurSetup(uint8_t nbrMoteur, double *longueurCable)
       #ifdef ASS_VITESSE
       dxl_wb.setVelocityControlMode(liste_moteurs[i]);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Acceleration", 0);
+      dxl_wb.writeRegister(liste_moteurs[i], "Velocity_Limit",200);
       #else
       dxl_wb.setExtendedPositionControlMode(liste_moteurs[i]);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Velocity", 0);
@@ -127,7 +128,7 @@ void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
       //consigne du deplacement;
       #ifdef ASS_VITESSE
       float cible = vitesse[i]/mmprad[i];
-      dxl_wb.goalSpeed(liste_moteurs[i], cible);
+      dxl_wb.goalVelocity(liste_moteurs[i], cible);
       #else
       float cible = radian + (vitesse[i]/mmprad[i])*((float)dt/1000.f);
       dxl_wb.goalPosition(liste_moteurs[i], cible);
