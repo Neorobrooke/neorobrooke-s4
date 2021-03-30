@@ -56,7 +56,10 @@ FUNI_ERREUR_MESSAGES =\
         "GET_POLE_INEXISTANT",
         "GET_ACCROCHE_INEXISTANTE",
         "GET_LONGUEUR_CABLE_INEXISTANT",
-        "GET_POLE_RELATIF_INEXISTANT"
+        "GET_POLE_RELATIF_INEXISTANT",
+
+        # Doit rester la dernière pour avoir l'indice -1
+        "ERREUR_INCONNUE"
     ]
 
 FUNI_ERREUR_MAJ =\
@@ -105,22 +108,29 @@ class eFuniErreur(Enum):
     GET_LONGUEUR_CABLE_INEXISTANT = 17
     GET_POLE_RELATIF_INEXISTANT = 18
 
+    ERREUR_INCONNUE_VOIR_DICTIONNAIRE = -1
+
 
 class FuniErreur:
     """Représente une erreur du Funibot"""
 
-    def __init__(self, erreur: Union[int, eFuniErreur], temps: int) -> None:
+    def __init__(self, erreur: Union[int, eFuniErreur], temps: int, maj: bool) -> None:
         """Initialise une FuniErreur à partir de son eFuniErreur ou de son id"""
         if isinstance(erreur, int):
-            erreur = eFuniErreur(erreur)
-        self.erreur = erreur
-        self.id = erreur.value
-        self.maj = FUNI_ERREUR_MAJ[self.id]
+            self.id = erreur
+            try:
+                self.erreur = eFuniErreur(erreur)
+            except ValueError:
+                self.erreur = eFuniErreur(-1)
+        else:
+            self.id = erreur.value
+            self.erreur = erreur
+        self.maj = maj
         self.t = temps
 
     def __repr__(self) -> str:
         """Affiche une FuniErreur"""
-        return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.erreur.value}:{self.erreur.name}]"
+        return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.id}:{self.erreur.name}]"
 
 
 class FuniSerial():
@@ -384,6 +394,6 @@ class FuniSerial():
                 break
 
             erreurs.append(FuniErreur(
-                retour["args"]["id"], retour["args"]["t"]))
+                retour["args"]["id"], retour["args"]["t"], retour["args"]["maj"]))
 
         return erreurs
