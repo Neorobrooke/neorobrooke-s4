@@ -168,5 +168,16 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par une direciton, la position est {validation_requete} au lieu de {self.mock.requete}")
- 
+
+    def test_deplacer_str(self):
+        """Test de déplacement du funibot par une string"""
+        bot = Funibot(self.serial, config=self.config)
+        S = "4x-8y+z"
+        bot.deplacer(S)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "start", "axe_x": 4, "axe_y": -8, "axe_z": 1}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Après avoir demandé un déplacement par une string, la position est {validation_requete} au lieu de {self.mock.requete}")
 
