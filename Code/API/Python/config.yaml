@@ -3,6 +3,10 @@
     port: COM5
     baudrate: 57600
   sol: -1000
+  persistance:
+    fichier: Code/API/Python/calibration.yaml
+    auto-persistance: False
+    auto-calibration: False
   poteaux: # distances en mm
     - pot0:
         poles:
