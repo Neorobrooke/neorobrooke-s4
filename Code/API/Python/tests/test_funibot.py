@@ -222,3 +222,40 @@ class TestsFunibot(unittest.TestCase):
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par une string avec une distance, la position est {validation_requete} au lieu de {self.mock.requete}")
 
+    def test_deplacer_vect_dis_zero(self):
+        """Test de déplacement du funibot par un vecteur et une distance de zéro"""
+        bot = Funibot(self.serial, config=self.config)
+        V = Vecteur(4,1,8)
+        bot.deplacer(V,0)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {V.x}, "axe_y": {V.y}, "axe_z": {V.z}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Après avoir demandé un déplacement par un vecteur et une distance de zéro, la position est {validation_requete} au lieu de {self.mock.requete}")
+ 
+    def test_deplacer_dir_dis_zero(self):
+        """Test de déplacement du funibot par une direction et une distance de zéro"""
+        bot = Funibot(self.serial, config=self.config)
+        D = Direction("4x-8y+z")
+        bot.deplacer(D,0)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {D.axe_x}, "axe_y": {D.axe_y}, "axe_z": {D.axe_z}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Après avoir demandé un déplacement par une direciton et une distance de zéro, la position est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_deplacer_str_dis_zero(self):
+        """Test de déplacement du funibot par une string et une distance de zéro"""
+        bot = Funibot(self.serial, config=self.config)
+        x, y, z = 4, -8, 2
+        S = f"{x}x{y}y+{z}z"
+        bot.deplacer(S, 0)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {x}, "axe_y": {y}, "axe_z": {z}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Après avoir demandé un déplacement par une string avec une distance de zéro, la position est {validation_requete} au lieu de {self.mock.requete}")
+
