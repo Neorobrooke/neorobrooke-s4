@@ -2,7 +2,7 @@ from __future__ import annotations
 import unittest
 
 from funibot_api.funiconfig import FuniConfig
-from funibot_api.funilib import Poteau, Vecteur
+from funibot_api.funilib import Direction, Poteau, Vecteur
 from funibot_api.funiserial import FuniSerial
 from funibot_api.funibot import Funibot
 from tests.mock_serial import MockSerial, DualMockSerial, MockType
@@ -145,5 +145,28 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(bot.repr_sol(), f"Sol -> {bot.sol}", msg = f"La représentation du sol est {bot.repr_sol()} au lieu de Sol -> {bot.sol}")
 
+    def test_deplacer_vect(self):
+        """Test de déplacement du funibot par un vecteur"""
+        bot = Funibot(self.serial, config=self.config)
+        V = Vecteur(4,1,8)
+        bot.deplacer(V)
 
-# bot.deplacer(Vecteur)
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "start", "axe_x": {V.x}, "axe_y": {V.y}, "axe_z": {V.z}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Après avoir demandé un déplacement par un vecteur, la position est {validation_requete} au lieu de {self.mock.requete}")
+ 
+    def test_deplacer_dir(self):
+        """Test de déplacement du funibot par une direction"""
+        bot = Funibot(self.serial, config=self.config)
+        D = Direction("4x-8y+z")
+        bot.deplacer(D)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "start", "axe_x": {D.axe_x}, "axe_y": {D.axe_y}, "axe_z": {D.axe_z}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Après avoir demandé un déplacement par une direciton, la position est {validation_requete} au lieu de {self.mock.requete}")
+ 
+
