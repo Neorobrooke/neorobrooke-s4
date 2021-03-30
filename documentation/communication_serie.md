@@ -77,6 +77,76 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
   }
   ```
 
+### Contrôle des moteurs
+- Activer, désactiver ou réinitialiser les moteurs
+  - `get` permet de voir si les moteurs sont actifs ou pas
+    - S'utilise avec `mode` qui est `null`
+    - La réponse est mise dans le `mode`, à `on` ou `off`
+  - `set` permet de mettre les moteurs à `on` ou à `off`, ou de les réinitialiser avec `reset`
+  ```json
+  {
+    "comm": "mot",
+    "type": "get | set | ack",
+    "args":
+    {
+      "mode": "on | off | reset"
+    }
+  }
+  ```
+
+### Synchronisation
+- Obtenir la tâche actuelle du système
+  - Les tâches sont les suivantes:
+    - `arr` lorsque le système est à l'arrêt
+    - `dir` lorsque le système est en déplacement directionnel
+    - `pos` lorsque le système est en déplacement vers une position
+  ```json
+  {
+    "comm": "reg",
+    "type": "get | ack",
+    "args":
+    {
+      "tache": "arr | dir | pos"
+    }
+
+  }
+  ```
+- Obtenir un estimé de la durée avant la fin de la tâche en cours
+  - Les tâches sont les suivantes:
+    - `arr` lorsque le système est à l'arrêt
+    - `dir` lorsque le système est en déplacement directionnel
+    - `pos` lorsque le système est en déplacement vers une position
+  - La durée retournée dans `tmp` est en secondes
+    - `tmp` est utilisé par `ack` seulement pour répondre, et est à `null` avec `get`
+  ```json
+  {
+    "comm": "dur",
+    "type": "get | ack",
+    "args":
+    {
+      "tmp": 0.0
+    }
+  }
+  ```
+- Attendre la fin de la tâche en cours
+  - Un appel avec `set` obtient une réponse immédiate avec `ack`
+    - `val` indique si la demande est valide
+    - `fin` est `false` pour une demande
+      - La demande n'est pas valide s'il n'y a rien à attendre
+  - L'appelant doit ensuite recommencer à écouter (après le `ack`)
+    - L'appelé envoit un nouveau `set` à l'appelant, avec `fin` qui vaut `true`
+  ```json
+  {
+    "comm": "att",
+    "type": "set | ack",
+    "args":
+    {
+      "val": true,
+      "fin": false
+    }
+  }
+  ```
+
 ### Erreurs et exceptions
 - Accéder aux erreurs levées
 - Obtenir le dernier message d'erreur
