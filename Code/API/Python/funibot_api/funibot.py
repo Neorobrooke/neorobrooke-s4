@@ -1,4 +1,5 @@
 from __future__ import annotations
+from os import sep
 
 from traceback import print_exc
 from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
@@ -29,15 +30,16 @@ class Funibot:
         if self.auto_calibration:
             try:
                 self.calibrer()
-            except ErreurDonneesIncompatibles:
-                print_exc()
+            except ErreurDonneesIncompatibles as e:
+                raise ErreurDonneesIncompatibles(f"Erreur de calibration automatique: {e}")
 
     def __del__(self):
         if self.auto_persistance:
             try:
                 self.enregister_calibration()
-            except ErreurDonneesIncompatibles:
-                print_exc()
+            except ErreurDonneesIncompatibles as e:
+                raise ErreurDonneesIncompatibles(f"Erreur de persistance automatique: {e}")
+
 
     @property
     def pos(self) -> Optional[Vecteur]:

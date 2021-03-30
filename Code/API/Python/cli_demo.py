@@ -42,8 +42,11 @@ class CLIFunibot(cmd.Cmd):
 
         try:
             self.bot = Funibot(self.funi_serial, config)
+        except ErreurDonneesIncompatibles as e:
+            print(e)
+            print("Effectuer la calibration manuellement")
         except:
-            exit(f"Erreur lors de l'initialisation du bot")
+            sys.exit(f"Erreur lors de l'initialisation du bot")
 
     def do_cable(self, arg: str):
         """Calibre en posant la longueur d'un ou de plusieurs cables
