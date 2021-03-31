@@ -279,7 +279,7 @@ void mainCommunication()
             else if(mode == "off")
             {
                 moteurOff();
-                global.moteur_On = off;
+                global.moteur_On = false;
             }
             else if (mode == "reset")
             {
@@ -375,7 +375,7 @@ void rappel(bool valide)
             out["type"] = "set";
             out["args"]["val"] = valide;
             out["args"]["fin"] = true;
-            serializeJson(input,Serial);
+            serializeJson(out,Serial);
             Serial.println();
             global.rappel = false;
 }
@@ -463,7 +463,7 @@ void controle()
                 //envoie un rappel à l'utilisateur si celui-ci à été demandé
                 if(global.rappel)
                     rappel(false);
-                    
+
                 global.outOfZone = true;
                 global.regime = 0;
                 for(unsigned i = 0; i < NBR_CABLES; i++)
