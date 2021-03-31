@@ -356,6 +356,7 @@ class CLIFunibot(cmd.Cmd):
                 print(self.bot.moteurs_actifs)
             elif arg in {"off", "OFF", '0', "false", "FALSE", "False", 'd'}:
                 self.bot.moteurs_actifs = False
+                print(self.bot.moteurs_actifs)
             elif arg in {"reset", "reinit", 'r', "-1"}:
                 self.bot.reinitialiser_moteurs()
             else:
@@ -363,8 +364,11 @@ class CLIFunibot(cmd.Cmd):
         except ValueError:
             print("État du moteur inconnu")
 
-if __name__ == '__main__':
+def main():
     args = FuniArgs("funibot-cli").generer_config()
     cli_funibot = CLIFunibot(config=args.config)
 
     cli_funibot.cmdloop()
+
+if __name__ == '__main__':
+    main()
