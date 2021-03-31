@@ -26,9 +26,16 @@ class FuniModeDeplacement(Enum):
 
 
 class FuniModeCalibration(Enum):
-    """Mode de calibration pour 'cal' (CABLE)"""
+    """Mode de calibration pour 'cal' (CABLE/SOL)"""
     CABLE = 'cable'
     SOL = 'sol'
+
+
+class FuniModeMoteur(Enum):
+    """Mode de calibration pour 'mot' (ON/OFF/RESET)"""
+    ON = 'on'
+    OFF = 'off'
+    RESET = 'reset'
 
 
 class FuniCommException(Exception):
@@ -423,6 +430,35 @@ class FuniSerial():
             print_exc()
             return None
 
-        retour["args"]["msg"] = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
-        retour["args"]["msg"] = retour["args"]["msg"] if retour["args"]["msg"] != "" else "__vide__"
-        return retour["args"]["msg"]
+        msg_retour: str = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
+        msg_retour = msg_retour if msg_retour != "" else "__vide__"
+        msg_retour = msg_retour.replace('\r', '\n')
+        return msg_retour
+
+    def mot(self, type: FuniType, mode: Optional[FuniModeMoteur] = None) -> Optional[FuniModeMoteur]:
+        """S'occupe de la communication série pour la commande JSON 'mot'"""
+        if not isinstance(type, FuniType):
+            raise TypeError("type n'est psa un FuniType")
+        json = {}
+        json["comm"] = "mot"
+        json["type"] = type.value
+
+        args = {}
+        if type is not FuniType.GET:
+            if mode is None:
+                raise ValueError("mode est None")
+            args["mode"] = mode.value
+        else:
+            args["mode"] = None
+
+        json["args"] = args
+
+        try:
+            retour = self.envoyer(json)
+        except FuniCommException as e:
+            print_exc()
+            return None
+        try:
+            return FuniModeMoteur(retour["args"]["mode"])
+        except ValueError:
+            return None

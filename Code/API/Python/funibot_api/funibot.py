@@ -5,7 +5,7 @@ from traceback import print_exc
 from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
 from pathlib import Path
 
-from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniModeMoteur, FuniSerial, FuniType, FuniCommException
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
@@ -18,7 +18,7 @@ class Funibot:
         self.serial = serial
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
-        self._sol = config.sol
+        # self._sol = config.sol
         
         self._initialiser_persistance(
             fichier=config.persistance,
@@ -26,6 +26,7 @@ class Funibot:
             auto_calibration=config.auto_calibration)
         
         self.config = config
+        self.sol = config.sol
 
         if self.auto_calibration:
             try:
@@ -62,12 +63,12 @@ class Funibot:
 
     @property
     def sol(self) -> Optional[float]:
-        # """Retourne la position du sol.
-        #    Nécessite une communication série.
-        # """
-        """Retourne la position du sol."""
-        # return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
-        return self._sol
+        """Retourne la position du sol.
+           Nécessite une communication série.
+        """
+        # """Retourne la position du sol."""
+        return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
+        # return self._sol
 
     @sol.setter
     def sol(self, position: Optional[float]) -> None:
@@ -76,8 +77,8 @@ class Funibot:
         """
         valeur = self.serial.cal(
             FuniType.SET, FuniModeCalibration.SOL, longueur=position)
-        if valeur is not None:
-            self._sol = valeur
+        # if valeur is not None:
+        #     self._sol = valeur
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""
@@ -126,10 +127,16 @@ class Funibot:
         return None
 
     def stop(self) -> None:
+        """Arrête le mouvement du robot.
+           Nécessite une communication série.
+        """
         self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
         return None
 
     def erreur(self) -> Optional[List[FuniErreur]]:
+        """Retourne la liste des erreurs.
+           Nécessite une communication série.
+        """
         try:
             erreurs = self.serial.err(FuniType.GET)
             return erreurs
@@ -138,16 +145,48 @@ class Funibot:
             return None
 
     def log(self) -> Optional[str]:
+        """Retourne tous les messages de déboguage.
+           Nécessite une communication série.
+        """
         try:
             msg = self.serial.log(FuniType.GET)
             return msg
         except FuniCommException:
             return None
 
+    @property
+    def moteurs_actifs(self) -> Optional[bool]:
+        """Retourne si les moteurs sont activés ou non.
+           Nécessite une communication série.
+        """
+        valeur = self.serial.mot(FuniType.GET) 
+        if valeur is FuniModeMoteur.ON:
+            return True
+        elif valeur is FuniModeMoteur.OFF:
+            return False
+        else:
+            return None
+
+    @moteurs_actifs.setter
+    def moteurs_actifs(self, mode: bool):
+        """Active ou désactive les moteurs.
+           Nécessite une communication série.
+        """
+        actifs = FuniModeMoteur.ON if mode is True else FuniModeMoteur.OFF
+        self.serial.mot(FuniType.SET, actifs)
+
+    def reinitialiser_moteurs(self):
+        """Réinitialise les moteurs.
+           Nécessite une communication série.
+        """
+        self.serial.mot(FuniType.SET, FuniModeMoteur.RESET)
+
     def repr_sol(self):
+        """Retourne une représentation du sol"""
         return f"Sol -> {self.sol}"
 
     def enregister_calibration(self) -> None:
+        """Enregistre la longueur des câbles dans un fichier de persistance"""
         try:
             self.persistance.enregistrer(
                 self._poteaux_config(), self._longueur_cables())
@@ -159,6 +198,7 @@ class Funibot:
             print(e)
 
     def calibrer(self):
+        """Lit le fichier de persistance et calibre en conséquence"""
         try:
             for cle, longueur in self.persistance.calibrer(self._poteaux_config()).items():
                 self.poteaux[cle].longueur_cable = longueur
@@ -166,6 +206,9 @@ class Funibot:
             print("Impossible de calibrer: aucun fichier de persistance valide fourni.")
 
     def _poteaux_config(self) -> List[dict]:
+        """Génère une liste de dictionnaires pour les pôteaux.
+           Même format que les fichiers de configuration et de persistance.
+        """
         poteaux = []
         for poteau in self.poteaux.values():
             pole = {"x": poteau.pos_pole.x,
@@ -177,6 +220,9 @@ class Funibot:
         return poteaux
 
     def _longueur_cables(self) -> List[float]:
+        """Génère une liste des longueurs des câbles.
+           Même ordre que la liste de pôteaux provenant de _poteaux_config.
+        """
         longueurs = []
         for poteau in self.poteaux.values():
             longueurs.append(poteau.longueur_cable)
@@ -193,6 +239,7 @@ class Funibot:
     def _initialiser_persistance(self, fichier: Optional[Path],
                                  auto_calibration: bool,
                                  auto_persistance: bool):
+        """Prépare la logique pour la calibration et la persistance automatique ou manuelle"""
         if fichier is None:
             self.persistance = None
             self.auto_persistance = False

@@ -340,6 +340,28 @@ class CLIFunibot(cmd.Cmd):
         else:
             print("Erreur lors de l'obtention du log")
 
+    def do_mot(self, arg: str):
+        """Affiche ou modifie l'état des moteurs.
+           Valeurs possibles des arguments pour:
+                - Afficher: aucun argument
+                - Activer: {"on", "ON", '1', "true", "TRUE", "True", 'e', 'a'}
+                - Désactiver: {"off", "OFF", '0', "false", "FALSE", "False", 'd'}
+                - Réinitialiser: {"reset", "reinit", 'r', "-1"}
+        """
+        try:
+            if arg == "":
+                print(self.bot.moteurs_actifs)
+            elif arg in {"on", "ON", '1', "true", "TRUE", "True", 'e', 'a'}:
+                self.bot.moteurs_actifs = True
+                print(self.bot.moteurs_actifs)
+            elif arg in {"off", "OFF", '0', "false", "FALSE", "False", 'd'}:
+                self.bot.moteurs_actifs = False
+            elif arg in {"reset", "reinit", 'r', "-1"}:
+                self.bot.reinitialiser_moteurs()
+            else:
+                print("Argument invalide. Afficher les possibilités avec 'help'.")
+        except ValueError:
+            print("État du moteur inconnu")
 
 if __name__ == '__main__':
     args = FuniArgs().generer_config()

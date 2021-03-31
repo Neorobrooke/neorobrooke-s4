@@ -148,9 +148,10 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
   ```
 
 ### Erreurs et exceptions
-- Accéder aux erreurs levées
-- Obtenir le dernier message d'erreur
-- Effacer les erreurs et réinitialiser
+- Commande d'erreurs
+  - Accéder aux erreurs levées
+  - Obtenir le dernier message d'erreur
+  - Effacer les erreurs et réinitialiser
   ```json
   // Avec `get`, `args` lui-même est `null`
   // `code` est le code d'erreur (un entier)
@@ -169,4 +170,17 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
     }
   }
   ```
-
+- Commande de log
+  - Afficher les messages de déboguage
+  - Avec `get`, reçoit le *buffer* au complet
+  - Avec `ack`, envoit le *buffer* au complet
+  ```json
+  {
+    "comm": "log",
+    "type": "get | ack",
+    "args":
+    {
+      "msg": "message de déboguage quelconque\nContient plusieurs messages",
+    }
+  }
+  ```
