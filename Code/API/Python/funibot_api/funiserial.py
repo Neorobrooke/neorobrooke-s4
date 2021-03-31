@@ -397,3 +397,32 @@ class FuniSerial():
                 retour["args"]["id"], retour["args"]["t"], retour["args"]["maj"]))
 
         return erreurs
+    
+    def log(self, type: FuniType, msg: str = None) -> Optional[str]:
+        """S'occupe de la communication série pour la commande JSON 'log'"""
+        if not isinstance(type, FuniType):
+            raise TypeError("type n'est pas un FuniType")
+        if type == FuniType.SET:
+            raise ValueError("SET n'est pas supporté")
+        json = {}
+        json["comm"] = "log"
+        json["type"] = type.value
+
+        if type == FuniType.GET:
+            args = {}
+            args["msg"] = None
+        else:
+            args = {}
+            args["msg"] = msg
+
+        json["args"] = args
+
+        try:
+            retour = self.envoyer(json)
+        except FuniCommException:
+            print_exc()
+            return None
+
+        retour["args"]["msg"] = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
+        retour["args"]["msg"] = retour["args"]["msg"] if retour["args"]["msg"] != "" else "__vide__"
+        return retour["args"]["msg"]

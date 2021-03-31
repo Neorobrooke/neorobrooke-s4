@@ -325,6 +325,21 @@ class CLIFunibot(cmd.Cmd):
         else:
             print(self.bot.repr_sol())
 
+    def do_log(self, _):
+        """Affiche le log de déboguage du OpenCR"""
+        try:
+            msg = self.bot.log()
+        except Exception:
+            print("Erreur lors de l'obtention du log")
+            return
+
+        if msg is not None:
+            print("=" * 3, "LOG", "=" * (120 - 8))
+            print(msg)
+            print("=" * 120)
+        else:
+            print("Erreur lors de l'obtention du log")
+
 
 if __name__ == '__main__':
     args = FuniArgs().generer_config()

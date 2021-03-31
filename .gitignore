@@ -2,7 +2,7 @@
 ~$*
 NOGIT*
 __pycache__
-.venv
+.venv*
 .vs
 .pytest_cache
 googletest

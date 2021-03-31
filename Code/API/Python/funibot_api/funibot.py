@@ -31,14 +31,16 @@ class Funibot:
             try:
                 self.calibrer()
             except ErreurDonneesIncompatibles as e:
-                raise ErreurDonneesIncompatibles(f"Erreur de calibration automatique: {e}")
+                pass
+                # raise ErreurDonneesIncompatibles(f"Erreur de calibration automatique: {e}")
 
     def __del__(self):
         if self.auto_persistance:
             try:
                 self.enregister_calibration()
             except ErreurDonneesIncompatibles as e:
-                raise ErreurDonneesIncompatibles(f"Erreur de persistance automatique: {e}")
+                pass
+                # raise ErreurDonneesIncompatibles(f"Erreur de persistance automatique: {e}")
 
 
     @property
@@ -133,6 +135,13 @@ class Funibot:
             return erreurs
         except Exception:
             print_exc()
+            return None
+
+    def log(self) -> Optional[str]:
+        try:
+            msg = self.serial.log(FuniType.GET)
+            return msg
+        except FuniCommException:
             return None
 
     def repr_sol(self):
