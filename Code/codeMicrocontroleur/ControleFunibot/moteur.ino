@@ -22,6 +22,7 @@ double coef_mmprad[mmprad_buff] = {0.5,0.3,0.1,0.075,0.025};
 DynamixelWorkbench dxl_wb;
 
 uint8_t liste_moteurs[NBR_MOTOR] = {3, 2, 1, 4};
+uint8_t nbrMoteur = 4;
 float old_position_moteurs[NBR_MOTOR];
 double old_longueur_cable[NBR_MOTOR];
 double mmprad[NBR_MOTOR];
@@ -31,13 +32,9 @@ double buffer_mmprad[NBR_MOTOR][mmprad_buff];
 bool sous_tension[NBR_MOTOR];
 double vitesse_corr[NBR_MOTOR];
 #endif
-
-void moteurSetup(uint8_t nbrMoteur, double *longueurCable)
+void moteurSetMode()
 {
-    dxl_wb.init(DEVICE_NAME,MOTORBAUDRATE);
-
-    while(!Serial);
-    for (uint8_t i=0; i<nbrMoteur; i++)
+  for (uint8_t i=0; i<nbrMoteur; i++)
     {
       dxl_wb.ping(liste_moteurs[i]);
       dxl_wb.torqueOff(liste_moteurs[i]);
@@ -75,6 +72,14 @@ void moteurSetup(uint8_t nbrMoteur, double *longueurCable)
       #endif
       dxl_wb.torqueOn(liste_moteurs[i]);
     }
+} 
+
+void moteurSetup(uint8_t nbrMoteur_, double *longueurCable)
+{
+    dxl_wb.init(DEVICE_NAME,MOTORBAUDRATE);
+    nbrMoteur = nbrMoteur_;
+
+    moteurSetMode();
     for (uint8_t i=0; i<nbrMoteur; i++)
     {
       dxl_wb.getRadian(liste_moteurs[i], old_position_moteurs+i);
@@ -90,8 +95,39 @@ void moteurSetup(uint8_t nbrMoteur, double *longueurCable)
       #endif
     }
 }
+void moteurReset()
+{
+  for(uint8_t i = 0; i < nbrMoteur; i++)
+  {
+    dxl_wb.ping(liste_moteurs[i]);
+    dxl_wb.reboot(liste_moteurs[i]);
 
-void moteurLoop(uint8_t nbrMoteur, double *vitesse, double *longueurCable)
+    mmprad[i] = mmprad_normal;
+      for (int j = 0 ; j < mmprad_buff; j++)
+      {
+        buffer_mmprad[i][j] = mmprad_normal;
+      }
+      #ifdef REG_TENSION
+      sous_tension[i] = false;
+      vitesse_corr[i] = 1;
+      #endif
+  }
+  moteurSetMode();
+}
+
+void moteurOn()
+{
+  for(uint8_t i = 0; i < nbrMoteur; i++)
+  dxl_wb.torqueOn(liste_moteurs[i]);
+}
+
+void moteurOff()
+{
+  for(uint8_t i = 0; i < nbrMoteur; i++)
+  dxl_wb.torqueOn(liste_moteurs[i]);
+}
+
+void moteurLoop(double *vitesse, double *longueurCable)
 {
   //delta temps
   #ifndef ASS_VITESSE
