@@ -19,12 +19,16 @@ class TestFuniErreur(unittest.TestCase):
 class TestsFuniSerial(unittest.TestCase):
     """Test sur la classe FuniSerial"""
 
-    def SetUp(self):
+    def setUp(self):
         """Initialisation commune à plusieurs tests"""
         self.mock = MockSerial(MockType.TEST)
         self.emock = MockSerial(MockType.TEST)
         self.dmock = DualMockSerial(canal_lecture=self.mock, canal_ecriture=self.emock)
 
-    #def test_init(self):
-     #   """Test d'initialisation d'un FuniSerial"""
-      #  bot = FuniSerial(self.mock)
+    def test_repr(self):
+        """Test de représentation d'un FuniSerial"""
+        bot = FuniSerial(self.mock)
+
+        self.assertEqual(repr(
+            bot), "Mock", msg = f"La représentation du FuniSerial est {repr(bot)} au lieu de Mock")
+
