@@ -20,6 +20,9 @@ Disponible dans le gestionnaire de paquets de votre distribution.
 ## Windows ou autres
 Téléchargeable à partir [de ce lien.](https://git-lfs.github.com/)
 
+# Manuel d'utilisation 
+Vous pouvez trouver le manuel d'utilisation en suivant [ce lien].(documentation/Manuel d'utilisation du système Funibot.pdf)
+
 # Initialisation
 Il est possible d'initialiser un environnement Python contenant toutes les dépendances requises en exécutant le script `pip_script.py`.
 Ce script crée un environnement virtuel et y installe les dépendances.
