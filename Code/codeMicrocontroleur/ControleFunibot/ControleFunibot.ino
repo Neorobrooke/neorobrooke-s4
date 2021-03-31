@@ -367,6 +367,19 @@ void serialEvent(){
   mainCommunication();
 }
 
+void rappel(bool valide)
+{
+    StaticJsonDocument<256> out;
+
+            out["comm"] = "dur";
+            out["type"] = "set";
+            out["args"]["val"] = valide;
+            out["args"]["fin"] = true;
+            serializeJson(input,Serial);
+            Serial.println();
+            global.rappel = false;
+}
+
 //fonction de controle, choisie la vitesse des moteurs
 void controle()
 {
@@ -376,7 +389,13 @@ void controle()
         global.bot.setLongueurCable(i,global.cable[i]);
     }
 
-    if(!global.bot.erreurs.empty()) global.regime == 0;
+    if(!global.bot.erreurs.empty()) 
+    {
+        global.regime == 0;
+        //envoie un rappel à l'utilisateur si celui-ci à été demandé
+        if(global.rappel)
+            rappel(false);
+    }
     //en fonction du régime
     switch (global.regime)
     {
@@ -426,18 +445,7 @@ void controle()
 
             //envoie un rappel à l'utilisateur si celui-ci à été demandé
             if(global.rappel)
-            {
-                StaticJsonDocument<256> out;
-
-                out["comm"] = "dur";
-                out["type"] = "ack";
-                out["args"]["val"] = true;
-                out["args"]["fin"] = true;
-                serializeJson(input,Serial);
-                Serial.println();
-                global.rappel = false;
-                
-            }
+                rappel(true);
         }
         else
         {
@@ -452,6 +460,10 @@ void controle()
             }
             else
             {
+                //envoie un rappel à l'utilisateur si celui-ci à été demandé
+                if(global.rappel)
+                    rappel(false);
+                    
                 global.outOfZone = true;
                 global.regime = 0;
                 for(unsigned i = 0; i < NBR_CABLES; i++)
