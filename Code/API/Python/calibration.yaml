@@ -1,51 +1,11 @@
 ---
 poteaux:
-<<<<<<< HEAD
-  moteur1:
-=======
   pot0:
->>>>>>> algorithme
     poles:
       x: 0
       y: 0
       z: 0
     accroches:
-<<<<<<< HEAD
-      x: -55
-      y: 100
-      z: 0
-    cable:
-  moteur4:
-    poles:
-      x: 1180
-      y: 0
-      z: 0
-    accroches:
-      x: 55
-      y: 100
-      z: 0
-    cable:
-  moteur2:
-    poles:
-      x: 0
-      y: 0
-      z: 0
-    accroches:
-      x: -55
-      y: 100
-      z: 0
-    cable:
-  moteur3:
-    poles:
-      x: 1180
-      y: 0
-      z: 0
-    accroches:
-      x: 55
-      y: 100
-      z: 0
-    cable:
-=======
       x: 0
       y: 0
       z: 0
@@ -80,5 +40,4 @@ poteaux:
       y: 0
       z: 0
     cable: 1460.737
->>>>>>> algorithme
 ...
