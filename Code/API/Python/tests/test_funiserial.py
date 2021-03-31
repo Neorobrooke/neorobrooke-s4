@@ -73,7 +73,7 @@ class TestsFuniSerial(unittest.TestCase):
         self.assertEqual(str(re.exception), "position est None")
 
     def test_pot_ack(self):
-        """Test du poteau du FuniSerial avec ack"""
+        """Test du poteau du FuniSerial avec get"""
         bot = FuniSerial(self.mock)
         position = (3,1.2,8)
         bot.pot(FuniType.GET,0,position)
