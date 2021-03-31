@@ -52,7 +52,7 @@ class MockSerial(IMockSerial):
                 self.reponse), encoding='utf8')
 
     def readline(self) -> bytes:
-        """Envoie la réponse stockée ou envoie le premier message de la queue"""
+        """Envoie la réponse stockée"""
         if self.is_cli:
             print(f"\tMOCK_SEND -> <{self.reponse}>")
         return self.reponse
@@ -71,15 +71,9 @@ class DualMockSerial(IMockSerial):
             MockType.TEST, timeout=timeout)
         self.ecriture = canal_ecriture if canal_lecture is not None else MockSerial(
             MockType.TEST, timeout=timeout)
-        # self.var_cond = Condition()
 
     def write(self, contenu: bytes) -> None:
-        # with self.var_cond:
-            # try:
         self.ecriture.write(contenu=contenu)
-            # except Empty:
-                # raise
-            # self.var_cond.notify()
 
     def readline(self) -> bytes:
         return self.lecture.readline()
