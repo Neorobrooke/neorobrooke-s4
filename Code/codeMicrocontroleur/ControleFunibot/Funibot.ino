@@ -291,7 +291,8 @@ FuniMath::Vecteur Funibot::getPosition()
 			FuniMath::Vecteur PosAct = jointure + C1;
 
 			//tenue par 2 cables
-			if(!FuniMath::inTriangleXY(FuniMath::Vecteur(C1.x,C1.z,0),FuniMath::Vecteur(C2.x,C2.z,0),FuniMath::Vecteur(C3.x,C3.z,0),FuniMath::Vecteur(PosAct.x,PosAct.z,0)))
+			if(!FuniMath::inTriangleXY(FuniMath::Vecteur(C1.x,C1.z,0),FuniMath::Vecteur(C2.x,C2.z,0),
+				FuniMath::Vecteur(C3.x,C3.z,0),FuniMath::Vecteur(PosAct.x,PosAct.z,0)))
 			{
 				if (k2 > 0 && k2*k2 < r1Carr)
 				{
