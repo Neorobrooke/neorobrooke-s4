@@ -26,9 +26,16 @@ class FuniModeDeplacement(Enum):
 
 
 class FuniModeCalibration(Enum):
-    """Mode de calibration pour 'cal' (CABLE)"""
+    """Mode de calibration pour 'cal' (CABLE/SOL)"""
     CABLE = 'cable'
     SOL = 'sol'
+
+
+class FuniModeMoteur(Enum):
+    """Mode de calibration pour 'mot' (ON/OFF/RESET)"""
+    ON = 'on'
+    OFF = 'off'
+    RESET = 'reset'
 
 
 class FuniCommException(Exception):
@@ -57,6 +64,11 @@ FUNI_ERREUR_MESSAGES =\
         "GET_ACCROCHE_INEXISTANTE",
         "GET_LONGUEUR_CABLE_INEXISTANT",
         "GET_POLE_RELATIF_INEXISTANT",
+        "POLES_CONFONDUES_2D",
+        "POLES_CONFONDUES_3D",
+        "SETUP_SECURITE_AVEC_MOINS_DE_3_POLES",
+        "SECURITE_AVEC_MOINS_DE_3_POLES",
+        "SORTIE_DE_ZONE_DE_SECURITE",
 
         # Doit rester la dernière pour avoir l'indice -1
         "ERREUR_INCONNUE"
@@ -82,7 +94,12 @@ FUNI_ERREUR_MAJ =\
         True,   # 15
         True,   # 16
         True,   # 17
-        True    # 18
+        True,   # 18
+        True,   # 19
+        True,   # 20
+        True,   # 21
+        True,   # 22
+        False,  # 23
     ]
 
 
@@ -107,6 +124,11 @@ class eFuniErreur(Enum):
     GET_ACCROCHE_INEXISTANTE = 16
     GET_LONGUEUR_CABLE_INEXISTANT = 17
     GET_POLE_RELATIF_INEXISTANT = 18
+    POLES_CONFONDUES_2D = 19
+    POLES_CONFONDUES_3D = 20
+    SETUP_SECURITE_AVEC_MOINS_DE_3_POLES = 21
+    SECURITE_AVEC_MOINS_DE_3_POLES = 22
+    SORTIE_DE_ZONE_DE_SECURITE = 23
 
     ERREUR_INCONNUE_VOIR_DICTIONNAIRE = -1
 
@@ -342,10 +364,10 @@ class FuniSerial():
 
         if type == FuniType.GET:
             args = {}
-            args["id"] = 0
+            args["id"] = None
             args["maj"] = None
-            args["t"] = 0
-            args["err_sup"] = 0
+            args["t"] = None
+            args["err_sup"] = None
         else:
             args = {}
 
@@ -423,6 +445,35 @@ class FuniSerial():
             print_exc()
             return None
 
-        retour["args"]["msg"] = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
-        retour["args"]["msg"] = retour["args"]["msg"] if retour["args"]["msg"] != "" else "__vide__"
-        return retour["args"]["msg"]
+        msg_retour: str = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
+        msg_retour = msg_retour if msg_retour != "" else "__vide__"
+        msg_retour = msg_retour.replace('\r', '\n')
+        return msg_retour
+
+    def mot(self, type: FuniType, mode: Optional[FuniModeMoteur] = None) -> Optional[FuniModeMoteur]:
+        """S'occupe de la communication série pour la commande JSON 'mot'"""
+        if not isinstance(type, FuniType):
+            raise TypeError("type n'est psa un FuniType")
+        json = {}
+        json["comm"] = "mot"
+        json["type"] = type.value
+
+        args = {}
+        if type is not FuniType.GET:
+            if mode is None:
+                raise ValueError("mode est None")
+            args["mode"] = mode.value
+        else:
+            args["mode"] = None
+
+        json["args"] = args
+
+        try:
+            retour = self.envoyer(json)
+        except FuniCommException as e:
+            print_exc()
+            return None
+        try:
+            return FuniModeMoteur(retour["args"]["mode"])
+        except ValueError:
+            return None
