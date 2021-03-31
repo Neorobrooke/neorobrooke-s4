@@ -5,6 +5,9 @@
 #include "Encodeur.h"
 #include "GestionLog.h"
 
+
+#define version "v t1"
+
 #define BAUDRATE  57600
 
 #define periodeControle 100
@@ -370,10 +373,10 @@ void mainCommunication()
 
             out["comm"] = "log";
             out["type"] = "ack";
-            out["args"]["mess"] = GestionLog::log;
+            out["args"]["msg"] = GestionLog::log;
             serializeJson(out,Serial);
             Serial.println();
-            global.rappel = false;
+            GestionLog::clear();
         }
     }
     
@@ -546,8 +549,10 @@ void interrupt3 ()
 //setup
 void setup()
 {
+    GestionLog::printlnlog(version);
     //communication série
     Serial.begin(BAUDRATE);
+    
     for(int i = 0 ; i < NBR_CABLES; i++) global.encod[i].setup();
 
 
