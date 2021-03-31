@@ -39,6 +39,9 @@ namespace FuniMath
 	};
 
 	Vecteur operator*(const double vec, const Vecteur v);
+
+	bool inTriangleXY(const Vecteur A, const Vecteur B, const Vecteur C, const Vecteur P); //retourne vrai si P est dans le triangle A,B,C
+	bool inConvexXY(const Vecteur* Cotes, const int nbrCotes, const Vecteur P); //retourne vrai si P est dans le polynome convexe formé par les cotes
 }
 
 class Funibot
@@ -60,6 +63,11 @@ public:
 	double* deplacementDirectionnel(FuniMath::Vecteur dir, double pasTemps, double vitesse, double* vitesseCable);
 	double* deplacementPosition(FuniMath::Vecteur pos, double pasTemps, double vitesse, double* vitesseCable);
 
+	void setupSafeZone(double securite_cote = 0, double securite_toit = 200);
+	bool isSafe(FuniMath::Vecteur P);
+	void setSol(double val_sol);
+	double getSol();
+
 
 
 protected:
@@ -67,4 +75,9 @@ protected:
 	FuniMath::Vecteur pole[FuniConst::NBR_POLES];
 	FuniMath::Vecteur accroche[FuniConst::NBR_POLES];
 	double cable[FuniConst::NBR_POLES];
+
+	FuniMath::Vecteur safeCorner[FuniConst::NBR_POLES];
+	double toit;
+	double sol;
+	bool hasSol;
 };

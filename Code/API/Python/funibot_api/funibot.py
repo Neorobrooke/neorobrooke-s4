@@ -19,6 +19,7 @@ class Funibot:
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
         # self._sol = config.sol
+        self.sol = config.sol
         
         self._initialiser_persistance(
             fichier=config.persistance,
@@ -26,7 +27,6 @@ class Funibot:
             auto_calibration=config.auto_calibration)
         
         self.config = config
-        self.sol = config.sol
 
         if self.auto_calibration:
             try:
