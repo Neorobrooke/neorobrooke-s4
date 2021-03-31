@@ -19,6 +19,7 @@ class Funibot:
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
         self._sol = config.sol
+        self.sol = config.sol
         
         self._initialiser_persistance(
             fichier=config.persistance,

@@ -1,0 +1,43 @@
+---
+poteaux:
+  pot0:
+    poles:
+      x: 0
+      y: 0
+      z: 0
+    accroches:
+      x: 0
+      y: 0
+      z: 0
+    cable: 1500
+  pot1:
+    poles:
+      x: 1220
+      y: 0
+      z: 0
+    accroches:
+      x: 0
+      y: 0
+      z: 0
+    cable: 1593.613
+  pot2:
+    poles:
+      x: 1220
+      y: 0
+      z: 1220
+    accroches:
+      x: 0
+      y: 0
+      z: 0
+    cable: 870
+  pot3:
+    poles:
+      x: 0
+      y: 0
+      z: 1220
+    accroches:
+      x: 0
+      y: 0
+      z: 0
+    cable: 1460.737
+...

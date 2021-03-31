@@ -2,7 +2,7 @@
   serial:
     port: COM5
     baudrate: 57600
-  sol: -1000
+  sol: -800
   persistance:
     fichier: Code/API/Python/calibration.yaml
     auto-persistance: False

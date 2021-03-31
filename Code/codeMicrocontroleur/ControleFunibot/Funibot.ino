@@ -197,6 +197,7 @@ FuniMath::Vecteur Funibot::getPosition()
 
 		FuniMath::Vecteur best_pos;
 		bool no_best = true;
+		bool no_valid = true;
 
 		//calcul dirr 1
 		FuniMath::Vecteur C1 = pole[indexOpti[0]] - accroche[indexOpti[0]];
@@ -287,15 +288,31 @@ FuniMath::Vecteur Funibot::getPosition()
 
 			// Conversion des positions dans le référentiel normal
 			FuniMath::Vecteur jointure = base1 * b1Pos + base2 * b2Pos + base3 * b3Pos;
+			FuniMath::Vecteur PosAct = jointure + C1;
 
+			//tenue par 2 cables
+			if(!FuniMath::inTriangleXY(FuniMath::Vecteur(C1.x,C1.z,0),FuniMath::Vecteur(C2.x,C2.z,0),FuniMath::Vecteur(C3.x,C3.z,0),FuniMath::Vecteur(PosAct.x,PosAct.z,0)))
+			{
+				if (k2 > 0 && k2*k2 < r1Carr)
+				{
+					double b3Pos_alt = sqrt(r1Carr - k2*k2);
+					PosAct = b3Pos_alt * base3 + k2 * Dirr2u + C1;
+				}
+				else if (k1 > 0 && k1*k1 < r1Carr)
+				{
+					double b3Pos_alt = sqrt(r1Carr - k1*k1);
+					PosAct = b3Pos_alt * base3 + k1 * Dirr1u + C1;
+				}
+				else continue;
+			}
 			if (no_best)
 			{
-				best_pos = jointure;
+				best_pos = PosAct;
 				no_best = false;
 			} 
-			else if (jointure.y > best_pos.y) best_pos = jointure;
+			else if (jointure.y > best_pos.y) best_pos = PosAct;
 		}
-		return best_pos + C1;
+		return best_pos;
 
 
 		#else
