@@ -3,6 +3,7 @@
 #include "Funibot.h"
 #include "moteur.h"
 #include "Encodeur.h"
+#include "GestionLog.h"
 
 #define BAUDRATE  57600
 
@@ -337,6 +338,7 @@ void mainCommunication()
             }
             input["type"] = "ack";
             serializeJson(input,Serial);
+
             Serial.println();
         }
     }
@@ -358,6 +360,20 @@ void mainCommunication()
             input["type"] = "ack";
             serializeJson(input,Serial);
             Serial.println();
+        }
+    }
+    else if(comm == "log")
+    {
+        if(type == "get")
+        {
+            StaticJsonDocument<1280> out;
+
+            out["comm"] = "log";
+            out["type"] = "ack";
+            out["args"]["mess"] = GestionLog::log;
+            serializeJson(out,Serial);
+            Serial.println();
+            global.rappel = false;
         }
     }
     
