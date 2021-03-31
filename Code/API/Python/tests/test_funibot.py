@@ -79,6 +79,7 @@ class TestsFunibot(unittest.TestCase):
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"Position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
 
+    @unittest.skip("mh")
     def test_sol(self):
         bot = Funibot(self.dserial, config=self.config)
 
