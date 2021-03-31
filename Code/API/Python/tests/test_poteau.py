@@ -2,7 +2,7 @@ from __future__ import annotations
 import unittest
 from funibot_api.funilib import JamaisInitialise, Vecteur, Poteau
 from funibot_api.funiserial import FuniSerial
-from tests.mock_serial import DualMockSerial, MockSerial, MockType
+from funibot_api.mock_serial import DualMockSerial, MockSerial, MockType
 
 
 class TestsPoteau(unittest.TestCase):
