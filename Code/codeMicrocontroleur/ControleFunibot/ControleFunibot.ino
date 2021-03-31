@@ -40,9 +40,11 @@ struct aglomerationVariable
 
     //commande au moteur
     double commandeVitesseCable[NBR_CABLES] = {0};
+    bool moteur_On = true;
 
     //communication
     bool SerialEvent = false;
+    bool rappel = false;
 
     //profile accumulatif
     long timeProfile[6];
@@ -263,6 +265,102 @@ void mainCommunication()
             }
         }
     }
+    else if (comm == "mot")
+    {
+        if(type == "set")
+        {
+            String mode = (const char*)input["args"]["mode"];
+
+            if (mode == "on")
+            {
+                moteurOn();
+                global.moteur_On = true;
+            }
+            else if(mode == "off")
+            {
+                moteurOff();
+                global.moteur_On = off;
+            }
+            else if (mode == "reset")
+            {
+                moteurReset();
+                global.moteur_On = true;
+            }
+            else
+            {
+                return;
+            }
+
+            input["type"] = "ack";
+            serializeJson(input,Serial);
+            Serial.println();
+        }
+        else if(type == "get")
+        {
+            input["type"] = "ack";
+            if (global.moteur_On)
+                input["args"]["mode"] = "on";
+            else
+                input["args"]["mode"] = "off";
+            serializeJson(input,Serial);
+            Serial.println();
+        }
+
+    }
+    else if(comm == "reg")
+    {
+        if (type == "get")
+        {
+            input["type"] = "ack";
+            if (global.regime == 1)
+                input["args"]["tache"] = "dir";
+            else if (global.regime == 2)
+                input["args"]["tache"] = "pos";
+            else
+                input["args"]["tache"] = "arr";
+            serializeJson(input,Serial);
+            Serial.println();
+        }
+    }
+    else if(comm == "dur")
+    {
+        if (type == "get")
+        {
+            if (global.regime != 2)
+            {
+                input["args"]["tmp"] = 0;
+            }
+            else
+            {
+                double distance = (global.bot.getPosition() - global.objectif).norme();
+                input["args"]["tmp"] = distance / global.vitesse;
+            }
+            input["type"] = "ack";
+            serializeJson(input,Serial);
+            Serial.println();
+        }
+    }
+    else if(comm == "att")
+    {
+        if (type == "set")
+        {
+            if (global.regime == 2)
+            {
+                input["args"]["val"] = true;
+                input["args"]["fin"] = false;
+                global.rappel = true;
+            }
+            else
+            {
+                input["args"]["val"] = false;
+                input["args"]["fin"] = false;
+            }
+            input["type"] = "ack";
+            serializeJson(input,Serial);
+            Serial.println();
+        }
+    }
+    
 }
 
 void serialEvent(){
@@ -325,6 +423,21 @@ void controle()
             {
                 global.commandeVitesseCable[i] = 0;
             }
+
+            //envoie un rappel à l'utilisateur si celui-ci à été demandé
+            if(global.rappel)
+            {
+                StaticJsonDocument<256> out;
+
+                out["comm"] = "dur";
+                out["type"] = "ack";
+                out["args"]["val"] = true;
+                out["args"]["fin"] = true;
+                serializeJson(input,Serial);
+                Serial.println();
+                global.rappel = false;
+                
+            }
         }
         else
         {
@@ -372,7 +485,8 @@ void controle()
 //fonction des moteurs, controle les moteurs et s'assure d'obtenir la bonne vitesse
 void moteurs()
 {
-    moteurLoop(NBR_CABLES,global.commandeVitesseCable,global.cable);
+    if(global.moteur_On)
+    moteurLoop(global.commandeVitesseCable,global.cable);
 }
 
 //fonction des encodeurs, assure un bon suivie de la longueur des cables
