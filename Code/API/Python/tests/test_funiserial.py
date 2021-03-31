@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Tuple
 
-from funibot_api.funiserial import FuniErreur, FuniSerial, FuniType, eFuniErreur
+from funibot_api.funiserial import FuniErreur, FuniModeDeplacement, FuniSerial, FuniType, eFuniErreur
 from tests.mock_serial import MockSerial, MockType, DualMockSerial
 import unittest
 
@@ -83,4 +83,13 @@ class TestsFuniSerial(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Le poteau est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_pot_err_type(self):
+        """Test du poteau du FuniSerial avec un type pas FuniType"""
+        bot = FuniSerial(self.mock)
+        position = None
+
+        with self.assertRaises(TypeError, msg = "La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
+            bot.pot(FuniModeDeplacement.START,2,position)
+        self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
