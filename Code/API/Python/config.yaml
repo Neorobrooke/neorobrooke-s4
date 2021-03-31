@@ -1,47 +1,47 @@
 ---
-serial:
-  port: COM5
-  baudrate: 57600
-sol: -1000
-persistance:
+  serial:
+    port: COM5
+    baudrate: 57600
+  sol: -800
+  persistance:
     fichier: Code/API/Python/calibration.yaml
     auto-persistance: False
     auto-calibration: False
-poteaux: # distances en mm
-  - moteur1:
-      poles:
-        x: 0
-        y: 0
-        z: 0
-      accroches:
-        x: -55
-        y: 100
-        z: 0
-  - moteur4:
-      poles:
-        x: 1180
-        y: 0
-        z: 0
-      accroches:
-        x: 55
-        y: 100
-        z: 0
-  - moteur2:
-      poles:
-        x: 0
-        y: 0
-        z: 0
-      accroches:
-        x: -55
-        y: 100
-        z: 0
-  - moteur3:
-      poles:
-        x: 1180
-        y: 0
-        z: 0
-      accroches:
-        x: 55
-        y: 100
-        z: 0
+  poteaux: # distances en mm
+    - pot0:
+        poles:
+          x: 0
+          y: 0
+          z: 0
+        accroches:
+          x: 0
+          y: 0
+          z: 0
+    - pot1:
+        poles:
+          x: 1220
+          y: 0
+          z: 0
+        accroches:
+          x: 0
+          y: 0
+          z: 0
+    - pot2:
+        poles:
+          x: 1220
+          y: 0
+          z: 1220
+        accroches:
+          x: 0
+          y: 0
+          z: 0
+    - pot3:
+        poles:
+          x: 0
+          y: 0
+          z: 1220
+        accroches:
+          x: 0
+          y: 0
+          z: 0
 ...

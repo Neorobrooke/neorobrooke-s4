@@ -2,7 +2,44 @@
 #include <iostream>
 
 #define systemeArduino
+#define autoSecure
+#define optiPole
 
+bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
+{
+
+	if (abs(A.x - B.x) < 0.00001)
+	{
+		const double k = (B.x - A.x)/(B.y-A.y);
+		if(isnan(k))return false;
+		double a = (P.x-A.x-k*(P.y - A.y))/(C.x-A.x-k*(C.y-A.y));
+		if(isnan(a))return false;
+		const double b = (P.y - A.y)/(B.y-A.y) - a*(C.y-A.y)/(B.y-A.y);
+		if(isnan(b))return false;
+		const double c = 1-a-b;
+		return (a >= 0 && b >= 0 && c>=0);
+	}
+	else
+	{
+		const double k = (B.y - A.y)/(B.x-A.x);
+		if(isnan(k))return false;
+		double a = (P.y-A.y-k*(P.x - A.x))/(C.y-A.y-k*(C.x-A.x));
+		if(isnan(a))return false;
+		const double b = (P.x - A.x)/(B.x-A.x) - a*(C.x-A.x)/(B.x-A.x);
+		if(isnan(b))return false;
+		const double c = 1-a-b;
+		return (a >= 0 && b >= 0 && c>=0);
+	}
+}
+bool FuniMath::inConvexXY(const FuniMath::Vecteur* Cotes, const int nbrCotes, const FuniMath::Vecteur P)
+{
+	if(nbrCotes < 3) return false; //pas d'aire
+	for (int i = 2 ;  i <  nbrCotes; i++)
+	{
+		if (inTriangleXY(Cotes[0],Cotes[i-1],Cotes[i],P)) return true; //dans au moins 1 triangle
+	}
+	return false; // dans aucun triangle
+}
 
 FuniMath::Vecteur FuniMath::operator*(const double u, const FuniMath::Vecteur v)
 {
@@ -52,6 +89,10 @@ void Funibot::addPole(FuniMath::Vecteur positionPole, FuniMath::Vecteur position
 	pole[nbrPole] = positionPole;
 	accroche[nbrPole] = positionAccroche;
 	nbrPole++;
+
+	#ifdef autoSecure
+		if(nbrPole >= 3) setupSafeZone();
+	#endif
 }
 
 void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniMath::Vecteur positionAccroche)
@@ -70,6 +111,9 @@ void Funibot::setPole(unsigned char index, FuniMath::Vecteur positionPole, FuniM
 
 	pole[index] = positionPole;
 	accroche[index] = positionAccroche;
+	#ifdef autoSecure
+		if(nbrPole >= 3) setupSafeZone();
+	#endif
 }
 
 void Funibot::setLongueurCable(unsigned char index, double longueur)
@@ -129,7 +173,150 @@ FuniMath::Vecteur Funibot::getPosition()
 				}
 			}
 
-		// Correction en fonction de la position des accroches
+		// Calcul de position
+		#ifdef optiPole
+		//recherche des cables courts
+		int indexOpti[2] = {-1,-1};
+		for (int i = 0; i < nbrPole; i++)
+		{
+			if (indexOpti[0] == -1)
+			{
+				indexOpti[0] = i;
+			}
+			else if (cable[i] < cable[indexOpti[0]])
+			{
+				
+				indexOpti[1] = indexOpti[0];
+				indexOpti[0] = i;
+			}
+			else if (indexOpti[1] == -1 || cable[i] < cable[indexOpti[1]])
+			{
+				indexOpti[1] = i;
+			}
+		}
+
+		FuniMath::Vecteur best_pos;
+		bool no_best = true;
+		bool no_valid = true;
+
+		//calcul dirr 1
+		FuniMath::Vecteur C1 = pole[indexOpti[0]] - accroche[indexOpti[0]];
+		FuniMath::Vecteur C2 = pole[indexOpti[1]] - accroche[indexOpti[1]];
+		
+		FuniMath::Vecteur Dirr1 = C2 - C1;
+		double dist1 = Dirr1.norme();
+		FuniMath::Vecteur Dirr1u = Dirr1 / dist1;
+
+		//calcul distance centrale entre deux cercle k1
+		double r1Carr = cable[indexOpti[0]] * cable[indexOpti[0]];
+		double k1 = (r1Carr - (cable[indexOpti[1]] * cable[indexOpti[1]]) + (dist1 * dist1)) / (2 * dist1);
+
+		for (int i = 0; i < nbrPole; i++)
+		{
+			if (i == indexOpti[0] || i == indexOpti[1]) continue;
+			//calcul dirr 2
+			FuniMath::Vecteur C3 = pole[i] - accroche[i];
+
+			FuniMath::Vecteur Dirr2 = C3 - C1;
+			double dist2 = Dirr2.norme();
+			FuniMath::Vecteur Dirr2u = Dirr2 / dist2;
+
+			//test si même direction
+			if ((Dirr1u - Dirr2u).norme_carree() < 0.0001)
+			{
+				GestionErreurs::Erreur erreur;
+				erreur.id = 9;
+				#ifdef systemeArduino
+					erreur.moment = millis();
+				#endif
+				erreurs.addBack(erreur);
+				return FuniMath::Vecteur();
+			}
+
+			//distance centrale entre deux cercle k2
+			double k2 = (r1Carr - (cable[i] * cable[i]) + (dist2 * dist2)) / (2 * dist2);
+
+			// Création de base orthonormées dans le plan (c1,c2,c3) ayant c1 comme centre
+			FuniMath::Vecteur base1 = Dirr1u;
+			FuniMath::Vecteur base2 = Dirr2u - Dirr1u * Dirr1u.produitScalaire(Dirr2u);
+			base2 = base2 / base2.norme();
+			FuniMath::Vecteur base3 = base1.produitVectoriel(base2);
+			base3 = base3 / base3.norme();
+
+			if (base3.y > 0)
+			{
+				base3 = base3 * -1;
+			}
+
+			// Position dans le referentiel base1, base2
+
+			// Projection du vecteur k1*Dirr1u sur les bases 1 et 2
+			// Dirr1u étant la base1, la réponse est évidente
+			double b1Pos = k1;
+
+			// Projection du vecteur k2*Dirr2u sur les bases 1 et 2
+			double compb1 = Dirr2u.produitScalaire(base1) * k2;
+			double compb2 = Dirr2u.produitScalaire(base2) * k2;
+
+			// Création d'une droite perpendiculaire au vecteur k2*Dirr2u passant par le point k2*Dirr2u
+			double a, b;
+			a = -compb1 / compb2;
+			b = compb2 - a * compb1;
+
+			// Jonction entre les deux perpendiculaires
+			double b2Pos = a * b1Pos + b;
+
+			// Recherche de la composante dans la base3 à l'aide de l'équation de la sphère C1
+			double b3Pos2 = r1Carr - (b1Pos * b1Pos) - (b2Pos * b2Pos);
+
+			// Racine neative
+			if (b3Pos2 < 0)
+			{
+				GestionErreurs::Erreur erreur;
+				erreur.id = 10;
+				erreur.majeur = false;
+				#ifdef systemeArduino
+					erreur.moment = millis();
+				#endif
+				erreurs.addBack(erreur);
+
+				b3Pos2 = 0;
+			}
+
+			double b3Pos = sqrt(b3Pos2);
+
+
+			// Conversion des positions dans le référentiel normal
+			FuniMath::Vecteur jointure = base1 * b1Pos + base2 * b2Pos + base3 * b3Pos;
+			FuniMath::Vecteur PosAct = jointure + C1;
+
+			//tenue par 2 cables
+			if(!FuniMath::inTriangleXY(FuniMath::Vecteur(C1.x,C1.z,0),FuniMath::Vecteur(C2.x,C2.z,0),
+				FuniMath::Vecteur(C3.x,C3.z,0),FuniMath::Vecteur(PosAct.x,PosAct.z,0)))
+			{
+				if (k2 > 0 && k2*k2 < r1Carr)
+				{
+					double b3Pos_alt = sqrt(r1Carr - k2*k2);
+					PosAct = b3Pos_alt * base3 + k2 * Dirr2u + C1;
+				}
+				else if (k1 > 0 && k1*k1 < r1Carr)
+				{
+					double b3Pos_alt = sqrt(r1Carr - k1*k1);
+					PosAct = b3Pos_alt * base3 + k1 * Dirr1u + C1;
+				}
+				else continue;
+			}
+			if (no_best)
+			{
+				best_pos = PosAct;
+				no_best = false;
+			} 
+			else if (jointure.y > best_pos.y) best_pos = PosAct;
+		}
+		return best_pos;
+
+
+		#else
 		FuniMath::Vecteur C1 = pole[0] - accroche[0];
 		FuniMath::Vecteur C2 = pole[1] - accroche[1];
 		FuniMath::Vecteur C3 = pole[2] - accroche[2];
@@ -220,6 +407,7 @@ FuniMath::Vecteur Funibot::getPosition()
 
 		// Décentrage de C1
 		return jointure + C1;
+		#endif
 
 
 	}
@@ -475,4 +663,75 @@ FuniMath::Vecteur Funibot::getPoleRelatif(unsigned char index)
 		return FuniMath::Vecteur();
 	}
 	return pole[index] - accroche[index];
+}
+
+void Funibot::setupSafeZone(double securite_cote , double securite_toit )
+{
+	//pas en 3D
+	if(nbrPole < 3)
+	{
+		GestionErreurs::Erreur erreur;
+		erreur.id = 21;
+		#ifdef systemeArduino
+			erreur.moment = millis();
+		#endif
+		erreurs.addBack(erreur);
+		return;
+	}
+
+	//mise en place du toit
+	toit = getPoleRelatif(0).y;
+	for(int i = 1 ; i < nbrPole; i++)
+	{
+		if (getPoleRelatif(i).y < toit) toit = getPoleRelatif(i).y ;
+	}
+	toit -= securite_toit;
+
+	//polygone de securite
+	FuniMath::Vecteur listeVecteur[nbrPole];
+	FuniMath::Vecteur centre = FuniMath::Vecteur(0,0,0);
+	for(int i = 0 ; i < nbrPole; i++)
+	{
+		FuniMath::Vecteur pole = getPoleRelatif(i);
+		listeVecteur[i] = FuniMath::Vecteur(pole.x,pole.z,0);
+		centre = centre + listeVecteur[i];
+	}
+	centre =  centre / nbrPole;
+	for( int i = 0; i < nbrPole; i++)
+	{
+		FuniMath::Vecteur dir = centre - listeVecteur[i];
+		dir = dir / dir.norme();
+		safeCorner[i] = listeVecteur[i] + securite_cote * dir;
+	}
+
+}
+bool Funibot::isSafe(FuniMath::Vecteur P)
+{
+	//pas en 3D
+	if(nbrPole < 3)
+	{
+		GestionErreurs::Erreur erreur;
+		erreur.id = 22;
+		#ifdef systemeArduino
+			erreur.moment = millis();
+		#endif
+		erreurs.addBack(erreur);
+		return false;
+	}
+	
+	if (P.y > toit) return false;
+	if (hasSol && P.y < sol) return false;
+	FuniMath::Vecteur PXY(P.x,P.z,0);
+	return FuniMath::inConvexXY(safeCorner,nbrPole,PXY);
+}
+
+void Funibot::setSol(double val_sol)
+{
+	sol = val_sol;
+	hasSol = true;
+}
+
+double Funibot::getSol()
+{
+	return sol;
 }
