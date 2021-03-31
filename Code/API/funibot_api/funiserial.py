@@ -6,7 +6,7 @@ from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
 
-from tests.mock_serial import IMockSerial
+from funibot_api.mock_serial import IMockSerial
 
 from serial import Serial
 
@@ -26,9 +26,16 @@ class FuniModeDeplacement(Enum):
 
 
 class FuniModeCalibration(Enum):
-    """Mode de calibration pour 'cal' (CABLE)"""
+    """Mode de calibration pour 'cal' (CABLE/SOL)"""
     CABLE = 'cable'
     SOL = 'sol'
+
+
+class FuniModeMoteur(Enum):
+    """Mode de calibration pour 'mot' (ON/OFF/RESET)"""
+    ON = 'on'
+    OFF = 'off'
+    RESET = 'reset'
 
 
 class FuniCommException(Exception):
@@ -57,9 +64,14 @@ FUNI_ERREUR_MESSAGES =\
         "GET_ACCROCHE_INEXISTANTE",
         "GET_LONGUEUR_CABLE_INEXISTANT",
         "GET_POLE_RELATIF_INEXISTANT",
+        "POLES_CONFONDUES_2D",
+        "POLES_CONFONDUES_3D",
         "SETUP_SECURITE_AVEC_MOINS_DE_3_POLES",
         "SECURITE_AVEC_MOINS_DE_3_POLES",
-        "SORTIE_DE_ZONE_DE_SECURITE"
+        "SORTIE_DE_ZONE_DE_SECURITE",
+
+        # Doit rester la dernière pour avoir l'indice -1
+        "ERREUR_INCONNUE"
     ]
 
 FUNI_ERREUR_MAJ =\
@@ -118,22 +130,29 @@ class eFuniErreur(Enum):
     SECURITE_AVEC_MOINS_DE_3_POLES = 22
     SORTIE_DE_ZONE_DE_SECURITE = 23
 
+    ERREUR_INCONNUE_VOIR_DICTIONNAIRE = -1
+
 
 class FuniErreur:
     """Représente une erreur du Funibot"""
 
-    def __init__(self, erreur: Union[int, eFuniErreur], temps: int) -> None:
+    def __init__(self, erreur: Union[int, eFuniErreur], temps: int, maj: bool) -> None:
         """Initialise une FuniErreur à partir de son eFuniErreur ou de son id"""
         if isinstance(erreur, int):
-            erreur = eFuniErreur(erreur)
-        self.erreur = erreur
-        self.id = erreur.value
-        self.maj = FUNI_ERREUR_MAJ[self.id]
+            self.id = erreur
+            try:
+                self.erreur = eFuniErreur(erreur)
+            except ValueError:
+                self.erreur = eFuniErreur(-1)
+        else:
+            self.id = erreur.value
+            self.erreur = erreur
+        self.maj = maj
         self.t = temps
 
     def __repr__(self) -> str:
         """Affiche une FuniErreur"""
-        return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.erreur.value}:{self.erreur.name}]"
+        return f"FuniErreur<{self.t}>{'(M)' if self.maj else ''}[{self.id}:{self.erreur.name}]"
 
 
 class FuniSerial():
@@ -397,6 +416,64 @@ class FuniSerial():
                 break
 
             erreurs.append(FuniErreur(
-                retour["args"]["id"], retour["args"]["t"]))
+                retour["args"]["id"], retour["args"]["t"], retour["args"]["maj"]))
 
         return erreurs
+    
+    def log(self, type: FuniType, msg: str = None) -> Optional[str]:
+        """S'occupe de la communication série pour la commande JSON 'log'"""
+        if not isinstance(type, FuniType):
+            raise TypeError("type n'est pas un FuniType")
+        if type == FuniType.SET:
+            raise ValueError("SET n'est pas supporté")
+        json = {}
+        json["comm"] = "log"
+        json["type"] = type.value
+
+        if type == FuniType.GET:
+            args = {}
+            args["msg"] = None
+        else:
+            args = {}
+            args["msg"] = msg
+
+        json["args"] = args
+
+        try:
+            retour = self.envoyer(json)
+        except FuniCommException:
+            print_exc()
+            return None
+
+        msg_retour: str = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
+        msg_retour = msg_retour if msg_retour != "" else "__vide__"
+        msg_retour = msg_retour.replace('\r', '\n').rstrip()
+        return msg_retour
+
+    def mot(self, type: FuniType, mode: Optional[FuniModeMoteur] = None) -> Optional[FuniModeMoteur]:
+        """S'occupe de la communication série pour la commande JSON 'mot'"""
+        if not isinstance(type, FuniType):
+            raise TypeError("type n'est psa un FuniType")
+        json = {}
+        json["comm"] = "mot"
+        json["type"] = type.value
+
+        args = {}
+        if type is not FuniType.GET:
+            if mode is None:
+                raise ValueError("mode est None")
+            args["mode"] = mode.value
+        else:
+            args["mode"] = None
+
+        json["args"] = args
+
+        try:
+            retour = self.envoyer(json)
+        except FuniCommException as e:
+            print_exc()
+            return None
+        try:
+            return FuniModeMoteur(retour["args"]["mode"])
+        except ValueError:
+            return None

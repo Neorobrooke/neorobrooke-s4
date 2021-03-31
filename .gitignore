@@ -2,10 +2,10 @@
 ~$*
 NOGIT*
 __pycache__
-.venv
+.venv*
 .vs
 .pytest_cache
 googletest
 .coverage
 **/simulation_cpp/src
-htmlcov
+htmlcov*

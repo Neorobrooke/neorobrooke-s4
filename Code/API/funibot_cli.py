@@ -14,7 +14,7 @@ from funibot_api.funilib import Direction, Vecteur
 from funibot_api.funipersistance import ErreurDonneesIncompatibles
 from funibot_api.funiserial import FuniSerial, FuniCommException
 from funibot_api.funibot import Funibot
-from tests.mock_serial import MockSerial, MockType
+from funibot_api.mock_serial import MockSerial, MockType
 
 
 class CLIFunibot(cmd.Cmd):
@@ -325,9 +325,50 @@ class CLIFunibot(cmd.Cmd):
         else:
             print(self.bot.repr_sol())
 
+    def do_log(self, _):
+        """Affiche le log de déboguage du OpenCR"""
+        try:
+            msg = self.bot.log()
+        except Exception:
+            print("Erreur lors de l'obtention du log")
+            return
 
-if __name__ == '__main__':
-    args = FuniArgs().generer_config()
+        if msg is not None:
+            print("=" * 3, "LOG", "=" * (120 - 8))
+            print(msg)
+            print("=" * 120)
+        else:
+            print("Erreur lors de l'obtention du log")
+
+    def do_mot(self, arg: str):
+        """Affiche ou modifie l'état des moteurs.
+           Valeurs possibles des arguments pour:
+                - Afficher: aucun argument
+                - Activer: {"on", "ON", '1', "true", "TRUE", "True", 'e', 'a'}
+                - Désactiver: {"off", "OFF", '0', "false", "FALSE", "False", 'd'}
+                - Réinitialiser: {"reset", "reinit", 'r', "-1"}
+        """
+        try:
+            if arg == "":
+                print(self.bot.moteurs_actifs)
+            elif arg in {"on", "ON", '1', "true", "TRUE", "True", 'e', 'a'}:
+                self.bot.moteurs_actifs = True
+                print(self.bot.moteurs_actifs)
+            elif arg in {"off", "OFF", '0', "false", "FALSE", "False", 'd'}:
+                self.bot.moteurs_actifs = False
+                print(self.bot.moteurs_actifs)
+            elif arg in {"reset", "reinit", 'r', "-1"}:
+                self.bot.reinitialiser_moteurs()
+            else:
+                print("Argument invalide. Afficher les possibilités avec 'help'.")
+        except ValueError:
+            print("État du moteur inconnu")
+
+def main():
+    args = FuniArgs("funibot-cli").generer_config()
     cli_funibot = CLIFunibot(config=args.config)
 
     cli_funibot.cmdloop()
+
+if __name__ == '__main__':
+    main()

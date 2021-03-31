@@ -4,7 +4,7 @@
     baudrate: 57600
   sol: -800
   persistance:
-    fichier: Code/API/Python/calibration.yaml
+    fichier: Code/API/calibration.yaml
     auto-persistance: False
     auto-calibration: False
   poteaux: # distances en mm
