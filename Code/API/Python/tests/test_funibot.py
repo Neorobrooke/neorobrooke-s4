@@ -5,7 +5,7 @@ from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Direction, Poteau, Vecteur
 from funibot_api.funiserial import FuniSerial
 from funibot_api.funibot import Funibot
-from tests.mock_serial import MockSerial, DualMockSerial, MockType
+from funibot_api.mock_serial import MockSerial, DualMockSerial, MockType
 
 
 class TestsFunibot(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestsFunibot(unittest.TestCase):
         bot = Funibot(self.serial, config=self.config)
 
         self.assertEqual(repr(
-            bot), "Funibot[Mock]([Poteau[0:pot1](1;2;3)(11;12;13), Poteau[1:pot2](4;5;8)(0;23;9)])", msg = f"La représentation du Funibot est {repr(bot)} au lieu de Funibot[Mock]([Poteau[0:pot1](1;2;3)(11;12;13), Poteau[1:pot2](4;5;8)(0;23;9)])")
+            bot), "Funibot[Mock]([Poteau[0:pot1](1;2;3)(11;12;13), Poteau[1:pot2](4;5;8)(0;23;9)])", msg=f"La représentation du Funibot est {repr(bot)} au lieu de Funibot[Mock]([Poteau[0:pot1](1;2;3)(11;12;13), Poteau[1:pot2](4;5;8)(0;23;9)])")
 
     def test_pos(self):
         bot = Funibot(self.dserial, config=self.config)
@@ -84,7 +84,7 @@ class TestsFunibot(unittest.TestCase):
         bot = Funibot(self.dserial, config=self.config)
 
         bot.sol = 34
-    
+
         self.assertEqual(bot.sol, bot._sol,
                          msg=f"Position du sol est {bot.sol} au lieu de {bot._sol}")
 
@@ -101,34 +101,34 @@ class TestsFunibot(unittest.TestCase):
 
     def test_getitem(self):
         bot = Funibot(self.dserial, config=self.config)
-    
+
         nom = "pot1"
         self.assertIs(bot[nom], bot.poteaux[nom],
-                         msg=f"Le nom du poteau est {bot[nom]} au lieu de {bot.poteaux[nom]}")
+                      msg=f"Le nom du poteau est {bot[nom]} au lieu de {bot.poteaux[nom]}")
 
     def test_keys(self):
         bot = Funibot(self.dserial, config=self.config)
 
         self.assertTrue(bot.keys() == bot.poteaux.keys(),
-                         msg=f"La clé du poteau est {bot.keys()} au lieu de {bot.poteaux.keys()}")
+                        msg=f"La clé du poteau est {bot.keys()} au lieu de {bot.poteaux.keys()}")
 
     def test_values(self):
         bot = Funibot(self.dserial, config=self.config)
 
         self.assertTrue(list(bot.values()) == list(bot.poteaux.values()),
-                         msg=f"La valeur du poteau est {list(bot.values())} au lieu de {list(bot.poteaux.values())}")
+                        msg=f"La valeur du poteau est {list(bot.values())} au lieu de {list(bot.poteaux.values())}")
 
     def test_items(self):
         bot = Funibot(self.dserial, config=self.config)
 
         self.assertTrue(bot.items() == bot.poteaux.items(),
-                         msg=f"Les items du poteau sont {bot.items()} au lieu de {bot.poteaux.items()}")
+                        msg=f"Les items du poteau sont {bot.items()} au lieu de {bot.poteaux.items()}")
 
     def test_iter(self):
         bot = Funibot(self.dserial, config=self.config)
 
         self.assertTrue(list(bot) == list(bot.poteaux.values()),
-                         msg=f"L'iteration du poteau est {list(bot)} au lieu de {list(bot.poteaux.values())}")
+                        msg=f"L'iteration du poteau est {list(bot)} au lieu de {list(bot.poteaux.values())}")
 
     def test_set_stop(self):
         bot = Funibot(self.dserial, config=self.config)
@@ -139,17 +139,18 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"Après avoir demandé l'arrêt, la position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
- 
+
     def test_repr_sol(self):
         """Test de représentation du sol d'un Funibot"""
         bot = Funibot(self.serial, config=self.config)
 
-        self.assertEqual(bot.repr_sol(), f"Sol -> {bot.sol}", msg = f"La représentation du sol est {bot.repr_sol()} au lieu de Sol -> {bot.sol}")
+        self.assertEqual(bot.repr_sol(
+        ), f"Sol -> {bot.sol}", msg=f"La représentation du sol est {bot.repr_sol()} au lieu de Sol -> {bot.sol}")
 
     def test_deplacer_vect(self):
         """Test de déplacement du funibot par un vecteur"""
         bot = Funibot(self.serial, config=self.config)
-        V = Vecteur(4,1,8)
+        V = Vecteur(4, 1, 8)
         bot.deplacer(V)
 
         validation_requete = bytes(
@@ -157,7 +158,7 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par un vecteur, la position est {validation_requete} au lieu de {self.mock.requete}")
- 
+
     def test_deplacer_dir(self):
         """Test de déplacement du funibot par une direction"""
         bot = Funibot(self.serial, config=self.config)
@@ -186,8 +187,8 @@ class TestsFunibot(unittest.TestCase):
     def test_deplacer_vect_dis(self):
         """Test de déplacement du funibot par un vecteur et une distance"""
         bot = Funibot(self.serial, config=self.config)
-        V = Vecteur(4,1,8)
-        bot.deplacer(V,3.0)
+        V = Vecteur(4, 1, 8)
+        bot.deplacer(V, 3.0)
         U = V.unitaire() * 3.0
 
         validation_requete = bytes(
@@ -195,12 +196,12 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par un vecteur et une distance, la position est {validation_requete} au lieu de {self.mock.requete}")
- 
+
     def test_deplacer_dir_dis(self):
         """Test de déplacement du funibot par une direction et une distance"""
         bot = Funibot(self.serial, config=self.config)
         D = Direction("4x-8y+z")
-        bot.deplacer(D,2.4)
+        bot.deplacer(D, 2.4)
         U = D.vecteur().unitaire() * 2.4
 
         validation_requete = bytes(
@@ -215,7 +216,7 @@ class TestsFunibot(unittest.TestCase):
         x, y, z = 4, -8, 2
         S = f"{x}x{y}y+{z}z"
         bot.deplacer(S, 2.5)
-        U = Direction(S).vecteur().unitaire() *2.5
+        U = Direction(S).vecteur().unitaire() * 2.5
 
         validation_requete = bytes(
             f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {U.x}, "axe_y": {U.y}, "axe_z": {U.z}}}}}', 'utf8')
@@ -226,20 +227,20 @@ class TestsFunibot(unittest.TestCase):
     def test_deplacer_vect_dis_zero(self):
         """Test de déplacement du funibot par un vecteur et une distance de zéro"""
         bot = Funibot(self.serial, config=self.config)
-        V = Vecteur(4,1,8)
-        bot.deplacer(V,0)
+        V = Vecteur(4, 1, 8)
+        bot.deplacer(V, 0)
 
         validation_requete = bytes(
             f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {V.x}, "axe_y": {V.y}, "axe_z": {V.z}}}}}', 'utf8')
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par un vecteur et une distance de zéro, la position est {validation_requete} au lieu de {self.mock.requete}")
- 
+
     def test_deplacer_dir_dis_zero(self):
         """Test de déplacement du funibot par une direction et une distance de zéro"""
         bot = Funibot(self.serial, config=self.config)
         D = Direction("4x-8y+z")
-        bot.deplacer(D,0)
+        bot.deplacer(D, 0)
 
         validation_requete = bytes(
             f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {D.axe_x}, "axe_y": {D.axe_y}, "axe_z": {D.axe_z}}}}}', 'utf8')
@@ -259,4 +260,3 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par une string avec une distance de zéro, la position est {validation_requete} au lieu de {self.mock.requete}")
-

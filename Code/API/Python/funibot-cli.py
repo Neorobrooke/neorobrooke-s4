@@ -14,7 +14,7 @@ from funibot_api.funilib import Direction, Vecteur
 from funibot_api.funipersistance import ErreurDonneesIncompatibles
 from funibot_api.funiserial import FuniSerial, FuniCommException
 from funibot_api.funibot import Funibot
-from tests.mock_serial import MockSerial, MockType
+from funibot_api.mock_serial import MockSerial, MockType
 
 
 class CLIFunibot(cmd.Cmd):
@@ -364,7 +364,7 @@ class CLIFunibot(cmd.Cmd):
             print("État du moteur inconnu")
 
 if __name__ == '__main__':
-    args = FuniArgs().generer_config()
+    args = FuniArgs("funibot-cli").generer_config()
     cli_funibot = CLIFunibot(config=args.config)
 
     cli_funibot.cmdloop()

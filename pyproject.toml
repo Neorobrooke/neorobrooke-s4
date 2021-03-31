@@ -4,16 +4,3 @@ requires = [
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
-
-[project]
-dependencies = [
-    "PyYAML",
-    "pyserial",
-    "ruamel.yaml"
-]
-
-[project.optional-dependencies]
-tests = [
-    "pytest",
-    "pytest-cov"
-]

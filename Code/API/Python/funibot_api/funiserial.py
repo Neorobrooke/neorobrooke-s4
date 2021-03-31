@@ -6,7 +6,7 @@ from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
 
-from tests.mock_serial import IMockSerial
+from funibot_api.mock_serial import IMockSerial
 
 from serial import Serial
 
