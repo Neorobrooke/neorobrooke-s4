@@ -6,7 +6,7 @@
 #include "GestionLog.h"
 
 
-#define version "v t1"
+#define version "v t2"
 
 #define BAUDRATE  57600
 
@@ -369,7 +369,7 @@ void mainCommunication()
     {
         if(type == "get")
         {
-            StaticJsonDocument<1280> out;
+            StaticJsonDocument<128 + log_size> out;
 
             out["comm"] = "log";
             out["type"] = "ack";

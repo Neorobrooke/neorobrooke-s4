@@ -27,7 +27,7 @@ bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B
 		const double b = (P.x - A.x)/(B.x-A.x) - a*(C.x-A.x)/(B.x-A.x);
 		if(isnan(b))return false;
 		const double c = 1-a-b;
-		return (a >= 0 && b >= 0 && c>=0);
+		return (a >= -0.001 && b >= -0.001 && c>= -0.001 );
 	}
 }
 bool FuniMath::inConvexXY(const FuniMath::Vecteur* Cotes, const int nbrCotes, const FuniMath::Vecteur P)
@@ -297,6 +297,13 @@ FuniMath::Vecteur Funibot::getPosition()
 				{
 					double b3Pos_alt = sqrt(r1Carr - k2*k2);
 					PosAct = b3Pos_alt * base3 + k2 * Dirr2u + C1;
+					if (k1 > 0 && k1*k1 < r1Carr)
+					{
+						double b3Pos_alt = sqrt(r1Carr - k1*k1);
+						FuniMath::Vecteur Pos_alt = b3Pos_alt * base3 + k1 * Dirr1u + C1;
+						if (Pos_alt.y > PosAct.y)
+							PosAct = Pos_alt;
+					}
 				}
 				else if (k1 > 0 && k1*k1 < r1Carr)
 				{

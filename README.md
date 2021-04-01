@@ -31,3 +31,14 @@ Windows (git-bash) : `source ./.venv/Scripts/activate`
 Linux/Mac (bash, zsh, etc.) : `source ./.venv/bin/activate`
 
 L'environnement doit être réactivé chaque fois qu'on veut exécuter le module ou un autre module ou script qui en dépend.
+
+# Performance
+## Précision
+testé avec un stabilisateur de 340g à 275mm (0.9163 Nm) et une zone de 1.2m x 1.2m
+Plus la nacelle s'approche d'un pole, plus l'erreur est élevée
+position ± 165 mm
+orientation ± 31°
+
+##limite
+Masse maximale testé (nacelle exclue) 1.2 kg
+ 

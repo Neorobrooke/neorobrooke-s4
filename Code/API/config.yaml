@@ -14,34 +14,34 @@
           y: 0
           z: 0
         accroches:
-          x: 0
-          y: 0
-          z: 0
+          x: -60
+          y: 100
+          z: -60
     - pot1:
         poles:
           x: 1220
           y: 0
           z: 0
         accroches:
-          x: 0
-          y: 0
-          z: 0
+          x: 60
+          y: 100
+          z: -60
     - pot2:
         poles:
           x: 1220
           y: 0
           z: 1220
         accroches:
-          x: 0
-          y: 0
-          z: 0
+          x: 60
+          y: 100
+          z: 60
     - pot3:
         poles:
           x: 0
           y: 0
           z: 1220
         accroches:
-          x: 0
-          y: 0
-          z: 0
+          x: -60
+          y: 100
+          z: 60
 ...

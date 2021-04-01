@@ -142,6 +142,19 @@ void moteurLoop(double *vitesse, double *longueurCable)
   long dt = nt - t;
   t = nt;
   #endif
+  static int compteur = 0;
+  compteur ++;
+  if (compteur >= 200)
+  {
+    compteur = 0;
+    GestionLog::printlnlog("mmprad:");
+    for (int i = 0 ; i < nbrMoteur; i++)
+    {
+      GestionLog::printlnlog(mmprad[i]);
+    }
+    GestionLog::printlog("dt = ");
+    GestionLog::printlog(dt);
+  }
 
   //controle des moteurs
   for (uint8_t i=0; i<nbrMoteur; i++)
@@ -206,6 +219,8 @@ void moteurLoop(double *vitesse, double *longueurCable)
         else
         {
           sous_tension[i] = true;
+          GestionLog::printlog("sous tension moteur ");
+          GestionLog::printlog(i);
         }
       }
       //resolution des sous tension
@@ -229,6 +244,8 @@ void moteurLoop(double *vitesse, double *longueurCable)
             old_longueur_cable[i] = longueurCable[i];
             old_position_moteurs[i] = radian;
             sous_tension[i] = false;
+            GestionLog::printlog("tension moteur ");
+            GestionLog::printlnlog(i);
           }
         }
         else
