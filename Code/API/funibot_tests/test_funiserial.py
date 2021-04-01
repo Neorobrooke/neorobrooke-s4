@@ -284,3 +284,4 @@ class TestsFuniSerial(unittest.TestCase):
             bot.dep(FuniModeDeplacement.START,FuniModeDeplacement.DISTANCE, deplacement) # type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
+    
