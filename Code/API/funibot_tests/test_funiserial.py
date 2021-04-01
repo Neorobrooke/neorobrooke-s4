@@ -284,8 +284,8 @@ class TestsFuniSerial(unittest.TestCase):
             bot.dep(FuniModeDeplacement.START,FuniModeDeplacement.DISTANCE, deplacement) # type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
-    def test_err(self):
-        """Test des erreurs du FuniSerial"""
+    def test_err_get(self):
+        """Test des erreurs avec get du FuniSerial"""
         bot = FuniSerial(self.dmock)
         
         self.dmock.lecture.reponse = bytes(
@@ -304,4 +304,20 @@ class TestsFuniSerial(unittest.TestCase):
 
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"L'erreur avec get est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+
+    def test_err_set(self):
+        """Test des erreurs avec set du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(ValueError, msg="Le FuniType set n'a pas levé d'exception de type ValueError") as re:
+            bot.err(FuniType.SET,2,0,0)
+        self.assertEqual(str(re.exception), "SET n'est pas supporté")
+
+    def test_err_funitype(self):
+        """Test des erreurs sans FuniType du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(TypeError, msg="Le FuniType set n'a pas levé d'exception de type TypeError") as re:
+            bot.err(FuniModeDeplacement.START,2,0,0) # type: ignore
+        self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
