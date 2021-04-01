@@ -1,4 +1,5 @@
 #include "moteur.h"
+#include "GestionLog.h"
 
 
 #if defined(__OPENCM904__)
@@ -72,6 +73,7 @@ void moteurSetMode()
       #endif
       dxl_wb.torqueOn(liste_moteurs[i]);
     }
+  GestionLog::printlnlog("Mise à jour du mode de fonctionnement des moteurs");
 } 
 
 void moteurSetup(uint8_t nbrMoteur_, double *longueurCable)
@@ -94,6 +96,7 @@ void moteurSetup(uint8_t nbrMoteur_, double *longueurCable)
       vitesse_corr[i] = 1;
       #endif
     }
+    GestionLog::printlnlog("Initialisation des moteurs des moteurs");
 }
 void moteurReset()
 {
@@ -113,18 +116,21 @@ void moteurReset()
       #endif
   }
   moteurSetMode();
+  GestionLog::printlnlog("reinitialisation des moteurs");
 }
 
 void moteurOn()
 {
   for(uint8_t i = 0; i < nbrMoteur; i++)
   dxl_wb.torqueOn(liste_moteurs[i]);
+  GestionLog::printlnlog("Moteurs on");
 }
 
 void moteurOff()
 {
   for(uint8_t i = 0; i < nbrMoteur; i++)
-  dxl_wb.torqueOn(liste_moteurs[i]);
+  dxl_wb.torqueOff(liste_moteurs[i]);
+  GestionLog::printlnlog("Moteurs off");
 }
 
 void moteurLoop(double *vitesse, double *longueurCable)

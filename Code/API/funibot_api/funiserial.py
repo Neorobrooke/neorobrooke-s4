@@ -447,7 +447,7 @@ class FuniSerial():
 
         msg_retour: str = retour["args"]["msg"] if retour["args"]["msg"] is not None else ""
         msg_retour = msg_retour if msg_retour != "" else "__vide__"
-        msg_retour = msg_retour.replace('\r', '\n')
+        msg_retour = msg_retour.replace('\r', '\n').rstrip()
         return msg_retour
 
     def mot(self, type: FuniType, mode: Optional[FuniModeMoteur] = None) -> Optional[FuniModeMoteur]:

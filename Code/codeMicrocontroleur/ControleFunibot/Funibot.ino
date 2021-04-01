@@ -4,7 +4,6 @@
 #define systemeArduino
 #define autoSecure
 #define optiPole
-
 bool FuniMath::inTriangleXY(const FuniMath::Vecteur A, const FuniMath::Vecteur B, const FuniMath::Vecteur C, const FuniMath::Vecteur P)
 {
 
