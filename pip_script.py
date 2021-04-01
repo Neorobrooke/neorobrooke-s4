@@ -3,24 +3,23 @@ import pathlib
 import os
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--noedit", action='store_true', help="Installer en mode éditable")
-parser.add_argument("--nodev", action='store_true', help="Installer sans les dépendances de développement")
-parser.add_argument("--notest", action='store_true', help="Installer sans les dépendances de test")
-args = parser.parse_args()
-editable = "-e" if not args.noedit else ""
-test = "test" if not args.notest else ""
-dev = "dev" if not args.nodev else ""
-
-arg_extras = "[" if test != "" or dev != "" else ""
-arg_extras += test
-arg_extras = "," if test != "" and dev != "" else ""
-arg_extras += dev
-arg_extras = "]" if test != "" or dev != "" else ""
-
 if __name__ == '__main__':
-    print(editable)
-    print(arg_extras)
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--noedit", action='store_true', help="Installer en mode éditable")
+    parser.add_argument("--nodev", action='store_true', help="Installer sans les dépendances de développement")
+    parser.add_argument("--notest", action='store_true', help="Installer sans les dépendances de test")
+    args = parser.parse_args()
+    editable = "-e" if not args.noedit else ""
+    test = "test" if not args.notest else ""
+    dev = "dev" if not args.nodev else ""
+
+    arg_extras = "[" if test != "" or dev != "" else ""
+    arg_extras += test
+    arg_extras += "," if test != "" and dev != "" else ""
+    arg_extras += dev
+    arg_extras += "]" if test != "" or dev != "" else ""
+    
     python_exec = pathlib.Path(executable)
     python_exec = f"{python_exec.stem}{python_exec.suffix}"
 
