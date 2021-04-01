@@ -166,7 +166,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
       "id": 0,
       "maj": false,
       "t": 0,
-      "err_sup": 1
+      "err_sup": 0
     }
   }
   ```

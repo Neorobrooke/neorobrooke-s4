@@ -284,4 +284,24 @@ class TestsFuniSerial(unittest.TestCase):
             bot.dep(FuniModeDeplacement.START,FuniModeDeplacement.DISTANCE, deplacement) # type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
-    
+    def test_err(self):
+        """Test des erreurs du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+        
+        self.dmock.lecture.reponse = bytes(
+            f'{{"comm": "err", "type": "ack", "args": {{"id": 1, "maj": true, "t": 4252452, "err_sup": 0}}}}', 'utf8')
+        validation_requete = bytes(
+            f'{{"comm": "err", "type": "get", "args": {{"id": null, "maj": null, "t": null, "err_sup": null}}}}', 'utf8')
+        
+        reponse = bot.err(FuniType.GET)
+
+        self.assertEqual(len(reponse), 1)
+        erreur = reponse[0]
+        
+        self.assertIs(erreur.erreur, eFuniErreur.ADD_POLE_DEPASSEMENT)
+        self.assertEqual(erreur.id, eFuniErreur.ADD_POLE_DEPASSEMENT.value)
+        self.assertEqual(erreur.t, 4252452)
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete,
+                         msg=f"L'erreur avec get est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+
