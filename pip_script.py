@@ -6,7 +6,7 @@ python_exec = pathlib.Path(executable)
 python_exec = f"{python_exec.stem}{python_exec.suffix}"
 
 if not pathlib.Path(".venv").exists():
-    os.system(f"{python_exec} -m pip install -U pip")
+    os.system(f"{python_exec} -m pip install -U pip setuptools")
     os.system(f"{python_exec} -m venv .venv")
 
 if platform == 'win32':
@@ -14,4 +14,6 @@ if platform == 'win32':
 else:
     python_venv_exec = str(pathlib.Path(f".venv/bin/{python_exec}"))
 
-os.system(f"{python_venv_exec} -m pip install -r requirements.txt")
+os.system(f"{python_venv_exec} -m pip install -U pip setuptools wheel")
+os.system(f"{python_venv_exec} -m pip install -e .[test,dev]")
+os.system(f"{python_venv_exec} -m pip uninstall -y wheel")
