@@ -1,4 +1,4 @@
-from sys import platform, executable
+from sys import platform, executable, argv
 from pathlib import Path
 import os
 import argparse
@@ -9,12 +9,11 @@ if __name__ == '__main__':
     parser.add_argument("--noedit", action='store_true', help="Installer en mode éditable")
     parser.add_argument("--nodev", action='store_true', help="Installer sans les dépendances de développement")
     parser.add_argument("--notest", action='store_true', help="Installer sans les dépendances de test")
-    parser.add_argument("--path", type=Path, help="Chemin de la librairie")
     args = parser.parse_args()
     editable = "-e" if not args.noedit else ""
     test = "test" if not args.notest else ""
     dev = "dev" if not args.nodev else ""
-    path = args.path if args.path is not None else "."
+    path = Path(argv[0]).absolute().parent
 
     arg_extras = "[" if test != "" or dev != "" else ""
     arg_extras += test
