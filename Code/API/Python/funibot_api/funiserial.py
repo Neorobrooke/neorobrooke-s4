@@ -290,7 +290,7 @@ class FuniSerial():
     def pos(self, type: FuniType, position: Tuple[float, float, float] = None) -> Optional[Tuple[float, float, float]]:
         """S'occupe de la communication série pour la commande JSON 'pos'"""
         if not isinstance(type, FuniType):
-            raise TypeError("type n'est psa un FuniType")
+            raise TypeError("type n'est pas un FuniType")
         json = {}
         json["comm"] = "pos"
         json["type"] = type.value

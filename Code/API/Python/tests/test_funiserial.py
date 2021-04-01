@@ -177,3 +177,110 @@ class TestsFuniSerial(unittest.TestCase):
         with self.assertRaises(TypeError, msg = "La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
             bot.cal(FuniModeDeplacement.START,FuniModeCalibration.CABLE,2,long) #type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
+
+    def test_pos(self):
+        """Test de la position du FuniSerial"""
+        bot = FuniSerial(self.mock)
+        position = (3, 1.2, 8)
+        bot.pos(FuniType.SET,position)
+
+        validation_requete = bytes(
+            f'{{"comm": "pos", "type": "set", "args": {{"pos_x": {position[0]}, "pos_y": {position[1]}, "pos_z": {position[2]}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"La position est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_pos_err_none(self):
+        """Test de position du FuniSerial avec un None"""
+        bot = FuniSerial(self.mock)
+        position = None
+
+        with self.assertRaises(ValueError, msg="La présence de None comme position n'a pas levé d'exception de type ValueError") as re:
+            bot.pos(FuniType.SET, position)
+        self.assertEqual(str(re.exception), "position est None")
+
+    def test_pos_get(self):
+        """Test de position du FuniSerial avec get"""
+        bot = FuniSerial(self.mock)
+        position = (3, 1.2, 8)
+        bot.pos(FuniType.GET, position)
+
+        validation_requete = bytes(
+            f'{{"comm": "pos", "type": "get", "args": {{"pos_x": null, "pos_y": null, "pos_z": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"La position est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_pos_err_type(self):
+        """Test de position du FuniSerial avec un type pas FuniType"""
+        bot = FuniSerial(self.mock)
+        position = None
+
+        with self.assertRaises(TypeError, msg="La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
+            bot.pos(FuniModeDeplacement.START, position) # type: ignore
+        self.assertEqual(str(re.exception), "type n'est pas un FuniType")
+
+    def test_dep_start(self):
+        """Test de déplacement du FuniSerial avec start"""
+        bot = FuniSerial(self.mock)
+        direction = (3, 1.2, 8)
+        bot.dep(FuniType.SET,FuniModeDeplacement.START, direction)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "start", "axe_x": {direction[0]}, "axe_y": {direction[1]}, "axe_z": {direction[2]}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Le déplacement avec start est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_dep_dist(self):
+        """Test de déplacement du FuniSerial avec distance"""
+        bot = FuniSerial(self.mock)
+        direction = (3, 1.2, 8)
+        bot.dep(FuniType.SET,FuniModeDeplacement.DISTANCE, direction)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "distance", "axe_x": {direction[0]}, "axe_y": {direction[1]}, "axe_z": {direction[2]}}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Le déplacement avec distance est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_dep__err_dir_none(self):
+        """Test de déplacement du FuniSerial avec une direction None"""
+        bot = FuniSerial(self.mock)
+        direction = None
+
+        with self.assertRaises(ValueError, msg="La présence de None comme direction n'a pas levé d'exception de type ValueError") as re:
+            bot.dep(FuniType.SET,FuniModeDeplacement.DISTANCE, direction)
+        self.assertEqual(str(re.exception), "direction est None")
+
+    def test_dep_stop(self):
+        """Test de déplacement du FuniSerial en mode stop"""
+        bot = FuniSerial(self.mock)
+        direction = (3, 1.2, 8)
+        bot.dep(FuniType.SET,FuniModeDeplacement.STOP, direction)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "set", "args": {{"mode": "stop", "axe_x": null, "axe_y": null, "axe_z": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Le déplacement avec stop est {validation_requete} au lieu de {self.mock.requete}")
+
+
+    def test_dep__err_get(self):
+        """Test de déplacement du FuniSerial avec get"""
+        bot = FuniSerial(self.mock)
+        direction = (3,4,1)
+
+        with self.assertRaises(ValueError, msg="La présence du type get n'a pas levé d'exception de type ValueError") as re:
+            bot.dep(FuniType.GET,FuniModeDeplacement.DISTANCE, direction)
+        self.assertEqual(str(re.exception), "GET n'est pas supporté")
+
+    def test_dep_err_type(self):
+        """Test de déplacement du FuniSerial avec un type pas FuniType"""
+        bot = FuniSerial(self.mock)
+        deplacement = None
+
+        with self.assertRaises(TypeError, msg="La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
+            bot.dep(FuniModeDeplacement.START,FuniModeDeplacement.DISTANCE, deplacement) # type: ignore
+        self.assertEqual(str(re.exception), "type n'est pas un FuniType")
+
