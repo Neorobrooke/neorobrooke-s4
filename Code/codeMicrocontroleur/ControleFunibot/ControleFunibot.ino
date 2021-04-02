@@ -6,7 +6,7 @@
 #include "GestionLog.h"
 
 
-#define version "v t2"
+#define version "v t4"
 
 #define BAUDRATE  57600
 
@@ -35,7 +35,7 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 50;
+    double vitesse = 100;
     double seuilPosition = 5;
 
     //retour encodeur

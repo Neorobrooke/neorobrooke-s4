@@ -36,9 +36,10 @@ L'environnement doit être réactivé chaque fois qu'on veut exécuter le module
 ## Précision
 testé avec un stabilisateur de 340g à 275mm (0.9163 Nm) et une zone de 1.2m x 1.2m
 Plus la nacelle s'approche d'un pole, plus l'erreur est élevée
-position ± 165 mm
+position ± 25 mm
 orientation ± 31°
 
 ##limite
 Masse maximale testé (nacelle exclue) 1.2 kg
+vitesse moyenne pour déplacement diagonale (nacelle + stabilisateur 340g) 73 mm/s
  

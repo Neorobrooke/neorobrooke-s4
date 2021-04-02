@@ -58,7 +58,7 @@ void moteurSetMode()
 
       #else
       dxl_wb.setExtendedPositionControlMode(liste_moteurs[i]);
-      dxl_wb.writeRegister(liste_moteurs[i], "Profile_Velocity", 150);
+      dxl_wb.writeRegister(liste_moteurs[i], "Profile_Velocity", 200);
       dxl_wb.writeRegister(liste_moteurs[i], "Profile_Acceleration", 0);
 
       int32_t* data;
@@ -92,7 +92,6 @@ void moteurSetup(uint8_t nbrMoteur_, double *longueurCable)
         buffer_mmprad[i][j] = mmprad_normal;
       }
       #ifdef REG_TENSION
-      sous_tension[i] = false;
       vitesse_corr[i] = 1;
       #endif
     }
@@ -111,7 +110,6 @@ void moteurReset()
         buffer_mmprad[i][j] = mmprad_normal;
       }
       #ifdef REG_TENSION
-      sous_tension[i] = false;
       vitesse_corr[i] = 1;
       #endif
   }
@@ -144,17 +142,6 @@ void moteurLoop(double *vitesse, double *longueurCable)
   #endif
   static int compteur = 0;
   compteur ++;
-  if (compteur >= 200)
-  {
-    compteur = 0;
-    GestionLog::printlnlog("mmprad:");
-    for (int i = 0 ; i < nbrMoteur; i++)
-    {
-      GestionLog::printlnlog(mmprad[i]);
-    }
-    GestionLog::printlog("dt = ");
-    GestionLog::printlog(dt);
-  }
 
   //controle des moteurs
   for (uint8_t i=0; i<nbrMoteur; i++)
@@ -182,9 +169,9 @@ void moteurLoop(double *vitesse, double *longueurCable)
       }
       #else
       //calibration
-      if(!sous_tension[i] && abs(deltaAng)> 0.17)
+      if(abs(deltaAng)> 0.17)
       {
-        if(abs(deltaCable)>2.5)
+        if(abs(deltaCable)>0.5)
         {
           mmprad[i] = deltaCable / deltaAng;
 
@@ -202,56 +189,38 @@ void moteurLoop(double *vitesse, double *longueurCable)
           }
 
           //correction vitesse
-          if (mmprad[i] < mmprad_normal)
+          if (mmprad[i] < mmprad_normal && vitesse[i] > 0)
           {
+            if(mmprad[i] < mmprad_min)
+            {
+              vitesse_corr[i] = (mmprad[i] - mmprad_min -0.1)*mmprad[i] / vitesse[i];
+            }
+            else
+            {
               vitesse_corr[i] = 1 - p_corr*(mmprad_normal - mmprad[i]);
+            }
           }
           else vitesse_corr[i] = 1;
 
-          //ajout de frontiere
-          if(mmprad[i] < mmprad_min) mmprad[i] = mmprad_min;
+          //detection de limite
+          if(mmprad[i] < mmprad_min)
+          {
+            GestionLog::printlog("mmprad[");
+            GestionLog::printlog(i);
+            GestionLog::printlog("] = ");
+            GestionLog::printlnlog(mmprad[i]);
+            GestionLog::printlog("corr = ");
+            GestionLog::printlnlog(vitesse_corr[i]);
+          }
           else if (mmprad_max < mmprad[i]) mmprad[i] = mmprad_max;
 
           //mise à jours de mémoires pour delta
           old_position_moteurs[i] = radian;
           old_longueur_cable[i] = longueurCable[i];
         }
-        else
-        {
-          sous_tension[i] = true;
-          GestionLog::printlog("sous tension moteur ");
-          GestionLog::printlog(i);
-        }
       }
-      //resolution des sous tension
-      if(sous_tension[i])
-        {
-          if(abs(deltaCable) < 4 )
-          {
-            if (mmprad[i] < 0)
-            {
-              if (vitesse[i] < 80)
-              vitesse[i] = 80;
-            }
-            else
-            {
-              if (vitesse[i] > -80)
-              vitesse[i] = -80;
-            }
-          }
-          else
-          {
-            old_longueur_cable[i] = longueurCable[i];
-            old_position_moteurs[i] = radian;
-            sous_tension[i] = false;
-            GestionLog::printlog("tension moteur ");
-            GestionLog::printlnlog(i);
-          }
-        }
-        else
-        {
-          vitesse[i] *= vitesse_corr[i];
-        }
+      vitesse[i] *= vitesse_corr[i];
+      
       #endif
 
       //consigne du deplacement;
@@ -263,4 +232,17 @@ void moteurLoop(double *vitesse, double *longueurCable)
       dxl_wb.goalPosition(liste_moteurs[i], cible);
       #endif
     }
+
+  if (compteur >= 200)
+  {
+    compteur = 0;
+    GestionLog::printlnlog("mmprad:");
+    for (int i = 0 ; i < nbrMoteur; i++)
+    {
+      GestionLog::printlnlog(mmprad[i]);
+      GestionLog::printlnlog(vitesse_corr[i]);
+    }
+    GestionLog::printlog("dt = ");
+    GestionLog::printlnlog(dt);
+  }
 }
