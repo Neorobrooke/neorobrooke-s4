@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Tuple
 
-from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, eFuniErreur
+from funibot_api.funiserial import FUNI_ERREUR_MAJ, FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, eFuniErreur
 from funibot_api.mock_serial import MockSerial, MockType, DualMockSerial
 import unittest
 
@@ -320,4 +320,16 @@ class TestsFuniSerial(unittest.TestCase):
         with self.assertRaises(TypeError, msg="Le FuniType set n'a pas levé d'exception de type TypeError") as re:
             bot.err(FuniModeDeplacement.START,2,0,0) # type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
+
+    def test_err_ack(self):
+        """Test des erreurs avec ack du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+        
+        bot.err(FuniType.ACK,1,4252452,0)
+
+        validation_requete = bytes(
+            f'{{"comm": "err", "type": "ack", "args": {{"id": 1, "maj": {str(FUNI_ERREUR_MAJ[1]).lower()}, "t": 4252452, "err_sup": 0}}}}', 'utf8')
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete,
+                         msg=f"L'erreur avec ack est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
 
