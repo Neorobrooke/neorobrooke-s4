@@ -352,7 +352,7 @@ class TestsFuniSerial(unittest.TestCase):
         bot = FuniSerial(self.dmock)
 
         with self.assertRaises(TypeError, msg="Le float comme code n'a pas levé d'exception de type TypeError") as re:
-            bot.err(FuniType.ACK, 0.3, 4252452, 0)  # type: ignore
+            bot.err(eFuniType.ACK, 0.3, 4252452, 0)  # type: ignore
         self.assertEqual(str(re.exception),
                          "code n'est pas une eFuniErreur ou un entier")
 
@@ -370,7 +370,7 @@ class TestsFuniSerial(unittest.TestCase):
         bot = FuniSerial(self.dmock)
 
         with self.assertRaises(TypeError, msg="Le temps en float n'a pas levé d'exception de type TypeError") as re:
-            bot.err(FuniType.ACK, 6, 5.76, 0)  # type: ignore
+            bot.err(eFuniType.ACK, 6, 5.76, 0)  # type: ignore
         self.assertEqual(str(re.exception), "temps n'est pas un entier")
 
     def test_err_errsup_float(self):
@@ -378,7 +378,7 @@ class TestsFuniSerial(unittest.TestCase):
         bot = FuniSerial(self.dmock)
 
         with self.assertRaises(TypeError, msg="L'err_sup en float n'a pas levé d'exception de type TypeError") as re:
-            bot.err(FuniType.ACK, 6, 345, 0.54)  # type: ignore
+            bot.err(eFuniType.ACK, 6, 345, 0.54)  # type: ignore
         self.assertEqual(str(re.exception), "err_sup n'est pas un entier")
 
     def test_err_errsup_neg(self):
@@ -414,10 +414,9 @@ class TestsFuniSerial(unittest.TestCase):
         bot = FuniSerial(self.mock)
 
         with self.assertRaises(TypeError, msg="La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
-            bot.log(FuniModeCalibration.SOL, "allo")  # type: ignore
+            bot.log(eFuniModeCalibration.SOL, "allo")  # type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
-    @unittest.skip("mh")
     def test_log_ack(self):
         """Test de log du FuniSerial avec ack"""
         bot = FuniSerial(self.dmock)

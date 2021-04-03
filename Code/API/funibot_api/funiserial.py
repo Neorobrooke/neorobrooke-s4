@@ -43,6 +43,10 @@ class FuniCommException(Exception):
     pass
 
 
+class ReponseACK(Exception):
+    pass
+
+
 FUNI_ERREUR_MESSAGES =\
     [
         "AUCUNE_ERREUR",
@@ -175,7 +179,7 @@ class FuniSerial():
         self.serial.write(
             bytes(self.json_encoder.encode(json), encoding='utf8'))
         if json["type"] == eFuniType.ACK.value:
-            return {}
+            raise ReponseACK
 
         try:
             reponse = self.serial.readline()
@@ -242,6 +246,8 @@ class FuniSerial():
 
         try:
             retour = self.envoyer(json)
+        except ReponseACK:
+            return None
         except FuniCommException:
             print_exc()
             return None
@@ -281,6 +287,8 @@ class FuniSerial():
 
         try:
             retour = self.envoyer(json)
+        except ReponseACK:
+            return None
         except FuniCommException:
             print_exc()
             return None
@@ -311,6 +319,8 @@ class FuniSerial():
 
         try:
             retour = self.envoyer(json)
+        except ReponseACK:
+            return None
         except FuniCommException as e:
             print_exc()
             return None
@@ -346,6 +356,8 @@ class FuniSerial():
 
         try:
             retour = self.envoyer(json)
+        except ReponseACK:
+            return None
         except FuniCommException:
             print_exc()
             return None
@@ -401,6 +413,8 @@ class FuniSerial():
         while encore:
             try:
                 retour = self.envoyer(json)
+            except ReponseACK:
+                break
             except FuniCommException:
                 print_exc()
                 err_limite -= 1
@@ -435,12 +449,17 @@ class FuniSerial():
             args["msg"] = None
         else:
             args = {}
-            args["msg"] = msg
+            msg_corrige: str = msg if msg is not None else ""
+            msg_corrige = msg_corrige if msg_corrige != "" else "__vide__"
+            msg_corrige = msg_corrige.replace('\n', '\r')
+            args["msg"] = msg_corrige
 
         json["args"] = args
 
         try:
             retour = self.envoyer(json)
+        except ReponseACK:
+            return None
         except FuniCommException:
             print_exc()
             return None
@@ -470,6 +489,8 @@ class FuniSerial():
 
         try:
             retour = self.envoyer(json)
+        except ReponseACK:
+            return None
         except FuniCommException as e:
             print_exc()
             return None
