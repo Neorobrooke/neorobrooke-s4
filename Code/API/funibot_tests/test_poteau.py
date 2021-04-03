@@ -164,25 +164,25 @@ class TestsPoteau(unittest.TestCase):
 
         self.assertEqual(str(re.exception), "longueur est None")
 
-    def test_courant_moteur_pas_init(self):
-        """Test d'obtention de courant du moteur avant initialisation"""
-        poteau = Poteau(nom="test_courant_moteur_pas_init")
+    # def test_courant_moteur_pas_init(self):
+    #     """Test d'obtention de courant du moteur avant initialisation"""
+    #     poteau = Poteau(nom="test_courant_moteur_pas_init")
 
-        with self.assertRaises(JamaisInitialise) as re:
-            poteau.courant_moteur
+    #     with self.assertRaises(JamaisInitialise) as re:
+    #         poteau.courant_moteur
 
-        self.assertEqual(str(re.exception), str(
-            JamaisInitialise(poteau=poteau, message="courant_moteur")))
+    #     self.assertEqual(str(re.exception), str(
+    #         JamaisInitialise(poteau=poteau, message="courant_moteur")))
 
-    def test_couple_moteur_pas_init(self):
-        """Test d'obtention de couple du moteur avant initialisation"""
-        poteau = Poteau(nom="test_courant_moteur_pas_init")
+    # def test_couple_moteur_pas_init(self):
+    #     """Test d'obtention de couple du moteur avant initialisation"""
+    #     poteau = Poteau(nom="test_courant_moteur_pas_init")
 
-        with self.assertRaises(JamaisInitialise) as re:
-            poteau.couple_moteur
+    #     with self.assertRaises(JamaisInitialise) as re:
+    #         poteau.couple_moteur
 
-        self.assertEqual(str(re.exception), str(
-            JamaisInitialise(poteau=poteau, message="couple_moteur")))
+    #     self.assertEqual(str(re.exception), str(
+    #         JamaisInitialise(poteau=poteau, message="couple_moteur")))
 
     def test_repr_cable(self):
         """Test de représentation d'un Câble"""
