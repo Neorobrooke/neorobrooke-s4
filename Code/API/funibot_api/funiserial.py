@@ -495,7 +495,7 @@ class FuniSerial():
     def mot(self, type: eFuniType, mode: Optional[eFuniModeMoteur] = None) -> Optional[eFuniModeMoteur]:
         """S'occupe de la communication série pour la commande JSON 'mot'"""
         if not isinstance(type, eFuniType):
-            raise TypeError("type n'est psa un FuniType")
+            raise TypeError("type n'est pas un FuniType")
         json = {}
         json["comm"] = "mot"
         json["type"] = type.value

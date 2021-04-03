@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Tuple
 
-from funibot_api.funiserial import FUNI_ERREUR_MAJ, FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, FuniSerial, eFuniType, eFuniErreur
+from funibot_api.funiserial import FUNI_ERREUR_MAJ, FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, FuniSerial, eFuniModeMoteur, eFuniType, eFuniErreur
 from funibot_api.mock_serial import MockSerial, MockType, DualMockSerial
 import unittest
 
@@ -87,6 +87,18 @@ class TestsFuniSerial(unittest.TestCase):
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Le poteau est {validation_requete} au lieu de {self.mock.requete}")
 
+    def test_pot_ack(self):
+        """Test du poteau du FuniSerial avec ack"""
+        bot = FuniSerial(self.mock)
+        position = (3, 1.2, 8)
+        bot.pot(eFuniType.ACK, 0, position)
+
+        validation_requete = bytes(
+            f'{{"comm": "pot", "type": "ack", "args": {{"id": 0, "pos_x": null, "pos_y": null, "pos_z": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Le poteau avec ack est {validation_requete} au lieu de {self.mock.requete}")
+
     def test_pot_err_type(self):
         """Test du poteau du FuniSerial avec un type pas FuniType"""
         bot = FuniSerial(self.mock)
@@ -119,6 +131,19 @@ class TestsFuniSerial(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"La calibration des cables est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_cal_ack(self):
+        """Test de calibration des cables avec ack du FuniSerial"""
+        bot = FuniSerial(self.mock)
+        long = 4.3
+        bot.cal(eFuniType.ACK, eFuniModeCalibration.CABLE, 2, long)
+
+        validation_requete = bytes(
+            f'{{"comm": "cal", "type": "ack", "args": {{"mode": "cable", "id": 2, "long": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"La calibration des cables avec ack est {validation_requete} au lieu de {self.mock.requete}")
+
 
     def test_cal_err_id_float(self):
         """Test de calibration du cable du FuniSerial avec un float comme id"""
@@ -191,6 +216,18 @@ class TestsFuniSerial(unittest.TestCase):
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"La position est {validation_requete} au lieu de {self.mock.requete}")
 
+    def test_pos_ack(self):
+        """Test de la position avec ack du FuniSerial"""
+        bot = FuniSerial(self.mock)
+        position = (3, 1.2, 8)
+        bot.pos(eFuniType.ACK, position)
+
+        validation_requete = bytes(
+            f'{{"comm": "pos", "type": "ack", "args": {{"pos_x": null, "pos_y": null, "pos_z": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"La position avec ack est {validation_requete} au lieu de {self.mock.requete}")
+
     def test_pos_err_none(self):
         """Test de position du FuniSerial avec un None"""
         bot = FuniSerial(self.mock)
@@ -232,6 +269,18 @@ class TestsFuniSerial(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Le déplacement avec start est {validation_requete} au lieu de {self.mock.requete}")
+    
+    def test_dep_start_ack(self):
+        """Test de déplacement avec ack du FuniSerial avec start"""
+        bot = FuniSerial(self.mock)
+        direction = (3, 1.2, 8)
+        bot.dep(eFuniType.ACK, eFuniModeDeplacement.START, direction)
+
+        validation_requete = bytes(
+            f'{{"comm": "dep", "type": "ack", "args": {{"mode": "start", "axe_x": null, "axe_y": null, "axe_z": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Le déplacement avec start et ack est {validation_requete} au lieu de {self.mock.requete}")
 
     def test_dep_dist(self):
         """Test de déplacement du FuniSerial avec distance"""
@@ -330,10 +379,23 @@ class TestsFuniSerial(unittest.TestCase):
 
         validation_requete = bytes(
             f'{{"comm": "err", "type": "ack", "args": {{"id": 1, "maj": {str(FUNI_ERREUR_MAJ[1]).lower()}, "t": 4252452, "err_sup": 0}}}}', 'utf8')
-
+        
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"L'erreur avec ack est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
 
+    @unittest.skip("mh")
+    def test_err_exception(self):
+        """Test des erreurs avec exception du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        bot.err(eFuniType.ACK, 1, 4252452, 0)
+
+        validation_requete = bytes(
+            f'{{"comm": "err", "type": "ack", "args": {{"id": 4, "maj": {str(FUNI_ERREUR_MAJ[1]).lower()}, "t": 4252452, "err_sup": 0}}}}', 'utf8')
+
+        with self.assertRaises(AssertionError, msg="Le FuniType set n'a pas levé d'exception de type AssertionError"):
+            self.dmock.ecriture.requete is validation_requete,
+                       
     def test_err_eFuniErreur(self):
         """Test des erreurs du FuniSerial avec eFuniErreur"""
         bot = FuniSerial(self.dmock)
@@ -428,3 +490,53 @@ class TestsFuniSerial(unittest.TestCase):
 
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"Le log avec ack est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+
+    def test_mot_set(self):
+        """Test des moteurs du FuniSerial avec SET"""
+        bot = FuniSerial(self.mock)
+        bot.mot(eFuniType.SET, eFuniModeMoteur.ON)
+
+        validation_requete = bytes(
+            f'{{"comm": "mot", "type": "set", "args": {{"mode": "on"}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Les moteurs avec set sont {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_mot_get(self):
+        """Test des moteurs du FuniSerial avec GET"""
+        bot = FuniSerial(self.mock)
+        bot.mot(eFuniType.GET, eFuniModeMoteur.ON)
+
+        validation_requete = bytes(
+            f'{{"comm": "mot", "type": "get", "args": {{"mode": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Les moteurs avec get sont {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_mot_err_type(self):
+        """Test des moteurs du FuniSerial avec un type pas FuniType"""
+        bot = FuniSerial(self.mock)
+
+        with self.assertRaises(TypeError, msg="La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
+            bot.mot(eFuniModeDeplacement.START, # type: ignore
+                    eFuniModeMoteur.OFF)
+        self.assertEqual(str(re.exception), "type n'est pas un FuniType")
+
+    def test_mot_ack(self):
+        """Test des moteurs du FuniSerial avec un ack"""
+        bot = FuniSerial(self.mock)
+        bot.mot(eFuniType.ACK, eFuniModeMoteur.ON)
+
+        validation_requete = bytes(
+            f'{{"comm": "mot", "type": "ack", "args": {{"mode": "on"}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Les moteurs avec ack sont {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_mot_ack_mode_none(self):
+        """Test des moteurs du FuniSerial avec un ack et mode None"""
+        bot = FuniSerial(self.mock)
+
+        with self.assertRaises(ValueError, msg="La présence de ack avec un mode None n'a pas levé d'exception de type ValueError") as re:
+            bot.mot(eFuniType.ACK)
+        self.assertEqual(str(re.exception), "mode est None")

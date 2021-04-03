@@ -79,14 +79,17 @@ class TestsFunibot(unittest.TestCase):
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"Position est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
 
-    @unittest.skip("mh")
     def test_sol(self):
         bot = Funibot(self.dserial, config=self.config)
 
-        bot.sol = 34
+        long = 3
+        self.dmock.lecture.reponse = bytes(
+            f'{{"comm": "cal", "type": "ack", "args": {{"mode": "sol", "id": null, "long": {long}}}}}', 'utf8')
 
-        self.assertEqual(bot.sol, bot._sol,
-                         msg=f"Position du sol est {bot.sol} au lieu de {bot._sol}")
+        val_sol = bot.sol
+
+        self.assertEqual(val_sol, long,
+                         msg=f"Position du sol est {val_sol} au lieu de {long}")
 
     def test_set_sol(self):
         bot = Funibot(self.serial, config=self.config)
@@ -260,3 +263,16 @@ class TestsFunibot(unittest.TestCase):
 
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"Après avoir demandé un déplacement par une string avec une distance de zéro, la position est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_log(self):
+        bot = Funibot(self.dserial, config=self.config)
+        string = "allo"
+
+        self.dmock.lecture.reponse = bytes(
+            f'{{"comm": "log", "type": "ack", "args": {{"msg": "{string}"}}}}', 'utf8')
+
+        val_log = bot.log()
+
+        self.assertEqual(string, val_log,
+                         msg=f"Le log est {val_log} au lieu de {string}")
+
