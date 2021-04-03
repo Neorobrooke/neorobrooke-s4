@@ -1,25 +1,48 @@
 from __future__ import annotations
-from os import sep
 
 from traceback import print_exc
-from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
+from typing import Callable, ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
 from pathlib import Path
+from contextlib import contextmanager
+from functools import wraps
 
-from funibot_api.funiserial import FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, eFuniModeMoteur, FuniSerial, eFuniType, FuniCommException
+from funibot_api.funiserial import ErrSupEstNone, FuniErreur, eFuniErreur, eFuniModeCalibration, eFuniModeDeplacement, eFuniModeMoteur, FuniSerial, eFuniRegime, eFuniType, FuniCommException
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
+
+
+class ErreurPersistance(ErreurDonneesIncompatibles):
+    def __init__(self, bot: Funibot, *args: object) -> None:
+        super().__init__(*args)
+        self.bot = bot
+
+
+def attendre_si_besoin(func) -> Callable:
+    @wraps(func)
+    def wrapper(self: Funibot, *args, **kwargs):
+        retour = func(self, *args, **kwargs)
+
+        if self._attendre:
+            pass
+        return retour
+
+    return wrapper
 
 
 class Funibot:
     """Représente le Funibot"""
 
     def __init__(self, serial: FuniSerial, config: FuniConfig) -> None:
+        """Initialise un Funibot.
+           Peut lever une ErreurPersistance si la calibration automatique est active, mais échoue.
+           Dans ce cas, l'objet est accessible via l'attribut 'bot' de l'exception.
+        """
         self.serial = serial
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
-        # self._sol = config.sol
         self.sol = config.sol
+        self._attendre = False
         
         self._initialiser_persistance(
             fichier=config.persistance,
@@ -32,17 +55,14 @@ class Funibot:
             try:
                 self.calibrer()
             except ErreurDonneesIncompatibles as e:
-                pass
-                # raise ErreurDonneesIncompatibles(f"Erreur de calibration automatique: {e}")
+                raise ErreurPersistance(self, f"Erreur de calibration automatique: {e}")
 
     def __del__(self):
         if self.auto_persistance:
             try:
                 self.enregister_calibration()
-            except ErreurDonneesIncompatibles as e:
+            except ErreurDonneesIncompatibles:
                 pass
-                # raise ErreurDonneesIncompatibles(f"Erreur de persistance automatique: {e}")
-
 
     @property
     def pos(self) -> Optional[Vecteur]:
@@ -140,6 +160,8 @@ class Funibot:
         try:
             erreurs = self.serial.err(eFuniType.GET)
             return erreurs
+        except ErrSupEstNone as e:
+            raise
         except Exception:
             print_exc()
             return None
@@ -180,6 +202,43 @@ class Funibot:
            Nécessite une communication série.
         """
         self.serial.mot(eFuniType.SET, eFuniModeMoteur.RESET)
+
+    @property
+    def arrete(self) -> bool:
+        """Retourne un booléen qui vaut True si le robot est arrêté.
+           Nécessite une communication série.
+        """
+        return self.serial.reg(eFuniType.GET) is eFuniRegime.ARRET
+
+    @property
+    def en_deplacement(self) -> bool:
+        """Retourne un booléen qui vaut True si le robot est en mouvement.
+           Nécessite une communication série.
+        """
+        regime = self.serial.reg(eFuniType.GET)
+        return regime is eFuniRegime.DIRECTION or regime is eFuniRegime.POSITION
+
+    @property
+    def regime(self) -> Optional[eFuniRegime]:
+        """Retourne le régime du Funibot sous forme d'un eFuniRegime.
+           Valeurs:
+                ARRETE s'il ne bouge pas
+                DIRECTION s'il se déplace en direction sans condition d'arrêt (il attend un stop)
+                POSITION s'il se déplace en position ou en direction d'une certaine distance
+           Nécessite une communication série.
+        """
+        return self.serial.reg(eFuniType.GET)
+
+    @property
+    def duree_estimee(self) -> Optional[float]:
+        """Retourne la durée estimée restante au déplacement en cours.
+           Si regime != eFuniRegime.POSITION, retourne 0.
+           Nécessite une communication série.
+        """
+        return self.serial.dur(eFuniType.GET)
+
+    # @contextmanager
+
 
     def repr_sol(self):
         """Retourne une représentation du sol"""

@@ -1,9 +1,36 @@
-from funibot_api.funibot import Funibot
-from funibot_api.funiconfig import FuniConfig, FuniArgs
-from funibot_api.funilib import (Direction, Vecteur, ErreurChangerNormeVecteurNul,
-                                 JamaisInitialise, Poteau)
-from funibot_api.funipersistance import ErreurDonneesIncompatibles, FuniPersistance
-from funibot_api.funiserial import (FuniCommException, FuniErreur, eFuniModeCalibration,
-                                    eFuniModeDeplacement, eFuniModeMoteur, eFuniType,
-                                    FuniSerial, eFuniErreur, FUNI_ERREUR_MAJ,
-                                    FUNI_ERREUR_MESSAGES)
+from funibot_api.funibot            import  (
+                                                Funibot,
+                                                ErreurPersistance
+                                            )
+
+from funibot_api.funiconfig         import  (
+                                                FuniConfig,
+                                                FuniArgs
+                                            )
+
+from funibot_api.funilib            import  (
+                                                Direction,
+                                                Vecteur,
+                                                ErreurChangerNormeVecteurNul,
+                                                JamaisInitialise,
+                                                Poteau
+                                            )
+
+from funibot_api.funipersistance    import  (
+                                                ErreurDonneesIncompatibles,
+                                                FuniPersistance
+                                            )
+
+from funibot_api.funiserial         import  (
+                                                FuniCommException,
+                                                FuniErreur,
+                                                ErrSupEstNone,
+                                                eFuniModeCalibration,
+                                                eFuniModeDeplacement,
+                                                eFuniModeMoteur,
+                                                eFuniType,
+                                                FuniSerial,
+                                                eFuniErreur,
+                                                FUNI_ERREUR_MAJ,
+                                                FUNI_ERREUR_MESSAGES
+                                            )

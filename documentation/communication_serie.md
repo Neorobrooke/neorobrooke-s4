@@ -98,8 +98,8 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
 - Obtenir la tâche actuelle du système
   - Les tâches sont les suivantes:
     - `arr` lorsque le système est à l'arrêt
-    - `dir` lorsque le système est en déplacement directionnel
-    - `pos` lorsque le système est en déplacement vers une position
+    - `dir` lorsque le système est en déplacement directionnel sans condition d'arrêt
+    - `pos` lorsque le système est en déplacement vers une position spéficique ou dans une direction mais d'une certaine longueur
   ```json
   {
     "comm": "reg",
@@ -129,12 +129,29 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
   }
   ```
 - Attendre la fin de la tâche en cours
-  - Un appel avec `set` obtient une réponse immédiate avec `ack`
-    - `val` indique si la demande est valide
-    - `fin` est `false` pour une demande
-      - La demande n'est pas valide s'il n'y a rien à attendre
-  - L'appelant doit ensuite recommencer à écouter (après le `ack`)
-    - L'appelé envoit un nouveau `set` à l'appelant, avec `fin` qui vaut `true`
+  - Premier échange
+    - Premier appel avec `set`
+      - `fin` est `false`, on est au premier appel
+      - `val` est `null`
+    - Première réponse avec `ack`
+      - `fin` est `false`, on est à la première réponse
+      - `val` peut avoir deux valeurs
+        - `true` si le robot bouge et que d'attendre est valide
+        - `false` si le robot ne bouge pas et que d'attendre n'est pas valide
+    - Si `val` est `true`, on passe au second échange
+  
+  - Second échange
+    - Second appel avec `set`
+      - `fin` est `true`, on est à l'appel attendant la fin
+      - `val` est `null`
+      - On reste bloqué en attendant la réponse, qui ne viendra que lorsque le déplacement sera fini
+    - Le déplacement se poursuit, puis se termine
+    - Seconde réponse avec `ack`
+      - `fin` est `true`, on a fini de bouger
+      - `val` peut avoir deux valeurs:
+        - `true` si la fin est causée par l'atteinte de la position
+        - `false` si la fin est causée par une erreur ou par l'atteinte des limites de la zone de travail
+        - Pour un déplacement en direction sans condition d'arrêt, la seule réponse possible ici est `false`, mais on s'y attend
   ```json
   {
     "comm": "att",
