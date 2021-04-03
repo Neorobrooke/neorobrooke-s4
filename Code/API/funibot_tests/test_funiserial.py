@@ -379,10 +379,23 @@ class TestsFuniSerial(unittest.TestCase):
 
         validation_requete = bytes(
             f'{{"comm": "err", "type": "ack", "args": {{"id": 1, "maj": {str(FUNI_ERREUR_MAJ[1]).lower()}, "t": 4252452, "err_sup": 0}}}}', 'utf8')
-
+        
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"L'erreur avec ack est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
 
+    @unittest.skip("mh")
+    def test_err_exception(self):
+        """Test des erreurs avec exception du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        bot.err(eFuniType.ACK, 1, 4252452, 0)
+
+        validation_requete = bytes(
+            f'{{"comm": "err", "type": "ack", "args": {{"id": 4, "maj": {str(FUNI_ERREUR_MAJ[1]).lower()}, "t": 4252452, "err_sup": 0}}}}', 'utf8')
+
+        with self.assertRaises(AssertionError, msg="Le FuniType set n'a pas levé d'exception de type AssertionError"):
+            self.dmock.ecriture.requete is validation_requete,
+                       
     def test_err_eFuniErreur(self):
         """Test des erreurs du FuniSerial avec eFuniErreur"""
         bot = FuniSerial(self.dmock)
