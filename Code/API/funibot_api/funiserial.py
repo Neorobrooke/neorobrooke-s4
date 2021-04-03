@@ -382,9 +382,9 @@ class FuniSerial():
             if not isinstance(temps, int):
                 raise TypeError("temps n'est pas un entier")
 
-            if not isinstance(temps, int):
+            if not isinstance(err_sup, int):
                 raise TypeError("err_sup n'est pas un entier")
-            if not err_sup >= 0:
+            if err_sup < 0:
                 raise ValueError("err_sup est négatif")
 
             args["id"] = code
