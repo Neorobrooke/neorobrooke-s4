@@ -120,7 +120,6 @@ class TestsFuniSerial(unittest.TestCase):
         self.assertEqual(self.mock.requete, validation_requete,
                          msg=f"La calibration des cables est {validation_requete} au lieu de {self.mock.requete}")
 
-
     def test_cal_err_id_float(self):
         """Test de calibration du cable du FuniSerial avec un float comme id"""
         bot = FuniSerial(self.mock)
@@ -384,4 +383,32 @@ class TestsFuniSerial(unittest.TestCase):
         with self.assertRaises(ValueError, msg="L'err_sup en négatif n'a pas levé d'exception de type ValueError") as re:
             bot.err(FuniType.ACK,6,345,-5)
         self.assertEqual(str(re.exception), "err_sup est négatif")
+
+    def test_log_get(self):
+        """Test de log du FuniSerial avec get"""
+        bot = FuniSerial(self.mock)
+
+        bot.log(FuniType.GET, "allo")
+
+        validation_requete = bytes(
+            f'{{"comm": "log", "type": "get", "args": {{"msg": null}}}}', 'utf8')
+
+        self.assertEqual(self.mock.requete, validation_requete,
+                         msg=f"Le log avec get est {validation_requete} au lieu de {self.mock.requete}")
+
+    def test_log__err_set(self):
+        """Test de log du FuniSerial avec set"""
+        bot = FuniSerial(self.mock)
+
+        with self.assertRaises(ValueError, msg="La présence du type set n'a pas levé d'exception de type ValueError") as re:
+            bot.log(FuniType.SET, "allo")
+        self.assertEqual(str(re.exception), "SET n'est pas supporté")
+
+    def test_log_err_type(self):
+        """Test de log du FuniSerial avec un type pas FuniType"""
+        bot = FuniSerial(self.mock)
+
+        with self.assertRaises(TypeError, msg="La présence d'un type n'étant pas un Funitype n'a pas levé d'exception de type TypeError") as re:
+            bot.log(FuniModeCalibration.SOL, "allo") # type: ignore
+        self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
