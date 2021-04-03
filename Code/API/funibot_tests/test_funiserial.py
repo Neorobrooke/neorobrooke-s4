@@ -412,3 +412,15 @@ class TestsFuniSerial(unittest.TestCase):
             bot.log(FuniModeCalibration.SOL, "allo") # type: ignore
         self.assertEqual(str(re.exception), "type n'est pas un FuniType")
 
+    @unittest.skip("mh")
+    def test_log_ack(self):
+        """Test de log du FuniSerial avec ack"""
+        bot = FuniSerial(self.dmock)
+
+        bot.log(FuniType.ACK, "allo")
+
+        validation_requete = bytes(
+            f'{{"comm": "log", "type": "ack", "args": {{"msg": "allo"}}}}', 'utf8')
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete,
+                         msg=f"Le log avec ack est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
