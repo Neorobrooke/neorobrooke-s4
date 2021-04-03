@@ -382,17 +382,13 @@ class Poteau:
         """Représente le Câble associé au Poteau sous la forme Câble[id:nom] -> longueur"""
         return f"Câble[{self.id}:{self.nom}] -> {self.longueur_cable}"
 
-    def repr_moteur(self) -> str:
-        """Représente le Moteur associé au Poteau sous la forme Moteur[id:nom] -> I: (courant) T: <couple>"""
-        return f"Moteur[{self.id}:{self.nom}] -> I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
-
     def repr_complet(self) -> str:
         """Représente le Poteau sous la forme Poteau[id:nom](px;py;pz)(ax;ay;az) -> L: {longueur} I: (courant) T: <couple>
            Le vecteur (px;py;pz) représente la position du poteau
            Le vecteur (ax;ay;az) représente la position de l'attache sur la nacelle par rapport au TCP du robot
            (Le TCP est le Tool Center Point)
         """
-        return f"{self.__repr__()} -> L: {{{self.longueur_cable}}} I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
+        return f"{self.__repr__()} -> Câble: {{{self.longueur_cable}}}"
 
     @property
     def longueur_cable(self) -> Optional[Union[float, str]]:
@@ -422,20 +418,20 @@ class Poteau:
             print_exc()
             raise
 
-    @property
-    def courant_moteur(self) -> float:
-        """Donne le courant actuel du moteur associé à ce poteau
-           Nécessite une communication série.
-        """
-        if self.id is None or self.serial is None:
-            raise JamaisInitialise(self, "courant_moteur")
-        raise NotImplementedError("Pas encore codé dans la communication")
+    # @property
+    # def courant_moteur(self) -> float:
+    #     """Donne le courant actuel du moteur associé à ce poteau
+    #        Nécessite une communication série.
+    #     """
+    #     if self.id is None or self.serial is None:
+    #         raise JamaisInitialise(self, "courant_moteur")
+    #     raise NotImplementedError("Pas encore codé dans la communication")
 
-    @property
-    def couple_moteur(self) -> float:
-        """Donne le couple actuel du moteur associé à ce poteau
-           Nécessite une communication série.
-        """
-        if self.id is None or self.serial is None:
-            raise JamaisInitialise(self, "couple_moteur")
-        raise NotImplementedError("Pas encore codé dans la communication")
+    # @property
+    # def couple_moteur(self) -> float:
+    #     """Donne le couple actuel du moteur associé à ce poteau
+    #        Nécessite une communication série.
+    #     """
+    #     if self.id is None or self.serial is None:
+    #         raise JamaisInitialise(self, "couple_moteur")
+    #     raise NotImplementedError("Pas encore codé dans la communication")
