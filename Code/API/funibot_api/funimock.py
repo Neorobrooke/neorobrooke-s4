@@ -13,9 +13,9 @@ class IMockSerial:
 
 class eMockType(Enum):
     """Type de Mock série"""
-    CLI = auto
-    TEST = auto
-    MULTI_TEST = auto
+    CLI = auto()
+    TEST = auto()
+    MULTI_TEST = auto()
 
 
 class MockSerial(IMockSerial):
@@ -28,7 +28,7 @@ class MockSerial(IMockSerial):
         self.json_encoder = JSONEncoder()
         self.json_decoder = JSONDecoder()
         self.type = type
-        if type is eMockType.MULTI_TEST:
+        if self.type is eMockType.MULTI_TEST:
             self.reponses = []
             self.requetes = []
             self.clear_requetes = lambda: self.requetes.clear()
@@ -40,7 +40,7 @@ class MockSerial(IMockSerial):
         if self.type is eMockType.CLI:
             print(f"\tMOCK_RECEIVE <- <{contenu}>")
         self.requete = contenu
-        if type is eMockType.MULTI_TEST:
+        if self.type is eMockType.MULTI_TEST:
             self.requetes.append(self.requete)
 
         try:
@@ -49,7 +49,7 @@ class MockSerial(IMockSerial):
             if self.type is eMockType.CLI:
                 print(f"ERREUR: JSON invalide -> {contenu.decode('utf8')}")
             self.reponse = b'{"erreur"}'
-            if type is eMockType.MULTI_TEST:
+            if self.type is eMockType.MULTI_TEST:
                 self.reponses.append(self.reponse)
             return
 
@@ -61,18 +61,21 @@ class MockSerial(IMockSerial):
             self.reponse = bytes(self.json_encoder.encode(
                 self.reponse), encoding='utf8')
 
-        if type is eMockType.MULTI_TEST:
+        if self.type is eMockType.MULTI_TEST:
             self.reponses.append(self.reponse)
 
     def readline(self) -> bytes:
         """Envoie la réponse stockée"""
         if self.type is eMockType.CLI:
             print(f"\tMOCK_SEND -> <{self.reponse}>")
-        if type is not eMockType.MULTI_TEST:
+        if self.type is not eMockType.MULTI_TEST:
             return self.reponse
         else:
-            reponse = self.reponses.pop(0)
-            return reponse
+            try:
+                reponse = self.reponses.pop(0)
+                return reponse
+            except IndexError:
+                return b'{"liste_vide"}'
 
     def read_all(self) -> bytes:
         """Envoie la réponse stockée"""

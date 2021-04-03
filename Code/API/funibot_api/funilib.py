@@ -38,10 +38,10 @@ class eRetourAttendre(Enum):
        ARRET_INVALIDE -> L'arrêt a été causé par une erreur ou l'atteinte de la limite de la zone de travail
        ERREUR_COMM -> Erreur de communication
     """
-    OK = auto
-    ATTENTE_INVALIDE = auto
-    ARRET_INVALIDE = auto
-    ERREUR_COMM = auto
+    OK = auto()
+    ATTENTE_INVALIDE = auto()
+    ARRET_INVALIDE = auto()
+    ERREUR_COMM = auto()
 
 
 class sEntreeAttendre:
