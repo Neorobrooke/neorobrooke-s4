@@ -1,6 +1,6 @@
 from __future__ import annotations
 import unittest
-from funibot_api.funilib import Vecteur, ChangerNormeVecteurNulErreur
+from funibot_api.funilib import Vecteur, ErreurChangerNormeVecteurNul
 
 
 class TestVecteur(unittest.TestCase):
@@ -464,7 +464,7 @@ class TestVecteur(unittest.TestCase):
     def test_norme_changement_vecteur_null(self):
         """Test du changement de norme d'un vecteur null"""
         vecteur_null = Vecteur(0, 0, 0)
-        with self.assertRaises(ChangerNormeVecteurNulErreur, msg=f"La modification de la norme d'un vecteur null n'a pas levé d'exception de type ChangerNormeVecteurNulErreur"):
+        with self.assertRaises(ErreurChangerNormeVecteurNul, msg=f"La modification de la norme d'un vecteur null n'a pas levé d'exception de type ChangerNormeVecteurNulErreur"):
             vecteur_null.norme = 2.5
 
     def test_norme_changement_none(self):

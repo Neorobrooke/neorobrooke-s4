@@ -6,7 +6,7 @@ from numbers import Real
 from string import digits
 from typing import Union, Tuple, Optional
 
-from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, FuniSerial, eFuniType, FuniCommException
 
 
 class JamaisInitialise(Exception):
@@ -25,7 +25,7 @@ class JamaisInitialise(Exception):
         super().__init__(self.message)
 
 
-class ChangerNormeVecteurNulErreur(Exception):
+class ErreurChangerNormeVecteurNul(Exception):
     pass
 
 
@@ -217,7 +217,7 @@ class Vecteur:
         """Change la norme du vecteur"""
         norme = self.norme
         if norme == 0:
-            raise ChangerNormeVecteurNulErreur(
+            raise ErreurChangerNormeVecteurNul(
                 "Impossible d'assigner une norme au vecteur nul, car il n'as pas d'orientation")
 
         bckup = (self.x, self.y, self.z)
@@ -339,7 +339,7 @@ class Poteau:
         """
         self.id = id
         self.serial = comm_serie
-        self.serial.pot(type=FuniType.SET, id=self.id,
+        self.serial.pot(type=eFuniType.SET, id=self.id,
                         position=self.pos_resultante.vers_tuple())
 
     def __repr__(self) -> str:
@@ -375,7 +375,7 @@ class Poteau:
             raise JamaisInitialise(self, "longueur_cable")
         try:
             return self.serial.cal(
-                FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
+                eFuniType.GET, eFuniModeCalibration.CABLE, self.id, None)
         except Exception:
             print_exc()
             raise
@@ -389,7 +389,7 @@ class Poteau:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
             self.serial.cal(
-                FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
+                eFuniType.SET, eFuniModeCalibration.CABLE, self.id, longueur)
         except Exception:
             print_exc()
             raise

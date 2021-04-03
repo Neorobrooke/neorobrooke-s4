@@ -5,7 +5,7 @@ from traceback import print_exc
 from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
 from pathlib import Path
 
-from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniModeMoteur, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, eFuniModeMoteur, FuniSerial, eFuniType, FuniCommException
 from funibot_api.funiconfig import FuniConfig
 from funibot_api.funilib import Poteau, Vecteur, Direction
 from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
@@ -49,7 +49,7 @@ class Funibot:
         """Retourne la position actuelle du Funibot.
            Nécessite une communication série.
         """
-        valeur = self.serial.pos(FuniType.GET)
+        valeur = self.serial.pos(eFuniType.GET)
         if valeur is None:
             return None
         return Vecteur(*valeur)
@@ -59,7 +59,7 @@ class Funibot:
         """Déplace le Funibot à la posision vectorielle demandée.
            Nécessite une communication série.
         """
-        self.serial.pos(FuniType.SET, position.vers_tuple())
+        self.serial.pos(eFuniType.SET, position.vers_tuple())
 
     @property
     def sol(self) -> Optional[float]:
@@ -67,7 +67,7 @@ class Funibot:
            Nécessite une communication série.
         """
         # """Retourne la position du sol."""
-        return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
+        return self.serial.cal(eFuniType.GET, eFuniModeCalibration.SOL)
         # return self._sol
 
     @sol.setter
@@ -76,7 +76,7 @@ class Funibot:
            Nécessite une communication série.
         """
         valeur = self.serial.cal(
-            FuniType.SET, FuniModeCalibration.SOL, longueur=position)
+            eFuniType.SET, eFuniModeCalibration.SOL, longueur=position)
         # if valeur is not None:
         #     self._sol = valeur
 
@@ -117,12 +117,12 @@ class Funibot:
         if isinstance(direction, Direction):
             direction = direction.vecteur()
 
-        mode = FuniModeDeplacement.START if distance is None else FuniModeDeplacement.DISTANCE
+        mode = eFuniModeDeplacement.START if distance is None else eFuniModeDeplacement.DISTANCE
 
         if distance is not None and distance != 0:
             direction.norme = distance
 
-        self.serial.dep(type=FuniType.SET, mode=mode,
+        self.serial.dep(type=eFuniType.SET, mode=mode,
                         direction=direction.vers_tuple())
         return None
 
@@ -130,7 +130,7 @@ class Funibot:
         """Arrête le mouvement du robot.
            Nécessite une communication série.
         """
-        self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
+        self.serial.dep(type=eFuniType.SET, mode=eFuniModeDeplacement.STOP)
         return None
 
     def erreur(self) -> Optional[List[FuniErreur]]:
@@ -138,7 +138,7 @@ class Funibot:
            Nécessite une communication série.
         """
         try:
-            erreurs = self.serial.err(FuniType.GET)
+            erreurs = self.serial.err(eFuniType.GET)
             return erreurs
         except Exception:
             print_exc()
@@ -149,7 +149,7 @@ class Funibot:
            Nécessite une communication série.
         """
         try:
-            msg = self.serial.log(FuniType.GET)
+            msg = self.serial.log(eFuniType.GET)
             return msg
         except FuniCommException:
             return None
@@ -159,10 +159,10 @@ class Funibot:
         """Retourne si les moteurs sont activés ou non.
            Nécessite une communication série.
         """
-        valeur = self.serial.mot(FuniType.GET) 
-        if valeur is FuniModeMoteur.ON:
+        valeur = self.serial.mot(eFuniType.GET) 
+        if valeur is eFuniModeMoteur.ON:
             return True
-        elif valeur is FuniModeMoteur.OFF:
+        elif valeur is eFuniModeMoteur.OFF:
             return False
         else:
             return None
@@ -172,14 +172,14 @@ class Funibot:
         """Active ou désactive les moteurs.
            Nécessite une communication série.
         """
-        actifs = FuniModeMoteur.ON if mode is True else FuniModeMoteur.OFF
-        self.serial.mot(FuniType.SET, actifs)
+        actifs = eFuniModeMoteur.ON if mode is True else eFuniModeMoteur.OFF
+        self.serial.mot(eFuniType.SET, actifs)
 
     def reinitialiser_moteurs(self):
         """Réinitialise les moteurs.
            Nécessite une communication série.
         """
-        self.serial.mot(FuniType.SET, FuniModeMoteur.RESET)
+        self.serial.mot(eFuniType.SET, eFuniModeMoteur.RESET)
 
     def repr_sol(self):
         """Retourne une représentation du sol"""
