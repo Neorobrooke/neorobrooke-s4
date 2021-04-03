@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from enum import Enum, auto
 from math import sqrt
 from traceback import print_exc
 from numbers import Real
 from string import digits
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, List
 
 from funibot_api.funiserial import FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, FuniSerial, eFuniType, FuniCommException
 
@@ -26,7 +27,34 @@ class JamaisInitialise(Exception):
 
 
 class ErreurChangerNormeVecteurNul(Exception):
+    """Levée lorsqu'on essaie de changer la norme du vecteur nul"""
     pass
+
+
+class eRetourAttendre(Enum):
+    """Représente les possibilités de retour lors de l'attente.
+       OK -> Attente réalisée avec succès
+       ATTENTE_INVALIDE -> Il n'était pas nécessaire d'attendre
+       ARRET_INVALIDE -> L'arrêt a été causé par une erreur ou l'atteinte de la limite de la zone de travail
+       ERREUR_COMM -> Erreur de communication
+    """
+    OK = auto
+    ATTENTE_INVALIDE = auto
+    ARRET_INVALIDE = auto
+    ERREUR_COMM = auto
+
+
+class sEntreeAttendre:
+    def __init__(self, func_name: str, retour_attendre: eRetourAttendre) -> None:
+        self.func_name = func_name
+        self.retour_attendre = retour_attendre
+
+
+class WithAttendre:
+
+    def __init__(self) -> None:
+        # self.dernier_retour: Optional[eRetourAttendre] = None
+        self.retours: List[sEntreeAttendre] = []
 
 
 class Vecteur:

@@ -6,9 +6,12 @@ from pathlib import Path
 from contextlib import contextmanager
 from functools import wraps
 
-from funibot_api.funiserial import ErrSupEstNone, FuniErreur, eFuniErreur, eFuniModeCalibration, eFuniModeDeplacement, eFuniModeMoteur, FuniSerial, eFuniRegime, eFuniType, FuniCommException
+from funibot_api.funiserial import (ErrSupEstNone, FuniErreur, eFuniErreur,
+                                    eFuniModeCalibration, eFuniModeDeplacement,
+                                    eFuniModeMoteur, FuniSerial, eFuniRegime,
+                                    eFuniType, FuniCommException)
 from funibot_api.funiconfig import FuniConfig
-from funibot_api.funilib import Poteau, Vecteur, Direction
+from funibot_api.funilib import Poteau, Vecteur, Direction, eRetourAttendre, WithAttendre, sEntreeAttendre
 from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
 
 
@@ -19,12 +22,16 @@ class ErreurPersistance(ErreurDonneesIncompatibles):
 
 
 def attendre_si_besoin(func) -> Callable:
+    """La méthode attend la fin de son déplacement si on est dans un contextmanager tout_attendre."""
     @wraps(func)
     def wrapper(self: Funibot, *args, **kwargs):
         retour = func(self, *args, **kwargs)
 
-        if self._attendre:
-            pass
+        if self._attendre is not None:
+            entree = sEntreeAttendre(func_name=func.__name__,
+                                     retour_attendre=self.attendre())
+            self._attendre.retours.append(entree)
+        
         return retour
 
     return wrapper
@@ -42,20 +49,21 @@ class Funibot:
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
         self.sol = config.sol
-        self._attendre = False
-        
+        self._attendre: Optional[WithAttendre] = None
+
         self._initialiser_persistance(
             fichier=config.persistance,
             auto_persistance=config.auto_persistance,
             auto_calibration=config.auto_calibration)
-        
+
         self.config = config
 
         if self.auto_calibration:
             try:
                 self.calibrer()
             except ErreurDonneesIncompatibles as e:
-                raise ErreurPersistance(self, f"Erreur de calibration automatique: {e}")
+                raise ErreurPersistance(
+                    self, f"Erreur de calibration automatique: {e}")
 
     def __del__(self):
         if self.auto_persistance:
@@ -75,6 +83,7 @@ class Funibot:
         return Vecteur(*valeur)
 
     @pos.setter
+    @attendre_si_besoin
     def pos(self, position: Vecteur) -> None:
         """Déplace le Funibot à la posision vectorielle demandée.
            Nécessite une communication série.
@@ -86,19 +95,15 @@ class Funibot:
         """Retourne la position du sol.
            Nécessite une communication série.
         """
-        # """Retourne la position du sol."""
         return self.serial.cal(eFuniType.GET, eFuniModeCalibration.SOL)
-        # return self._sol
 
     @sol.setter
     def sol(self, position: Optional[float]) -> None:
         """Change la position du sol.
            Nécessite une communication série.
         """
-        valeur = self.serial.cal(
+        self.serial.cal(
             eFuniType.SET, eFuniModeCalibration.SOL, longueur=position)
-        # if valeur is not None:
-        #     self._sol = valeur
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""
@@ -124,7 +129,8 @@ class Funibot:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
         return f"Funibot[{self.serial}]({list(self.poteaux.values())})"
 
-    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
+    @attendre_si_besoin
+    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None) -> None:
         """Déplace le Funibot dans la direction indiquée par 'direction'.
            Si 'distance' n'est pas None, arrête après avoir parcouru 'distance'.
            Si 'distance' est la valeur spéciale 0, arrête après avoir parcouru la distance correspondant à la norme du vecteur
@@ -181,7 +187,7 @@ class Funibot:
         """Retourne si les moteurs sont activés ou non.
            Nécessite une communication série.
         """
-        valeur = self.serial.mot(eFuniType.GET) 
+        valeur = self.serial.mot(eFuniType.GET)
         if valeur is eFuniModeMoteur.ON:
             return True
         elif valeur is eFuniModeMoteur.OFF:
@@ -237,8 +243,36 @@ class Funibot:
         """
         return self.serial.dur(eFuniType.GET)
 
-    # @contextmanager
+    def attendre(self) -> eRetourAttendre:
+        """Attend la fin du déplacement du Funibot.
+           Retoune immédiatemment si le robot ne bouge pas.
+           Si le robot est en déplacement, bloque l'exécution jusqu'à ce qu'il arrive s'arrête.
+           Nécessite une communication série.
+        """
+        retour_1 = self.serial.att(eFuniType.SET, fin=False)
+        if retour_1 is None:
+            return eRetourAttendre.ERREUR_COMM
+        elif retour_1[0] is False:
+            return eRetourAttendre.ATTENTE_INVALIDE
 
+        # Bloque l'exécution ici:
+        retour_2 = self.serial.att(eFuniType.SET, fin=True)
+        # Reprend l'exécution quand le Funibot arrête de se déplacer
+
+        if retour_2 is None:
+            return eRetourAttendre.ERREUR_COMM
+        elif retour_2[0] is False:
+            return eRetourAttendre.ARRET_INVALIDE
+        else:
+            return eRetourAttendre.OK
+
+    @contextmanager
+    def tout_attendre(self):
+        self._attendre = WithAttendre()
+        try:
+            yield self._attendre
+        finally:
+            self._attendre = None
 
     def repr_sol(self):
         """Retourne une représentation du sol"""

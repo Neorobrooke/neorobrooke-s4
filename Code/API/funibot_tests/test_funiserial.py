@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Tuple
 
 from funibot_api.funiserial import FUNI_ERREUR_MAJ, FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, FuniSerial, eFuniModeMoteur, eFuniType, eFuniErreur
-from funibot_api.mock_serial import MockSerial, MockType, DualMockSerial
+from funibot_api.funimock import MockSerial, eMockType, DualMockSerial
 import unittest
 
 
@@ -24,8 +24,8 @@ class TestsFuniSerial(unittest.TestCase):
 
     def setUp(self):
         """Initialisation commune à plusieurs tests"""
-        self.mock = MockSerial(MockType.TEST)
-        self.emock = MockSerial(MockType.TEST)
+        self.mock = MockSerial(eMockType.TEST)
+        self.emock = MockSerial(eMockType.TEST)
         self.dmock = DualMockSerial(
             canal_lecture=self.mock, canal_ecriture=self.emock)
 

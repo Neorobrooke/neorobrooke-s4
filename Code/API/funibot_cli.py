@@ -14,7 +14,7 @@ from funibot_api.funilib import Direction, Vecteur
 from funibot_api.funipersistance import ErreurDonneesIncompatibles
 from funibot_api.funiserial import ErrSupEstNone, FuniSerial, FuniCommException, eFuniRegime
 from funibot_api.funibot import ErreurPersistance, Funibot
-from funibot_api.mock_serial import MockSerial, MockType
+from funibot_api.funimock import MockSerial, eMockType
 
 
 class CLIFunibot(cmd.Cmd):
@@ -36,7 +36,7 @@ class CLIFunibot(cmd.Cmd):
             except SerialException:
                 sys.exit("Port série introuvable")
         else:
-            self.serial = MockSerial(MockType.CLI)
+            self.serial = MockSerial(eMockType.CLI)
 
         self.funi_serial = FuniSerial(self.serial)
 
@@ -380,6 +380,9 @@ class CLIFunibot(cmd.Cmd):
            Si le régime n'est pas un déplacement avec une condition de fin, affiche 0.
         """
         print(self.bot.regime)
+
+    def do_att(self, _):
+        print(f"Attente terminée avec statut -> {self.bot.attendre().name}")
 
 def main():
     args = FuniArgs("funibot-cli").generer_config()

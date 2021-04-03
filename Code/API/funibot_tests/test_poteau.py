@@ -2,7 +2,7 @@ from __future__ import annotations
 import unittest
 from funibot_api.funilib import JamaisInitialise, Vecteur, Poteau
 from funibot_api.funiserial import FuniSerial
-from funibot_api.mock_serial import DualMockSerial, MockSerial, MockType
+from funibot_api.funimock import DualMockSerial, MockSerial, eMockType
 
 
 class TestsPoteau(unittest.TestCase):
@@ -10,10 +10,10 @@ class TestsPoteau(unittest.TestCase):
 
     def setUp(self) -> None:
         """Préparation commune aux différents tests"""
-        self.mock = MockSerial(MockType.TEST)
+        self.mock = MockSerial(eMockType.TEST)
         self.serial = FuniSerial(self.mock)
 
-        self.emock = MockSerial(MockType.TEST)
+        self.emock = MockSerial(eMockType.TEST)
         self.dmock = DualMockSerial(
             canal_lecture=self.mock, canal_ecriture=self.emock)
         self.dserial = FuniSerial(self.dmock)

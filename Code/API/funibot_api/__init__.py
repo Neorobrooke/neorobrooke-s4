@@ -13,7 +13,9 @@ from funibot_api.funilib            import  (
                                                 Vecteur,
                                                 ErreurChangerNormeVecteurNul,
                                                 JamaisInitialise,
-                                                Poteau
+                                                Poteau,
+                                                eRetourAttendre,
+                                                WithAttendre
                                             )
 
 from funibot_api.funipersistance    import  (
@@ -34,3 +36,5 @@ from funibot_api.funiserial         import  (
                                                 FUNI_ERREUR_MAJ,
                                                 FUNI_ERREUR_MESSAGES
                                             )
+
+import funibot_api.funimock

@@ -6,7 +6,7 @@ from json import JSONDecoder, JSONEncoder, JSONDecodeError
 from enum import Enum
 from typing import Union, Tuple, List, Optional
 
-from funibot_api.mock_serial import IMockSerial
+from funibot_api.funimock import IMockSerial
 
 from serial import Serial
 
@@ -586,7 +586,7 @@ class FuniSerial():
 
         return retour["args"]["tmp"]
 
-    def att(self, type: eFuniType, fin: bool = False, valide: Optional[bool] = None) -> Optional[Tuple[bool, bool]]:
+    def att(self, type: eFuniType, fin: bool, valide: Optional[bool] = None) -> Optional[Tuple[bool, bool]]:
         """S'occupe de la communication série pour la commande JSON 'dur'"""
         if not isinstance(type, eFuniType):
             raise TypeError("type n'est psa un FuniType")
@@ -619,4 +619,4 @@ class FuniSerial():
             print_exc()
             return None
 
-        return retour["args"]["tmp"]
+        return (retour["args"]["val"], retour["args"]["fin"])
