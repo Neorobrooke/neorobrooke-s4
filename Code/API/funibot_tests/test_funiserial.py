@@ -333,3 +333,55 @@ class TestsFuniSerial(unittest.TestCase):
         self.assertEqual(self.dmock.ecriture.requete, validation_requete,
                          msg=f"L'erreur avec ack est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
 
+    def test_err_eFuniErreur(self):
+        """Test des erreurs du FuniSerial avec eFuniErreur"""
+        bot = FuniSerial(self.dmock)
+        
+        bot.err(FuniType.ACK,eFuniErreur.DEPLACEMENT_DIRECTIONNEL_ERREUR_MAJEURE,4252452,0)
+
+        validation_requete = bytes(
+            f'{{"comm": "err", "type": "ack", "args": {{"id": 11, "maj": {str(FUNI_ERREUR_MAJ[1]).lower()}, "t": 4252452, "err_sup": 0}}}}', 'utf8')
+
+        self.assertEqual(self.dmock.ecriture.requete, validation_requete,
+                         msg=f"L'erreur avec ack et avec eFuniErreur est {validation_requete} au lieu de {self.dmock.ecriture.requete}")
+
+    def test_err_code_float(self):
+        """Test des erreurs avec code float du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(TypeError, msg="Le float comme code n'a pas levé d'exception de type TypeError") as re:
+            bot.err(FuniType.ACK,0.3,4252452,0) # type: ignore
+        self.assertEqual(str(re.exception), "code n'est pas une eFuniErreur ou un entier")
+
+    def test_err_code_neg(self):
+        """Test des erreurs avec code négatif du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(ValueError, msg="Le code négatif n'a pas levé d'exception de type ValueError") as re:
+            bot.err(FuniType.ACK,-6,4252452,0)
+        self.assertEqual(str(re.exception), "code est un entier négatif, il devrait être positif")
+
+    def test_err_temps_float(self):
+        """Test des erreurs avec temps float du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(TypeError, msg="Le temps en float n'a pas levé d'exception de type TypeError") as re:
+            bot.err(FuniType.ACK,6,5.76,0) # type: ignore
+        self.assertEqual(str(re.exception), "temps n'est pas un entier")
+
+    def test_err_errsup_float(self):
+        """Test des erreurs avec err_sup float du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(TypeError, msg="L'err_sup en float n'a pas levé d'exception de type TypeError") as re:
+            bot.err(FuniType.ACK,6,345,0.54) # type: ignore
+        self.assertEqual(str(re.exception), "err_sup n'est pas un entier")
+
+    def test_err_errsup_neg(self):
+        """Test des erreurs avec err_sup négatif du FuniSerial"""
+        bot = FuniSerial(self.dmock)
+
+        with self.assertRaises(ValueError, msg="L'err_sup en négatif n'a pas levé d'exception de type ValueError") as re:
+            bot.err(FuniType.ACK,6,345,-5)
+        self.assertEqual(str(re.exception), "err_sup est négatif")
+
