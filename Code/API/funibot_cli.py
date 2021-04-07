@@ -348,7 +348,7 @@ class CLIFunibot(cmd.Cmd):
                 - Afficher: aucun argument
                 - Activer: {"on", "ON", '1', "true", "TRUE", "True", 'e', 'a'}
                 - Désactiver: {"off", "OFF", '0', "false", "FALSE", "False", 'd'}
-                - Réinitialiser: {"reset", "reinit", 'r', "-1"}
+                - Réinitialiser: {"reset", "reinit", 'r'}
         """
         try:
             if arg == "":
@@ -359,7 +359,7 @@ class CLIFunibot(cmd.Cmd):
             elif arg in {"off", "OFF", '0', "false", "FALSE", "False", 'd'}:
                 self.bot.moteurs_actifs = False
                 print(self.bot.moteurs_actifs)
-            elif arg in {"reset", "reinit", 'r', "-1"}:
+            elif arg in {"reset", "reinit", 'r'}:
                 self.bot.reinitialiser_moteurs()
             else:
                 print("Argument invalide. Afficher les possibilités avec 'help'.")
@@ -373,7 +373,10 @@ class CLIFunibot(cmd.Cmd):
                 - DIRECTION: Déplacement directionnel en cours sans condition de fin (attend un 'stop')
                 - POSITION: Déplacement en position ou en direction d'une certaine distance en cours
         """
-        print(self.bot.regime.name)
+        try:
+            print(self.bot.regime.name)
+        except TypeError:
+            print(self.bot.regime)
 
     def do_dur(self, _):
         """Affiche la durée restante estimée pour le déplacement du funibot.
@@ -382,13 +385,25 @@ class CLIFunibot(cmd.Cmd):
         print(self.bot.duree_estimee)
 
     def do_att(self, _):
+        """Bloque jusqu'à ce que le robot arrive à sa destination, puis affiche le résultat de l'attente.
+           Résultats:
+                - OK: Terminé sans erreur
+                - ATTENTE_INVALIDE: Impossible d'attendre, le régime n'est pas un déplacement avec une condition de fin
+                - ARRET_INVALIDE: Une erreur ou la limite de la zone de travail ont arrêté le robot
+                - ERREUR_COMM: Une erreur de communication a eu lieu, et il est impossible de savoir si le robot a atteint ou pas sa destination
+           Si le régime n'est pas un déplacement avec une condition de fin, retourne immédiatement.
+        """
         print(f"Attente terminée avec statut -> {self.bot.attendre().name}")
 
 def main():
-    args = FuniArgs("funibot-cli").generer_config()
+    args = FuniArgs(programme="funibot-cli").generer_config()
     cli_funibot = CLIFunibot(config=args.config)
 
-    cli_funibot.cmdloop()
+    try:
+        cli_funibot.cmdloop()
+    except KeyboardInterrupt:
+        print("^C")
+        sys.exit()
 
 if __name__ == '__main__':
     main()

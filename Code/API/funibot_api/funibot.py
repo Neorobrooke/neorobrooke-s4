@@ -6,8 +6,6 @@ from pathlib import Path
 from contextlib import contextmanager
 from functools import wraps
 
-from serial.serialwin32 import Serial
-
 from funibot_api.funiserial import (ErrSupEstNone, FuniErreur, eFuniErreur,
                                     eFuniModeCalibration, eFuniModeDeplacement,
                                     eFuniModeMoteur, FuniSerial, eFuniRegime,

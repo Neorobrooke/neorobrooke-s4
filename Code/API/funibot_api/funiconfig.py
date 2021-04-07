@@ -166,9 +166,12 @@ class FuniConfig:
 class FuniArgs:
     """Gère les arguments CLI par défaut pour le Funibot"""
 
-    def __init__(self, programme: str = "funibot_api." + os.path.basename(__file__)) -> None:
+    def __init__(self, programme: str = "funibot_api." + os.path.basename(__file__), parser: argparse.ArgumentParser = None) -> None:
         """Génère et parse les arguments"""
-        self.parser = argparse.ArgumentParser(prog=programme)
+        if parser is None:
+            self.parser = argparse.ArgumentParser(prog=programme)
+        else:
+            self.parser = parser
         self.parser.add_argument('-f', required=True,
                                  help='Fichier de config yaml à utiliser')
         self.parser.add_argument('-c',
