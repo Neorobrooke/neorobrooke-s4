@@ -12,7 +12,7 @@
 #define NBR_MOTOR 4
 #define REG_TENSION
 //#define ASS_VITESSE
-#define mmprad_min 15
+#define mmprad_min 10
 #define mmprad_max 30
 #define mmprad_buff 5
 #define mmprad_normal 18
@@ -169,11 +169,16 @@ void moteurLoop(double *vitesse, double *longueurCable)
       }
       #else
       //calibration
-      if(abs(deltaAng)> 0.17)
+      if(abs(deltaAng) > 0.4)
       {
-        if(abs(deltaCable)>0.5)
+        if(abs(deltaCable) < 0.2)
+        {
+          mmprad[i] = 5;
+        }
+        else
         {
           mmprad[i] = deltaCable / deltaAng;
+        }
           if(mmprad[i]<5)mmprad[i]=5;
           if(mmprad[i]>30)mmprad[i]=30;
 
@@ -204,22 +209,9 @@ void moteurLoop(double *vitesse, double *longueurCable)
           }
           else vitesse_corr[i] = 1;
 
-          /*//detection de limite
-          if(mmprad[i] < mmprad_min)
-          {
-            GestionLog::printlog("mmprad[");
-            GestionLog::printlog(i);
-            GestionLog::printlog("] = ");
-            GestionLog::printlnlog(mmprad[i]);
-            GestionLog::printlog("corr = ");
-            GestionLog::printlnlog(vitesse_corr[i]);
-          }
-          else if (mmprad_max < mmprad[i]) mmprad[i] = mmprad_max;*/
-
           //mise à jours de mémoires pour delta
           old_position_moteurs[i] = radian;
           old_longueur_cable[i] = longueurCable[i];
-        }
       }
       vitesse[i] *= vitesse_corr[i];
       
