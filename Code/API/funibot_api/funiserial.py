@@ -215,6 +215,7 @@ class FuniSerial():
         try:
             self._valider_reponse(json_envoye=json, json_recu=reponse)
         except FuniCommException:
+            self.serial.reset_input_buffer()
             raise
 
         return reponse
@@ -224,7 +225,7 @@ class FuniSerial():
         """Compare les documents JSON envoyé et reçu pour valider que la communication a réussi"""
         json_envoye_flat: dict = benedict(json_envoye).flatten("/")
         json_recu_flat: dict = benedict(json_recu).flatten("/")
-
+        
         for key, value in json_recu_flat.items():
             if not key in json_envoye_flat:
                 raise FuniCommException(

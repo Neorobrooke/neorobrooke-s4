@@ -140,8 +140,8 @@ void moteurLoop(double *vitesse, double *longueurCable)
   long dt = nt - t;
   t = nt;
   #endif
-  static int compteur = 0;
-  compteur ++;
+  /*static int compteur = 0;
+  compteur ++;*/
 
   //controle des moteurs
   for (uint8_t i=0; i<nbrMoteur; i++)
@@ -174,6 +174,8 @@ void moteurLoop(double *vitesse, double *longueurCable)
         if(abs(deltaCable)>0.5)
         {
           mmprad[i] = deltaCable / deltaAng;
+          if(mmprad[i]<5)mmprad[i]=5;
+          if(mmprad[i]>30)mmprad[i]=30;
 
           //filtrage
           for(int j = 1; j < mmprad_buff; j++)
@@ -193,7 +195,7 @@ void moteurLoop(double *vitesse, double *longueurCable)
           {
             if(mmprad[i] < mmprad_min)
             {
-              vitesse_corr[i] = (mmprad[i] - mmprad_min -0.1)*mmprad[i] / vitesse[i];
+              vitesse_corr[i] = 0.5*(mmprad[i] - mmprad_min -0.1)*mmprad[i] / vitesse[i];
             }
             else
             {
@@ -202,7 +204,7 @@ void moteurLoop(double *vitesse, double *longueurCable)
           }
           else vitesse_corr[i] = 1;
 
-          //detection de limite
+          /*//detection de limite
           if(mmprad[i] < mmprad_min)
           {
             GestionLog::printlog("mmprad[");
@@ -212,7 +214,7 @@ void moteurLoop(double *vitesse, double *longueurCable)
             GestionLog::printlog("corr = ");
             GestionLog::printlnlog(vitesse_corr[i]);
           }
-          else if (mmprad_max < mmprad[i]) mmprad[i] = mmprad_max;
+          else if (mmprad_max < mmprad[i]) mmprad[i] = mmprad_max;*/
 
           //mise à jours de mémoires pour delta
           old_position_moteurs[i] = radian;
@@ -233,7 +235,7 @@ void moteurLoop(double *vitesse, double *longueurCable)
       #endif
     }
 
-  if (compteur >= 200)
+  /*if (compteur >= 200)
   {
     compteur = 0;
     GestionLog::printlnlog("mmprad:");
@@ -244,5 +246,5 @@ void moteurLoop(double *vitesse, double *longueurCable)
     }
     GestionLog::printlog("dt = ");
     GestionLog::printlnlog(dt);
-  }
+  }*/
 }

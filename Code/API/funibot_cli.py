@@ -373,13 +373,13 @@ class CLIFunibot(cmd.Cmd):
                 - DIRECTION: Déplacement directionnel en cours sans condition de fin (attend un 'stop')
                 - POSITION: Déplacement en position ou en direction d'une certaine distance en cours
         """
-        print(self.bot.regime)
+        print(self.bot.regime.name)
 
-    def do_duree(self, _):
+    def do_dur(self, _):
         """Affiche la durée restante estimée pour le déplacement du funibot.
            Si le régime n'est pas un déplacement avec une condition de fin, affiche 0.
         """
-        print(self.bot.regime)
+        print(self.bot.duree_estimee)
 
     def do_att(self, _):
         print(f"Attente terminée avec statut -> {self.bot.attendre().name}")

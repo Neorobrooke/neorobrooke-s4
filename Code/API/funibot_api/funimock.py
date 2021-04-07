@@ -9,6 +9,12 @@ class IMockSerial:
     def write(self, contenu: bytes) -> None: ...
     def readline(self) -> bytes: ...
     def read_all(self) -> bytes: ...
+    def reset_input_buffer(self) -> None: ...
+
+    @property
+    def timeout(self) -> float: return 0
+    @timeout.setter
+    def timeout(self) -> None: pass
 
 
 class eMockType(Enum):
@@ -80,6 +86,11 @@ class MockSerial(IMockSerial):
     def read_all(self) -> bytes:
         """Envoie la réponse stockée"""
         return self.readline()
+
+    def reset_input_buffer(self) -> None:
+        self.reponse = b'{"vide"}'
+        if self.type is eMockType.MULTI_TEST:
+            return self.reponses.clear()
 
 
 class DualMockSerial(IMockSerial):

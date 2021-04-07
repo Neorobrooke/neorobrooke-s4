@@ -35,8 +35,8 @@ struct aglomerationVariable
     Funibot bot;
     FuniMath::Vecteur objectif;
     unsigned char regime = 0; //0 := arret, 1 := direction, 2 := position
-    double vitesse = 100;
-    double seuilPosition = 5;
+    double vitesse = 50;
+    double seuilPosition = 10;
 
     //retour encodeur
     double cable[NBR_CABLES] = {1300,1300,1300,1300};
@@ -146,7 +146,7 @@ void mainCommunication()
                     {
                         FuniMath::Vecteur position = global.bot.getPosition();
                         global.objectif = global.objectif + position;
-                        global.regime = 1; //déplacement jusqu'à la position de objectif
+                        global.regime = 2; //déplacement jusqu'à la position de objectif
                         input["type"] = "ack";
                         serializeJson(input,Serial);
                         Serial.println();
@@ -349,20 +349,27 @@ void mainCommunication()
     {
         if (type == "set")
         {
-            if (global.regime == 2)
+            bool fin = input["args"]["fin"];
+            if (!fin)
             {
-                input["args"]["val"] = true;
-                input["args"]["fin"] = false;
-                global.rappel = true;
+                GestionLog::printlnlog("demande d'attente recue");
+                if (global.regime == 2)
+                {
+                    input["args"]["val"] = true;
+                    input["args"]["fin"] = false;
+                    global.rappel = true;
+                    GestionLog::printlnlog("accepte");
+                }
+                else
+                {
+                    input["args"]["val"] = false;
+                    input["args"]["fin"] = false;
+                    GestionLog::printlnlog("refuse");
+                }
+                input["type"] = "ack";
+                serializeJson(input,Serial);
+                Serial.println();
             }
-            else
-            {
-                input["args"]["val"] = false;
-                input["args"]["fin"] = false;
-            }
-            input["type"] = "ack";
-            serializeJson(input,Serial);
-            Serial.println();
         }
     }
     else if(comm == "log")
@@ -390,13 +397,14 @@ void rappel(bool valide)
 {
     StaticJsonDocument<256> out;
 
-            out["comm"] = "dur";
-            out["type"] = "set";
+            out["comm"] = "att";
+            out["type"] = "ack";
             out["args"]["val"] = valide;
             out["args"]["fin"] = true;
             serializeJson(out,Serial);
             Serial.println();
             global.rappel = false;
+            GestionLog::printlnlog("fin attente");
 }
 
 //fonction de controle, choisie la vitesse des moteurs

@@ -6,6 +6,8 @@ from pathlib import Path
 from contextlib import contextmanager
 from functools import wraps
 
+from serial.serialwin32 import Serial
+
 from funibot_api.funiserial import (ErrSupEstNone, FuniErreur, eFuniErreur,
                                     eFuniModeCalibration, eFuniModeDeplacement,
                                     eFuniModeMoteur, FuniSerial, eFuniRegime,
@@ -256,7 +258,9 @@ class Funibot:
             return eRetourAttendre.ATTENTE_INVALIDE
 
         # Bloque l'exécution ici:
+        timeout, self.serial.serial.timeout = self.serial.serial.timeout, None
         retour_2 = self.serial.att(eFuniType.SET, fin=True)
+        self.serial.serial.timeout = timeout
         # Reprend l'exécution quand le Funibot arrête de se déplacer
 
         if retour_2 is None:
