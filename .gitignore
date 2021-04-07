@@ -9,3 +9,5 @@ googletest
 .coverage
 **/simulation_cpp/src
 htmlcov*
+*.egg*
+pip-wheel-metadata*

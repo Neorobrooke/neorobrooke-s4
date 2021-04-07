@@ -12,13 +12,13 @@ import time
 from funibot_api.funiconfig import FuniArgs, FuniConfig
 from funibot_api.funilib import Direction, Vecteur
 from funibot_api.funipersistance import ErreurDonneesIncompatibles
-from funibot_api.funiserial import FuniSerial, FuniCommException
-from funibot_api.funibot import Funibot
-from funibot_api.mock_serial import MockSerial, MockType
+from funibot_api.funiserial import ErrSupEstNone, FuniSerial, FuniCommException, eFuniRegime
+from funibot_api.funibot import ErreurPersistance, Funibot
+from funibot_api.funimock import MockSerial, eMockType
 
 
 class CLIFunibot(cmd.Cmd):
-    intro = "Funibot CLI v1.0   ->   Tapez help ou ? pour la liste des commandes.\n"
+    intro = "Funibot CLI v2.0.0   ->   Tapez help ou ? pour la liste des commandes.\n"
     prompt = "(Funibot) $ "
 
     def __init__(self, config: FuniConfig, completekey: str = 'tab', stdin: Any = None, stdout: Any = None) -> None:
@@ -36,16 +36,17 @@ class CLIFunibot(cmd.Cmd):
             except SerialException:
                 sys.exit("Port série introuvable")
         else:
-            self.serial = MockSerial(MockType.CLI)
+            self.serial = MockSerial(eMockType.CLI)
 
         self.funi_serial = FuniSerial(self.serial)
 
         try:
             self.bot = Funibot(self.funi_serial, config)
-        except ErreurDonneesIncompatibles as e:
+        except ErreurPersistance as e:
             print(e)
             print("Effectuer la calibration manuellement")
-        except:
+            self.bot = e.bot
+        except Exception:
             sys.exit(f"Erreur lors de l'initialisation du bot")
 
     def do_cable(self, arg: str):
@@ -156,15 +157,16 @@ class CLIFunibot(cmd.Cmd):
         """
         try:
             erreurs = self.bot.erreur()
-        except:
+        except ErrSupEstNone as e:
+            print("err_sup est None (utilisation probable de --mock)")
+            erreurs = e.erreurs
+        except Exception:
             print_exc()
             raise
 
         if erreurs is not None:
             for item in erreurs:
                 print(item)
-        else:
-            print("")
 
     def do_shell(self, arg):
         """Exécute la commande dans le shell sous-jacent. S'utilise aussi avec ! suivi de la commande."""
@@ -363,6 +365,24 @@ class CLIFunibot(cmd.Cmd):
                 print("Argument invalide. Afficher les possibilités avec 'help'.")
         except ValueError:
             print("État du moteur inconnu")
+
+    def do_reg(self, _):
+        """Affiche le régime du funibot.
+           Valeurs possibles:
+                - ARRET: pas de déplacement
+                - DIRECTION: Déplacement directionnel en cours sans condition de fin (attend un 'stop')
+                - POSITION: Déplacement en position ou en direction d'une certaine distance en cours
+        """
+        print(self.bot.regime)
+
+    def do_duree(self, _):
+        """Affiche la durée restante estimée pour le déplacement du funibot.
+           Si le régime n'est pas un déplacement avec une condition de fin, affiche 0.
+        """
+        print(self.bot.regime)
+
+    def do_att(self, _):
+        print(f"Attente terminée avec statut -> {self.bot.attendre().name}")
 
 def main():
     args = FuniArgs("funibot-cli").generer_config()

@@ -11,36 +11,46 @@ class IMockSerial:
     def read_all(self) -> bytes: ...
 
 
-class MockType(Enum):
+class eMockType(Enum):
     """Type de Mock série"""
-    CLI = auto,
-    TEST = auto
+    CLI = auto()
+    TEST = auto()
+    MULTI_TEST = auto()
 
 
 class MockSerial(IMockSerial):
     """Représente une fausse communication par port série"""
 
-    def __init__(self, type: MockType = MockType.TEST, timeout: float = 2) -> None:
+    def __init__(self, type: eMockType = eMockType.TEST) -> None:
         """Initialise une réponse vide pour l'objet"""
         self.reponse = b'{"vide"}'
         self.requete = b'{"vide"}'
         self.json_encoder = JSONEncoder()
         self.json_decoder = JSONDecoder()
-        self.is_cli = (type is MockType.CLI)
-        self.timeout = timeout
+        self.type = type
+        if self.type is eMockType.MULTI_TEST:
+            self.reponses = []
+            self.requetes = []
+            self.clear_requetes = lambda: self.requetes.clear()
+            self.clear_reponses = lambda: self.reponses.clear()
+            self.clear = lambda: self.clear_reponses(), self.clear_requetes()
 
     def write(self, contenu: bytes) -> None:
         """Stocke une réponse à un message reçu ou ajoute le message à la queue"""
-        if self.is_cli:
+        if self.type is eMockType.CLI:
             print(f"\tMOCK_RECEIVE <- <{contenu}>")
         self.requete = contenu
+        if self.type is eMockType.MULTI_TEST:
+            self.requetes.append(self.requete)
 
         try:
             self.reponse = self.json_decoder.decode(contenu.decode('utf8'))
         except JSONDecodeError:
-            if self.is_cli:
+            if self.type is eMockType.CLI:
                 print(f"ERREUR: JSON invalide -> {contenu.decode('utf8')}")
             self.reponse = b'{"erreur"}'
+            if self.type is eMockType.MULTI_TEST:
+                self.reponses.append(self.reponse)
             return
 
         try:
@@ -51,11 +61,21 @@ class MockSerial(IMockSerial):
             self.reponse = bytes(self.json_encoder.encode(
                 self.reponse), encoding='utf8')
 
+        if self.type is eMockType.MULTI_TEST:
+            self.reponses.append(self.reponse)
+
     def readline(self) -> bytes:
         """Envoie la réponse stockée"""
-        if self.is_cli:
+        if self.type is eMockType.CLI:
             print(f"\tMOCK_SEND -> <{self.reponse}>")
-        return self.reponse
+        if self.type is not eMockType.MULTI_TEST:
+            return self.reponse
+        else:
+            try:
+                reponse = self.reponses.pop(0)
+                return reponse
+            except IndexError:
+                return b'{"liste_vide"}'
 
     def read_all(self) -> bytes:
         """Envoie la réponse stockée"""
@@ -65,12 +85,12 @@ class MockSerial(IMockSerial):
 class DualMockSerial(IMockSerial):
     """Représente un mock série à deux canaux différents pour la lecture et l'écriture"""
 
-    def __init__(self, canal_lecture: Optional[MockSerial] = None, canal_ecriture: Optional[MockSerial] = None, timeout: float = 2) -> None:
+    def __init__(self, canal_lecture: Optional[MockSerial] = None, canal_ecriture: Optional[MockSerial] = None) -> None:
         """Initialise un mock de connection série avec un mock différent pour la lecture et l'écriture"""
         self.lecture = canal_lecture if canal_lecture is not None else MockSerial(
-            MockType.TEST, timeout=timeout)
+            eMockType.TEST)
         self.ecriture = canal_ecriture if canal_lecture is not None else MockSerial(
-            MockType.TEST, timeout=timeout)
+            eMockType.TEST)
 
     def write(self, contenu: bytes) -> None:
         self.ecriture.write(contenu=contenu)

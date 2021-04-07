@@ -2,7 +2,7 @@ from __future__ import annotations
 import unittest
 from funibot_api.funilib import JamaisInitialise, Vecteur, Poteau
 from funibot_api.funiserial import FuniSerial
-from funibot_api.mock_serial import DualMockSerial, MockSerial, MockType
+from funibot_api.funimock import DualMockSerial, MockSerial, eMockType
 
 
 class TestsPoteau(unittest.TestCase):
@@ -10,10 +10,10 @@ class TestsPoteau(unittest.TestCase):
 
     def setUp(self) -> None:
         """Préparation commune aux différents tests"""
-        self.mock = MockSerial(MockType.TEST)
+        self.mock = MockSerial(eMockType.TEST)
         self.serial = FuniSerial(self.mock)
 
-        self.emock = MockSerial(MockType.TEST)
+        self.emock = MockSerial(eMockType.TEST)
         self.dmock = DualMockSerial(
             canal_lecture=self.mock, canal_ecriture=self.emock)
         self.dserial = FuniSerial(self.dmock)
@@ -164,25 +164,25 @@ class TestsPoteau(unittest.TestCase):
 
         self.assertEqual(str(re.exception), "longueur est None")
 
-    def test_courant_moteur_pas_init(self):
-        """Test d'obtention de courant du moteur avant initialisation"""
-        poteau = Poteau(nom="test_courant_moteur_pas_init")
+    # def test_courant_moteur_pas_init(self):
+    #     """Test d'obtention de courant du moteur avant initialisation"""
+    #     poteau = Poteau(nom="test_courant_moteur_pas_init")
 
-        with self.assertRaises(JamaisInitialise) as re:
-            poteau.courant_moteur
+    #     with self.assertRaises(JamaisInitialise) as re:
+    #         poteau.courant_moteur
 
-        self.assertEqual(str(re.exception), str(
-            JamaisInitialise(poteau=poteau, message="courant_moteur")))
+    #     self.assertEqual(str(re.exception), str(
+    #         JamaisInitialise(poteau=poteau, message="courant_moteur")))
 
-    def test_couple_moteur_pas_init(self):
-        """Test d'obtention de couple du moteur avant initialisation"""
-        poteau = Poteau(nom="test_courant_moteur_pas_init")
+    # def test_couple_moteur_pas_init(self):
+    #     """Test d'obtention de couple du moteur avant initialisation"""
+    #     poteau = Poteau(nom="test_courant_moteur_pas_init")
 
-        with self.assertRaises(JamaisInitialise) as re:
-            poteau.couple_moteur
+    #     with self.assertRaises(JamaisInitialise) as re:
+    #         poteau.couple_moteur
 
-        self.assertEqual(str(re.exception), str(
-            JamaisInitialise(poteau=poteau, message="couple_moteur")))
+    #     self.assertEqual(str(re.exception), str(
+    #         JamaisInitialise(poteau=poteau, message="couple_moteur")))
 
     def test_repr_cable(self):
         """Test de représentation d'un Câble"""

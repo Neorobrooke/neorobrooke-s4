@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from enum import Enum, auto
 from math import sqrt
 from traceback import print_exc
 from numbers import Real
 from string import digits
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, List
 
-from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import FuniErreur, eFuniModeCalibration, eFuniModeDeplacement, FuniSerial, eFuniType, FuniCommException
 
 
 class JamaisInitialise(Exception):
@@ -25,8 +26,35 @@ class JamaisInitialise(Exception):
         super().__init__(self.message)
 
 
-class ChangerNormeVecteurNulErreur(Exception):
+class ErreurChangerNormeVecteurNul(Exception):
+    """Levée lorsqu'on essaie de changer la norme du vecteur nul"""
     pass
+
+
+class eRetourAttendre(Enum):
+    """Représente les possibilités de retour lors de l'attente.
+       OK -> Attente réalisée avec succès
+       ATTENTE_INVALIDE -> Il n'était pas nécessaire d'attendre
+       ARRET_INVALIDE -> L'arrêt a été causé par une erreur ou l'atteinte de la limite de la zone de travail
+       ERREUR_COMM -> Erreur de communication
+    """
+    OK = auto()
+    ATTENTE_INVALIDE = auto()
+    ARRET_INVALIDE = auto()
+    ERREUR_COMM = auto()
+
+
+class sEntreeAttendre:
+    def __init__(self, func_name: str, retour_attendre: eRetourAttendre) -> None:
+        self.func_name = func_name
+        self.retour_attendre = retour_attendre
+
+
+class WithAttendre:
+
+    def __init__(self) -> None:
+        # self.dernier_retour: Optional[eRetourAttendre] = None
+        self.retours: List[sEntreeAttendre] = []
 
 
 class Vecteur:
@@ -217,7 +245,7 @@ class Vecteur:
         """Change la norme du vecteur"""
         norme = self.norme
         if norme == 0:
-            raise ChangerNormeVecteurNulErreur(
+            raise ErreurChangerNormeVecteurNul(
                 "Impossible d'assigner une norme au vecteur nul, car il n'as pas d'orientation")
 
         bckup = (self.x, self.y, self.z)
@@ -339,7 +367,7 @@ class Poteau:
         """
         self.id = id
         self.serial = comm_serie
-        self.serial.pot(type=FuniType.SET, id=self.id,
+        self.serial.pot(type=eFuniType.SET, id=self.id,
                         position=self.pos_resultante.vers_tuple())
 
     def __repr__(self) -> str:
@@ -354,17 +382,13 @@ class Poteau:
         """Représente le Câble associé au Poteau sous la forme Câble[id:nom] -> longueur"""
         return f"Câble[{self.id}:{self.nom}] -> {self.longueur_cable}"
 
-    def repr_moteur(self) -> str:
-        """Représente le Moteur associé au Poteau sous la forme Moteur[id:nom] -> I: (courant) T: <couple>"""
-        return f"Moteur[{self.id}:{self.nom}] -> I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
-
     def repr_complet(self) -> str:
         """Représente le Poteau sous la forme Poteau[id:nom](px;py;pz)(ax;ay;az) -> L: {longueur} I: (courant) T: <couple>
            Le vecteur (px;py;pz) représente la position du poteau
            Le vecteur (ax;ay;az) représente la position de l'attache sur la nacelle par rapport au TCP du robot
            (Le TCP est le Tool Center Point)
         """
-        return f"{self.__repr__()} -> L: {{{self.longueur_cable}}} I: ({self.courant_moteur}) T: <{self.couple_moteur}>"
+        return f"{self.__repr__()} -> Câble: {{{self.longueur_cable}}}"
 
     @property
     def longueur_cable(self) -> Optional[Union[float, str]]:
@@ -375,7 +399,7 @@ class Poteau:
             raise JamaisInitialise(self, "longueur_cable")
         try:
             return self.serial.cal(
-                FuniType.GET, FuniModeCalibration.CABLE, self.id, None)
+                eFuniType.GET, eFuniModeCalibration.CABLE, self.id, None)
         except Exception:
             print_exc()
             raise
@@ -389,25 +413,25 @@ class Poteau:
             raise JamaisInitialise(self, "longueur_cable.setter")
         try:
             self.serial.cal(
-                FuniType.SET, FuniModeCalibration.CABLE, self.id, longueur)
+                eFuniType.SET, eFuniModeCalibration.CABLE, self.id, longueur)
         except Exception:
             print_exc()
             raise
 
-    @property
-    def courant_moteur(self) -> float:
-        """Donne le courant actuel du moteur associé à ce poteau
-           Nécessite une communication série.
-        """
-        if self.id is None or self.serial is None:
-            raise JamaisInitialise(self, "courant_moteur")
-        raise NotImplementedError("Pas encore codé dans la communication")
+    # @property
+    # def courant_moteur(self) -> float:
+    #     """Donne le courant actuel du moteur associé à ce poteau
+    #        Nécessite une communication série.
+    #     """
+    #     if self.id is None or self.serial is None:
+    #         raise JamaisInitialise(self, "courant_moteur")
+    #     raise NotImplementedError("Pas encore codé dans la communication")
 
-    @property
-    def couple_moteur(self) -> float:
-        """Donne le couple actuel du moteur associé à ce poteau
-           Nécessite une communication série.
-        """
-        if self.id is None or self.serial is None:
-            raise JamaisInitialise(self, "couple_moteur")
-        raise NotImplementedError("Pas encore codé dans la communication")
+    # @property
+    # def couple_moteur(self) -> float:
+    #     """Donne le couple actuel du moteur associé à ce poteau
+    #        Nécessite une communication série.
+    #     """
+    #     if self.id is None or self.serial is None:
+    #         raise JamaisInitialise(self, "couple_moteur")
+    #     raise NotImplementedError("Pas encore codé dans la communication")

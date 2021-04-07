@@ -1,84 +1,109 @@
 from __future__ import annotations
-from os import sep
 
 from traceback import print_exc
-from typing import ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
+from typing import Callable, ItemsView, Iterator, KeysView, List, ValuesView, Union, Optional
 from pathlib import Path
+from contextlib import contextmanager
+from functools import wraps
 
-from funibot_api.funiserial import FuniErreur, FuniModeCalibration, FuniModeDeplacement, FuniModeMoteur, FuniSerial, FuniType, FuniCommException
+from funibot_api.funiserial import (ErrSupEstNone, FuniErreur, eFuniErreur,
+                                    eFuniModeCalibration, eFuniModeDeplacement,
+                                    eFuniModeMoteur, FuniSerial, eFuniRegime,
+                                    eFuniType, FuniCommException)
 from funibot_api.funiconfig import FuniConfig
-from funibot_api.funilib import Poteau, Vecteur, Direction
+from funibot_api.funilib import Poteau, Vecteur, Direction, eRetourAttendre, WithAttendre, sEntreeAttendre
 from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
+
+
+class ErreurPersistance(ErreurDonneesIncompatibles):
+    def __init__(self, bot: Funibot, *args: object) -> None:
+        super().__init__(*args)
+        self.bot = bot
+
+
+def attendre_si_besoin(func) -> Callable:
+    """La méthode attend la fin de son déplacement si on est dans un contextmanager tout_attendre."""
+    @wraps(func)
+    def wrapper(self: Funibot, *args, **kwargs):
+        retour = func(self, *args, **kwargs)
+
+        if self._attendre is not None:
+            entree = sEntreeAttendre(func_name=func.__name__,
+                                     retour_attendre=self.attendre())
+            self._attendre.retours.append(entree)
+        
+        return retour
+
+    return wrapper
 
 
 class Funibot:
     """Représente le Funibot"""
 
     def __init__(self, serial: FuniSerial, config: FuniConfig) -> None:
+        """Initialise un Funibot.
+           Peut lever une ErreurPersistance si la calibration automatique est active, mais échoue.
+           Dans ce cas, l'objet est accessible via l'attribut 'bot' de l'exception.
+        """
         self.serial = serial
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
-        # self._sol = config.sol
         self.sol = config.sol
-        
+        self._attendre: Optional[WithAttendre] = None
+
         self._initialiser_persistance(
             fichier=config.persistance,
             auto_persistance=config.auto_persistance,
             auto_calibration=config.auto_calibration)
-        
+
         self.config = config
 
         if self.auto_calibration:
             try:
                 self.calibrer()
             except ErreurDonneesIncompatibles as e:
-                pass
-                # raise ErreurDonneesIncompatibles(f"Erreur de calibration automatique: {e}")
+                raise ErreurPersistance(
+                    self, f"Erreur de calibration automatique: {e}")
 
     def __del__(self):
         if self.auto_persistance:
             try:
                 self.enregister_calibration()
-            except ErreurDonneesIncompatibles as e:
+            except ErreurDonneesIncompatibles:
                 pass
-                # raise ErreurDonneesIncompatibles(f"Erreur de persistance automatique: {e}")
-
 
     @property
     def pos(self) -> Optional[Vecteur]:
         """Retourne la position actuelle du Funibot.
            Nécessite une communication série.
         """
-        valeur = self.serial.pos(FuniType.GET)
+        valeur = self.serial.pos(eFuniType.GET)
         if valeur is None:
             return None
         return Vecteur(*valeur)
 
     @pos.setter
+    @attendre_si_besoin
     def pos(self, position: Vecteur) -> None:
         """Déplace le Funibot à la posision vectorielle demandée.
            Nécessite une communication série.
         """
-        self.serial.pos(FuniType.SET, position.vers_tuple())
+        self.serial.pos(eFuniType.SET, position.vers_tuple())
 
     @property
     def sol(self) -> Optional[float]:
         """Retourne la position du sol.
            Nécessite une communication série.
         """
-        # """Retourne la position du sol."""
-        return self.serial.cal(FuniType.GET, FuniModeCalibration.SOL)
-        # return self._sol
+        return self.serial.cal(eFuniType.GET, eFuniModeCalibration.SOL)
 
     @sol.setter
     def sol(self, position: Optional[float]) -> None:
         """Change la position du sol.
            Nécessite une communication série.
         """
-        valeur = self.serial.cal(
-            FuniType.SET, FuniModeCalibration.SOL, longueur=position)
-        # if valeur is not None:
-        #     self._sol = valeur
+        self.serial.cal(
+            eFuniType.SET, eFuniModeCalibration.SOL, longueur=position)
 
     def __getitem__(self, nom: str) -> Poteau:
         """Retourne le poteau ayant le nom demandé"""
@@ -104,7 +129,8 @@ class Funibot:
         """Représente le Funibot sous la forme Funibot[port_serie](poteaux)"""
         return f"Funibot[{self.serial}]({list(self.poteaux.values())})"
 
-    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None):
+    @attendre_si_besoin
+    def deplacer(self, direction: Union[Direction, Vecteur, str], distance: float = None) -> None:
         """Déplace le Funibot dans la direction indiquée par 'direction'.
            Si 'distance' n'est pas None, arrête après avoir parcouru 'distance'.
            Si 'distance' est la valeur spéciale 0, arrête après avoir parcouru la distance correspondant à la norme du vecteur
@@ -117,12 +143,12 @@ class Funibot:
         if isinstance(direction, Direction):
             direction = direction.vecteur()
 
-        mode = FuniModeDeplacement.START if distance is None else FuniModeDeplacement.DISTANCE
+        mode = eFuniModeDeplacement.START if distance is None else eFuniModeDeplacement.DISTANCE
 
         if distance is not None and distance != 0:
             direction.norme = distance
 
-        self.serial.dep(type=FuniType.SET, mode=mode,
+        self.serial.dep(type=eFuniType.SET, mode=mode,
                         direction=direction.vers_tuple())
         return None
 
@@ -130,7 +156,7 @@ class Funibot:
         """Arrête le mouvement du robot.
            Nécessite une communication série.
         """
-        self.serial.dep(type=FuniType.SET, mode=FuniModeDeplacement.STOP)
+        self.serial.dep(type=eFuniType.SET, mode=eFuniModeDeplacement.STOP)
         return None
 
     def erreur(self) -> Optional[List[FuniErreur]]:
@@ -138,8 +164,10 @@ class Funibot:
            Nécessite une communication série.
         """
         try:
-            erreurs = self.serial.err(FuniType.GET)
+            erreurs = self.serial.err(eFuniType.GET)
             return erreurs
+        except ErrSupEstNone as e:
+            raise
         except Exception:
             print_exc()
             return None
@@ -149,7 +177,7 @@ class Funibot:
            Nécessite une communication série.
         """
         try:
-            msg = self.serial.log(FuniType.GET)
+            msg = self.serial.log(eFuniType.GET)
             return msg
         except FuniCommException:
             return None
@@ -159,10 +187,10 @@ class Funibot:
         """Retourne si les moteurs sont activés ou non.
            Nécessite une communication série.
         """
-        valeur = self.serial.mot(FuniType.GET) 
-        if valeur is FuniModeMoteur.ON:
+        valeur = self.serial.mot(eFuniType.GET)
+        if valeur is eFuniModeMoteur.ON:
             return True
-        elif valeur is FuniModeMoteur.OFF:
+        elif valeur is eFuniModeMoteur.OFF:
             return False
         else:
             return None
@@ -172,14 +200,79 @@ class Funibot:
         """Active ou désactive les moteurs.
            Nécessite une communication série.
         """
-        actifs = FuniModeMoteur.ON if mode is True else FuniModeMoteur.OFF
-        self.serial.mot(FuniType.SET, actifs)
+        actifs = eFuniModeMoteur.ON if mode is True else eFuniModeMoteur.OFF
+        self.serial.mot(eFuniType.SET, actifs)
 
     def reinitialiser_moteurs(self):
         """Réinitialise les moteurs.
            Nécessite une communication série.
         """
-        self.serial.mot(FuniType.SET, FuniModeMoteur.RESET)
+        self.serial.mot(eFuniType.SET, eFuniModeMoteur.RESET)
+
+    @property
+    def arrete(self) -> bool:
+        """Retourne un booléen qui vaut True si le robot est arrêté.
+           Nécessite une communication série.
+        """
+        return self.serial.reg(eFuniType.GET) is eFuniRegime.ARRET
+
+    @property
+    def en_deplacement(self) -> bool:
+        """Retourne un booléen qui vaut True si le robot est en mouvement.
+           Nécessite une communication série.
+        """
+        regime = self.serial.reg(eFuniType.GET)
+        return regime is eFuniRegime.DIRECTION or regime is eFuniRegime.POSITION
+
+    @property
+    def regime(self) -> Optional[eFuniRegime]:
+        """Retourne le régime du Funibot sous forme d'un eFuniRegime.
+           Valeurs:
+                ARRETE s'il ne bouge pas
+                DIRECTION s'il se déplace en direction sans condition d'arrêt (il attend un stop)
+                POSITION s'il se déplace en position ou en direction d'une certaine distance
+           Nécessite une communication série.
+        """
+        return self.serial.reg(eFuniType.GET)
+
+    @property
+    def duree_estimee(self) -> Optional[float]:
+        """Retourne la durée estimée restante au déplacement en cours.
+           Si regime != eFuniRegime.POSITION, retourne 0.
+           Nécessite une communication série.
+        """
+        return self.serial.dur(eFuniType.GET)
+
+    def attendre(self) -> eRetourAttendre:
+        """Attend la fin du déplacement du Funibot.
+           Retoune immédiatemment si le robot ne bouge pas.
+           Si le robot est en déplacement, bloque l'exécution jusqu'à ce qu'il arrive s'arrête.
+           Nécessite une communication série.
+        """
+        retour_1 = self.serial.att(eFuniType.SET, fin=False)
+        if retour_1 is None:
+            return eRetourAttendre.ERREUR_COMM
+        elif retour_1[0] is False:
+            return eRetourAttendre.ATTENTE_INVALIDE
+
+        # Bloque l'exécution ici:
+        retour_2 = self.serial.att(eFuniType.SET, fin=True)
+        # Reprend l'exécution quand le Funibot arrête de se déplacer
+
+        if retour_2 is None:
+            return eRetourAttendre.ERREUR_COMM
+        elif retour_2[0] is False:
+            return eRetourAttendre.ARRET_INVALIDE
+        else:
+            return eRetourAttendre.OK
+
+    @contextmanager
+    def tout_attendre(self):
+        self._attendre = WithAttendre()
+        try:
+            yield self._attendre
+        finally:
+            self._attendre = None
 
     def repr_sol(self):
         """Retourne une représentation du sol"""
