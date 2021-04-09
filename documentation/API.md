@@ -3,7 +3,7 @@
 ## Initialisation
 - Positionner les poteaux de soutien dans l'espace
 - Choisir un port série pour le système
-- Calibrer le système [À DÉTAILLER]
+- Calibrer le système
 
 ## Position et déplacement
 - Obtenir la position de la charge dans l'espace
