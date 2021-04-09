@@ -6,7 +6,6 @@ from traceback import print_exc
 from serial import Serial
 from serial.serialutil import SerialException
 from typing import Any
-from serial import Serial
 import time
 
 from funibot_api.funiconfig import FuniArgs, FuniConfig
