@@ -13,7 +13,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
     "type": "get | set | ack",
     "args": 
     {
-      "id": "identifiant_du_poteau",
+      "id": 0,
       "pos_x": 0.0,
       "pos_y": 0.0,
       "pos_z": 0.0
