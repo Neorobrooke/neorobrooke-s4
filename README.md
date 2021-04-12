@@ -12,6 +12,7 @@ La librairie est principalement en langage Arduino.
 Une API pour la librairie est développée en Python.
 
 ## Vidéo promotionnelle
+CLiquez sur [ce lien](http://www.youtube.com/watch?v=ZmdO61vBWyo) ou sur l'image ci-desous pour visionner la vidéo promotionnelle du projet.
 [![Vidéo promotionnelle](http://img.youtube.com/vi/ZmdO61vBWyo/0.jpg)](http://www.youtube.com/watch?v=ZmdO61vBWyo "Vidéo promotionnelle")
 
 # git-lfs
