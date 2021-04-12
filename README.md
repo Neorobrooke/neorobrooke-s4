@@ -11,6 +11,9 @@ Le projet consiste à réaliser un montage et une librairie pour contrôler un r
 La librairie est principalement en langage Arduino.
 Une API pour la librairie sera développée en Python.
 
+## Vidéo promotionnelle
+[![Vidéo promotionnelle](http://img.youtube.com/vi/ZmdO61vBWyo/0.jpg)](http://www.youtube.com/watch?v=ZmdO61vBWyo "Vidéo promotionnelle")
+
 # git-lfs
 Ce répertoir utilise git-lfs pour les fichiers volumineux.
 Installez git-lfs avant de cloner.
