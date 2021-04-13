@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from funibot_algorithmes.point_dans_forme import point_dans_triangle_plan_XY as point_triangle
-from funibot_algorithmes.point_dans_forme import point_dans_polygone_convexe_plan_XY as point_carre
+from point_dans_forme import point_dans_triangle_plan_XY as point_triangle
+from point_dans_forme import point_dans_polygone_convexe_plan_XY as point_carre
 import unittest
 
 from funibot_api.funibot import Vecteur
@@ -126,7 +126,7 @@ class TestPointDansCarre(unittest.TestCase):
                 self.C,
                 self.D
             ],
-            P = Vecteur(1, 1)))
+            P=Vecteur(1, 1)))
 
     def test_carre_dans_centre(self):
         self.assertTrue(point_carre(
@@ -136,7 +136,7 @@ class TestPointDansCarre(unittest.TestCase):
                 self.C,
                 self.D
             ],
-            P = Vecteur(500, 500)))
+            P=Vecteur(500, 500)))
 
     def test_carre_hors(self):
         self.assertFalse(point_carre(
@@ -146,7 +146,7 @@ class TestPointDansCarre(unittest.TestCase):
                 self.C,
                 self.D
             ],
-            P = Vecteur(1001, 1001)))
+            P=Vecteur(1001, 1001)))
 
 
 class TestPointDansTriangleDemies(unittest.TestCase):
@@ -166,26 +166,26 @@ class TestPointDansTriangleDemies(unittest.TestCase):
         self.assertTrue(point_triangle(
             self.A,
             self.B1,
-            self.C, 
-            P = self.point_in_1))
+            self.C,
+            P=self.point_in_1))
 
     def test_demi_triangle_2_dans(self):
         self.assertTrue(point_triangle(
             self.A,
-            self.B2, 
+            self.B2,
             self.C,
-            P = self.point_in_2))
+            P=self.point_in_2))
 
     def test_demi_triangle_1_hors(self):
         self.assertFalse(point_triangle(
             self.A,
             self.B1,
-            self.C, 
-            P = self.point_in_2))
+            self.C,
+            P=self.point_in_2))
 
     def test_demi_triangle_2_hors(self):
         self.assertFalse(point_triangle(
             self.A,
-            self.B2, 
+            self.B2,
             self.C,
-            P = self.point_in_1))
+            P=self.point_in_1))

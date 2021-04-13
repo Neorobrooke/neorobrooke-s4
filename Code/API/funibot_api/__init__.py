@@ -35,5 +35,3 @@ from funibot_api.funiserial         import  (
                                                 FUNI_ERREUR_MAJ,
                                                 FUNI_ERREUR_MESSAGES
                                             )
-
-import funibot_api.funimock
