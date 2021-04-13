@@ -41,6 +41,9 @@ Linux/Mac (bash, zsh, etc.) : `source ./.venv/bin/activate`
 L'environnement doit être réactivé chaque fois qu'on veut exécuter le module ou un autre module ou script qui en dépend.
 
 ## Méthode alternative pour utiliser la librairie sans la modifier
+Il est possible d'installer la librairie dans le répertoire courant si on ne souhaite pas la modifier en invoquant `python /chemin/vers/pip_script.py` avec l'option `--noedit`.
+
+### Méthode longue
 Il est possible d'installer la librairie directement avec `pip` si on ne souhaite pas la modifier, mais seulement l'utiliser.
 1. Cloner le répertoire git de la librairie, et noter l'endroit où il se trouve.
 2. Créer un dossier pour votre projet
