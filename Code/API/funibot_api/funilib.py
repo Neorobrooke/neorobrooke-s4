@@ -45,16 +45,9 @@ class eRetourAttendre(Enum):
 
 
 class sEntreeAttendre:
-    def __init__(self, func_name: str, retour_attendre: eRetourAttendre) -> None:
-        self.func_name = func_name
+    def __init__(self, nom_methode: str, retour_attendre: eRetourAttendre) -> None:
+        self.nom_methode = nom_methode
         self.retour_attendre = retour_attendre
-
-
-class WithAttendre:
-
-    def __init__(self) -> None:
-        # self.dernier_retour: Optional[eRetourAttendre] = None
-        self.retours: List[sEntreeAttendre] = []
 
 
 class Vecteur:

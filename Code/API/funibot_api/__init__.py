@@ -14,8 +14,7 @@ from funibot_api.funilib            import  (
                                                 ErreurChangerNormeVecteurNul,
                                                 JamaisInitialise,
                                                 Poteau,
-                                                eRetourAttendre,
-                                                WithAttendre
+                                                eRetourAttendre
                                             )
 
 from funibot_api.funipersistance    import  (

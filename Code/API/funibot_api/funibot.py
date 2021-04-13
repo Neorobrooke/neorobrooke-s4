@@ -11,7 +11,7 @@ from funibot_api.funiserial import (ErrSupEstNone, FuniErreur, eFuniErreur,
                                     eFuniModeMoteur, FuniSerial, eFuniRegime,
                                     eFuniType, FuniCommException)
 from funibot_api.funiconfig import FuniConfig
-from funibot_api.funilib import Poteau, Vecteur, Direction, eRetourAttendre, WithAttendre, sEntreeAttendre
+from funibot_api.funilib import Poteau, Vecteur, Direction, eRetourAttendre, sEntreeAttendre
 from funibot_api.funipersistance import FuniPersistance, ErreurDonneesIncompatibles
 
 
@@ -28,10 +28,10 @@ def attendre_si_besoin(func) -> Callable:
         retour = func(self, *args, **kwargs)
 
         if self._attendre is not None:
-            entree = sEntreeAttendre(func_name=func.__name__,
+            entree = sEntreeAttendre(nom_methode=func.__name__,
                                      retour_attendre=self.attendre())
-            self._attendre.retours.append(entree)
-        
+            self._attendre.append(entree)
+
         return retour
 
     return wrapper
@@ -49,7 +49,7 @@ class Funibot:
         self.poteaux = Funibot._poteaux_liste_a_dict(config.liste_poteaux)
         self._initialiser_poteaux()
         self.sol = config.sol
-        self._attendre: Optional[WithAttendre] = None
+        self._attendre: Optional[List[sEntreeAttendre]] = None
 
         self._initialiser_persistance(
             fichier=config.persistance,
@@ -270,7 +270,7 @@ class Funibot:
 
     @contextmanager
     def tout_attendre(self):
-        self._attendre = WithAttendre()
+        self._attendre = list()
         try:
             yield self._attendre
         finally:

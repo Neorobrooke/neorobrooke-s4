@@ -13,7 +13,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
     "type": "get | set | ack",
     "args": 
     {
-      "id": "identifiant_du_poteau",
+      "id": 0,
       "pos_x": 0.0,
       "pos_y": 0.0,
       "pos_z": 0.0
@@ -151,7 +151,6 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
       - `val` peut avoir deux valeurs:
         - `true` si la fin est causée par l'atteinte de la position
         - `false` si la fin est causée par une erreur ou par l'atteinte des limites de la zone de travail
-        - Pour un déplacement en direction sans condition d'arrêt, la seule réponse possible ici est `false`, mais on s'y attend
   ```json
   {
     "comm": "att",

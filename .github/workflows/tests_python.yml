@@ -1,12 +1,13 @@
 name: Tests Python
 
-# on: push
 on:
   push:
     paths:
       - '**.py'
       - '**requirements.txt'
       - '**tests_python.yml'
+      - 'setup.cfg'
+      - 'pyproject.toml'
   workflow_dispatch:
 
 jobs:
@@ -36,7 +37,7 @@ jobs:
           pytest --cov=funibot_api --cov-branch --cov-report=xml
           pytest --cov=funibot_api --cov-branch --cov-report=html:./coverage.html
 
-      - name: coverage report
+      - name: codecov
         uses: codecov/codecov-action@v1
         with:
           fail_ci_if_error: true
