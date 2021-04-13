@@ -5,9 +5,7 @@ __pycache__
 .venv*
 .vs
 .pytest_cache
-googletest
 .coverage
-**/simulation_cpp/src
 htmlcov*
 *.egg*
 pip-wheel-metadata*
