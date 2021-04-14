@@ -19,7 +19,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
       "pos_z": 0.0
     }
   }
-  // pos_x, pos_y et pos_z correspondent aux coordonnées du vecteur position du poteau additionné 
+  // pos_x, pos_y et pos_z correspondent aux coordonnées du vecteur position résultant du poteau (position du pôle - position de l'accroche)
   ```
 - Choisir un port série pour le système
   - Pas de comande
@@ -111,7 +111,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
 
   }
   ```
-- Obtenir un estimé de la durée avant la fin de la tâche en cours
+- Obtenir un estimé de la durée minimale avant la fin de la tâche en cours
   - Les tâches sont les suivantes:
     - `arr` lorsque le système est à l'arrêt
     - `dir` lorsque le système est en déplacement directionnel

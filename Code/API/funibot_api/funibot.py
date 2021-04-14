@@ -159,7 +159,7 @@ class Funibot:
         self.serial.dep(type=eFuniType.SET, mode=eFuniModeDeplacement.STOP)
         return None
 
-    def erreur(self) -> Optional[List[FuniErreur]]:
+    def erreurs(self) -> Optional[List[FuniErreur]]:
         """Retourne la liste des erreurs.
            Nécessite une communication série.
         """
@@ -236,8 +236,8 @@ class Funibot:
         return self.serial.reg(eFuniType.GET)
 
     @property
-    def duree_estimee(self) -> Optional[float]:
-        """Retourne la durée estimée restante au déplacement en cours.
+    def duree_minimale(self) -> Optional[float]:
+        """Retourne la durée minimale estimée restante au déplacement en cours.
            Si regime != eFuniRegime.POSITION, retourne 0.
            Nécessite une communication série.
         """
@@ -256,9 +256,9 @@ class Funibot:
             return eRetourAttendre.ATTENTE_INVALIDE
 
         # Bloque l'exécution ici:
-        timeout, self.serial.serial.timeout = self.serial.serial.timeout, None
+        _timeout, self.serial.serial.timeout = self.serial.serial.timeout, None
         retour_2 = self.serial.att(eFuniType.SET, fin=True)
-        self.serial.serial.timeout = timeout
+        self.serial.serial.timeout = _timeout
         # Reprend l'exécution quand le Funibot arrête de se déplacer
 
         if retour_2 is None:

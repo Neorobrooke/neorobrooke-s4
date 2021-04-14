@@ -14,7 +14,7 @@ class IMockSerial:
     @property
     def timeout(self) -> float: return 0
     @timeout.setter
-    def timeout(self) -> None: pass
+    def timeout(self, val) -> None: pass
 
 
 class eMockType(Enum):
