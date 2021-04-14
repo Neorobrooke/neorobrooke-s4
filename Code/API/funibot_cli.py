@@ -155,7 +155,7 @@ class CLIFunibot(cmd.Cmd):
            * La partie "(M)" signifie "erreur majeure", et n'est pas affichée pour une erreur mineure
         """
         try:
-            erreurs = self.bot.erreur()
+            erreurs = self.bot.erreurs()
         except ErrSupEstNone as e:
             print("err_sup est None (utilisation probable de --mock)")
             erreurs = e.erreurs
@@ -381,7 +381,7 @@ class CLIFunibot(cmd.Cmd):
         """Affiche la durée restante estimée pour le déplacement du funibot.
            Si le régime n'est pas un déplacement avec une condition de fin, affiche 0.
         """
-        print(self.bot.duree_estimee)
+        print(self.bot.duree_minimale)
 
     def do_att(self, _):
         """Bloque jusqu'à ce que le robot arrive à sa destination, puis affiche le résultat de l'attente.

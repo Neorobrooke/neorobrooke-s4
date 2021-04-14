@@ -37,8 +37,8 @@
   3. En déplacement positionnel si `en_deplacement() is True`, si `arrete() is False` ou si `regime() == eFuniRegime.POSITION`
     - Défini comme un déplacement avec une condition de fin (distance ou position)
     - S'arrêtera de lui-même
-- Permet d'avoir une durée estimée du déplacement en cours
-  - Avec l'attribut `duree_estimee`
+- Permet d'avoir une durée minimale estimée du déplacement en cours
+  - Avec l'attribut `duree_minimale`
   - Ne donne une valeur que pour un déplacement avec une condition de fin (distance ou position)
 - Possibilité d'attendre la fin du déplacement en cours
   - La méthode `attendre` bloque jusqu'à ce que le déplacement en cours soit terminé

@@ -111,7 +111,7 @@ La réponse à `get` ou `set` est `ack` avec la valeur.
 
   }
   ```
-- Obtenir un estimé de la durée avant la fin de la tâche en cours
+- Obtenir un estimé de la durée minimale avant la fin de la tâche en cours
   - Les tâches sont les suivantes:
     - `arr` lorsque le système est à l'arrêt
     - `dir` lorsque le système est en déplacement directionnel
