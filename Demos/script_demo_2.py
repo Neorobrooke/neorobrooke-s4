@@ -66,7 +66,7 @@ def script(bot: Funibot):
     print(f"Durée du déplacement: {tf} s")
     print()
 
-    time.sleep(3)
+    time.sleep(2)
 
     print("On monte jusqu'à ce qu'on sorte de la zone:")
     bot.deplacer("y")

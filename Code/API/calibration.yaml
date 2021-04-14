@@ -9,7 +9,7 @@ poteaux:
       x: -60
       y: 100
       z: -60
-    cable: 826.8633
+    cable: 825.3619
   pot1:
     poles:
       x: 1220
@@ -19,7 +19,7 @@ poteaux:
       x: 60
       y: 100
       z: -60
-    cable: 808.1325
+    cable: 806.6311
   pot2:
     poles:
       x: 1220
@@ -29,7 +29,7 @@ poteaux:
       x: 60
       y: 100
       z: 60
-    cable: 783.3335
+    cable: 784.0842
   pot3:
     poles:
       x: 0
@@ -39,5 +39,5 @@ poteaux:
       x: -60
       y: 100
       z: 60
-    cable: 802.6425
+    cable: 803.3932
 ...
