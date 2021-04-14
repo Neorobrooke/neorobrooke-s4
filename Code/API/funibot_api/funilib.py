@@ -410,21 +410,3 @@ class Poteau:
         except Exception:
             print_exc()
             raise
-
-    # @property
-    # def courant_moteur(self) -> float:
-    #     """Donne le courant actuel du moteur associé à ce poteau
-    #        Nécessite une communication série.
-    #     """
-    #     if self.id is None or self.serial is None:
-    #         raise JamaisInitialise(self, "courant_moteur")
-    #     raise NotImplementedError("Pas encore codé dans la communication")
-
-    # @property
-    # def couple_moteur(self) -> float:
-    #     """Donne le couple actuel du moteur associé à ce poteau
-    #        Nécessite une communication série.
-    #     """
-    #     if self.id is None or self.serial is None:
-    #         raise JamaisInitialise(self, "couple_moteur")
-    #     raise NotImplementedError("Pas encore codé dans la communication")
