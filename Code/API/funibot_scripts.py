@@ -9,10 +9,10 @@ def launch(path: Path) -> None:
 
 
 dossier = Path(prefix) / "share" / "funibot-neorobrooke"
-documentation = dossier / "documentation"
+documentation = dossier / "Documentation"
 config = dossier / "config.yaml"
 calibration = dossier / "calibration.yaml"
-erreurs = documentation / "dictionnaireErreur.txt"
+erreurs = documentation / "dictionnaire_erreurs.txt"
 
 
 def ouvrir_erreurs():

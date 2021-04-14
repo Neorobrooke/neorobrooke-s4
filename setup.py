@@ -2,7 +2,7 @@ from setuptools import setup
 from glob import glob
 from pathlib import Path
 
-doc = [x for x in glob("documentation/*") if Path(x).is_file()]
+doc = [x for x in glob("Documentation/*") if Path(x).is_file()]
 
 setup(
     data_files = [
