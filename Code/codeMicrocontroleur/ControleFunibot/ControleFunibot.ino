@@ -6,7 +6,7 @@
 #include "GestionLog.h"
 
 
-#define version "v t4"
+#define version "v t5"
 
 #define BAUDRATE  57600
 

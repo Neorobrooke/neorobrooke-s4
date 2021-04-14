@@ -139,7 +139,7 @@
   - Affiche `ARRET` si le robot ne bouge pas
   - Affiche `DIRECTION` si le robot se déplace, mais n'arrêtera pas si une commande `stop` ne lui est pas envoyée
   - Affiche `POSITION` si le robot se déplace jusqu'à une position connue d'avance
-- Commande `dur` pour afficher la durée estimée du déplacement en cours, en secondes
+- Commande `dur` pour afficher la durée minimale estimée du déplacement en cours, en secondes
   - Affiche `0` si le régime n'est pas `POSITION`
 - Commande `att` pour bloquer et attendre la fin du déplacement en cours
   - Affiche le résultat de l'attente
