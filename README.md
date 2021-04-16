@@ -24,7 +24,7 @@ Disponible dans le gestionnaire de paquets de votre distribution.
 Téléchargeable à partir [de ce lien.](https://git-lfs.github.com/)
 
 # Guide complet pour l'installation et l'assemblage du système
-Un guide complet d'installation et d'assemblage du système est disponible [dans le répertoire "documentation".](https://github.com/Neorobrooke/neorobrooke-s4/blob/main/documentation/Manuel%20d'utilisation%20du%20Funibot.pdf)
+Un guide complet d'installation et d'assemblage du système est disponible [dans le répertoire "documentation".](https://github.com/Neorobrooke/neorobrooke-s4/blob/main/documentation/manuel_utilisation_FuniBot.pdf)
 Ce manuel décrit toutes les étapes pour assembler le système Funibot et mettre en place un environnement de développement pour utiliser la librairie avec le système.
 Un guide de démarrage rapide pour mettre en place un environnement de développement logiciel seulement est disponible dans la section suivante de ce document.
 
