@@ -6,3 +6,4 @@
 *.PDF filter=lfs diff=lfs merge=lfs -text
 *.GGB filter=lfs diff=lfs merge=lfs -text
 *.STEP filter=lfs diff=lfs merge=lfs -text
+*.DWG filter=lfs diff=lfs merge=lfs -text
